@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --accent: #A020F0;
+  }
+
   html {
     @apply bg-bg text-text-primary;
     scroll-behavior: smooth;

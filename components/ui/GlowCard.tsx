@@ -15,7 +15,7 @@ export function GlowCard({ children, className = "", delay = 0 }: GlowCardProps)
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      whileHover={{ borderColor: "#A020F0", boxShadow: "0 0 25px rgba(160,32,240,0.25)" }}
+      whileHover={{ borderColor: "var(--accent)", boxShadow: "0 0 25px rgba(160,32,240,0.25)" }}
       className={`bg-surface border border-white/5 rounded-2xl p-6 transition-all duration-300 ${className}`}
     >
       {children}
