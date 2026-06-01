@@ -2,23 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #08070F;
-  --surface: #110F1E;
-  --accent: #A020F0;
-  --glow: #7C3AED;
-}
+@layer base {
+  html {
+    @apply bg-bg text-text-primary;
+    scroll-behavior: smooth;
+  }
 
-html {
-  background-color: #08070F;
-  color: #F4F0FF;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-::selection {
-  background: #A020F0;
-  color: #F4F0FF;
+  ::selection {
+    @apply bg-accent text-text-primary;
+  }
 }
