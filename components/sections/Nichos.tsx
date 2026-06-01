@@ -1,10 +1,10 @@
 "use client"
-import { Building2, Stethoscope, Heart, ShoppingCart, GraduationCap, Scale, Hotel, Megaphone, Briefcase, Wrench, Scissors, Car } from "lucide-react"
+import { Building2, Stethoscope, Heart, ShoppingCart, GraduationCap, Scale, Hotel, Megaphone, Briefcase, Wrench, Scissors, Car, type LucideIcon } from "lucide-react"
 import { motion } from "framer-motion"
 import { SectionTitle } from "@/components/ui/SectionTitle"
 import { NICHES } from "@/lib/constants"
 
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Building2, Stethoscope, Heart, ShoppingCart, GraduationCap, Scale, Hotel, Megaphone, Briefcase, Wrench, Scissors, Car,
 }
 

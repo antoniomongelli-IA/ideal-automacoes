@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Instagram, Linkedin, MessageCircle } from "lucide-react"
+import { Share2, Globe, MessageCircle } from "lucide-react"
 import { WHATSAPP_NUMBER } from "@/lib/constants"
 
 export function Footer() {
@@ -22,10 +22,10 @@ export function Footer() {
 
         <div className="flex items-center gap-4">
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent transition-colors">
-            <Instagram size={20} />
+            <Share2 size={20} />
           </a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent transition-colors">
-            <Linkedin size={20} />
+            <Globe size={20} />
           </a>
           <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-accent transition-colors">
             <MessageCircle size={20} />

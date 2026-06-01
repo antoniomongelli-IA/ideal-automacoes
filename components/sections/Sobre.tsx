@@ -1,9 +1,9 @@
 "use client"
 import { motion } from "framer-motion"
-import { Target, Eye, Zap } from "lucide-react"
+import { Target, Eye, Zap, type LucideIcon } from "lucide-react"
 import { VALUES } from "@/lib/constants"
 
-const ICON_MAP: Record<string, React.ElementType> = { Target, Eye, Zap }
+const ICON_MAP: Record<string, LucideIcon> = { Target, Eye, Zap }
 
 export function Sobre() {
   return (

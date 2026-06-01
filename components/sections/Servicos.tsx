@@ -1,14 +1,14 @@
 "use client"
-import { MessageCircle, Bot, RefreshCw, Instagram, TrendingUp, Plug } from "lucide-react"
+import { MessageCircle, Bot, RefreshCw, Share2, TrendingUp, Plug, type LucideIcon } from "lucide-react"
 import { GlowCard } from "@/components/ui/GlowCard"
 import { SectionTitle } from "@/components/ui/SectionTitle"
 import { SERVICES } from "@/lib/constants"
 
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   MessageCircle,
   Bot,
   RefreshCw,
-  Instagram,
+  Instagram: Share2,
   TrendingUp,
   Plug,
 }
