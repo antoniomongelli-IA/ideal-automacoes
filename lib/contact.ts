@@ -1,6 +1,6 @@
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY ?? "placeholder")
 
 export interface ContactPayload {
   name: string
@@ -10,7 +10,7 @@ export interface ContactPayload {
 }
 
 export async function sendContactEmail(payload: ContactPayload) {
-  const { data, error } = await resend.emails.send({
+  const { data, error } = await getResend().emails.send({
     from: "site@idealautomacoes.com.br",
     to: process.env.CONTACT_EMAIL!,
     subject: `Novo contato: ${payload.name} — ${payload.company}`,
