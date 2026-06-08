@@ -1,6 +1,6 @@
 // lib/constants.ts
 
-export const WHATSAPP_NUMBER = "5500000000000" // substituir pelo número real
+export const WHATSAPP_NUMBER = "5567996329837"
 
 export const SERVICES = [
   {
@@ -45,17 +45,26 @@ export const HOW_IT_WORKS = [
   {
     step: "01",
     title: "Diagnóstico",
-    description: "Mapeamos seu processo, identificamos gargalos e definimos a automação com maior impacto para o seu negócio.",
+    description: "Mapeamos seu processo, identificamos gargalos e definimos a automação com maior impacto para o seu negócio. Você sai com clareza total antes de investir.",
+    image: "/how/diagnostico.jpg",
+    imageAlt: "Diagnóstico do processo",
+    tag: "Semana 1–2",
   },
   {
     step: "02",
     title: "Implementação",
-    description: "Construímos a solução sob medida com entregas ágeis, integrando às ferramentas que você já usa.",
+    description: "Construímos a solução sob medida com entregas ágeis, integrando às ferramentas que você já usa — WhatsApp, CRM, ERP ou planilhas.",
+    image: "/how/implementacao.jpg",
+    imageAlt: "Implementação da automação",
+    tag: "Semana 3–4",
   },
   {
     step: "03",
-    title: "Resultado",
-    description: "Sua operação roda com mais eficiência, menos custo e mais conversão — com suporte contínuo.",
+    title: "Ativação & Resultado",
+    description: "Sua operação entra no piloto automático. Acompanhamos métricas, ajustamos o fluxo e garantimos que você veja retorno desde o primeiro mês.",
+    image: "/how/resultado.jpg",
+    imageAlt: "Resultado e métricas",
+    tag: "A partir da semana 5",
   },
 ]
 
@@ -66,13 +75,17 @@ export const CASES = [
     problem: "Atendimento manual sobrecarregado e demora no retorno de pacientes.",
     solution: "Agente de IA no WhatsApp para triagem, agendamento e envio de informações.",
     result: "Tempo de resposta reduzido de 2h para menos de 1 minuto.",
+    brandColor: "#00B4D8",
+    logo: "/logos/care-mais.png",
   },
   {
-    company: "RM Exclusive",
-    niche: "Locadora de Veículos",
-    problem: "Leads sem follow-up e processo de reserva totalmente manual.",
-    solution: "SDR automatizado com qualificação e agendamento integrado ao CRM.",
-    result: "Aumento de 40% na taxa de conversão de leads.",
+    company: "Kabana's Flores",
+    niche: "Floricultura",
+    problem: "Atendimento manual no WhatsApp e pedidos sem organização.",
+    solution: "Automação de pedidos, catálogo e atendimento via WhatsApp com IA.",
+    result: "Redução de 80% no tempo de resposta e aumento de pedidos recorrentes.",
+    brandColor: "#E91E8C",
+    logo: "/logos/kabana-flores.png",
   },
   {
     company: "Vila da Mônica",
@@ -80,20 +93,26 @@ export const CASES = [
     problem: "Alto volume de dúvidas e solicitações de agendamento via WhatsApp.",
     solution: "Atendente virtual com envio automático de imagens, vídeos e agendamento.",
     result: "Equipe de atendimento focada apenas em casos complexos.",
+    brandColor: "#E63946",
+    logo: "/logos/vila-monica.png",
   },
   {
     company: "doTERRA",
-    niche: "Wellness / Distribuidores",
-    problem: "Nutrição de leads e suporte a distribuidores sem escala.",
-    solution: "Fluxos automáticos de e-mail e WhatsApp para nutrição e reativação.",
-    result: "Operação escalada sem aumento de headcount.",
+    niche: "Óleos Essenciais",
+    problem: "Alto volume de mensagens e atendimento lento para clientes interessados.",
+    solution: "Agente de IA no WhatsApp para atendimento automático e qualificação de clientes.",
+    result: "Tempo de resposta reduzido para menos de 1 minuto.",
+    brandColor: "#9B7FC7",
+    logo: "/logos/doterra.svg",
   },
   {
-    company: "Oryon Digital",
-    niche: "Agência de Marketing",
-    problem: "Onboarding de clientes manual e processos internos repetitivos.",
-    solution: "Automação de onboarding, relatórios e comunicação com clientes via n8n.",
-    result: "Redução de 60% no tempo gasto em tarefas administrativas.",
+    company: "Faculdade Iguaçu",
+    niche: "Educação Superior",
+    problem: "Atendimento a alunos sobrecarregado e processos de matrícula manuais.",
+    solution: "Agente de IA para atendimento de alunos, dúvidas e processo de matrícula.",
+    result: "Redução de 70% nas consultas manuais ao setor administrativo.",
+    brandColor: "#1A6FA8",
+    logo: "/logos/faculdade-iguacu.png",
   },
   {
     company: "eLAV",
@@ -101,6 +120,8 @@ export const CASES = [
     problem: "Gestão de pedidos e comunicação com clientes feita manualmente.",
     solution: "Integração WhatsApp + sistema de pedidos com notificações automáticas.",
     result: "Zero falhas de comunicação e clientes sempre atualizados.",
+    brandColor: "#0077B6",
+    logo: "/logos/elav.png",
   },
 ]
 
@@ -120,14 +141,43 @@ export const NICHES = [
 ]
 
 export const TECHNOLOGIES = [
-  { name: "n8n", logo: "/tech/n8n.svg" },
-  { name: "OpenAI", logo: "/tech/openai.svg" },
-  { name: "Supabase", logo: "/tech/supabase.svg" },
-  { name: "WhatsApp Business", logo: "/tech/whatsapp.svg" },
-  { name: "WAHA API", logo: "/tech/waha.png" },
-  { name: "Instagram", logo: "/tech/instagram.svg" },
-  { name: "REST APIs", logo: "/tech/api.svg" },
-  { name: "PostgreSQL", logo: "/tech/postgresql.svg" },
+  // Automação & WhatsApp
+  { name: "n8n" },
+  { name: "Evolution API" },
+  { name: "UazAPI" },
+  { name: "WAHA API" },
+  { name: "WhatsApp Business" },
+  { name: "Typebot" },
+  { name: "ManyChat" },
+  // IA & LLMs
+  { name: "OpenAI" },
+  { name: "Anthropic Claude" },
+  { name: "Groq" },
+  { name: "Gemini" },
+  { name: "LangChain" },
+  { name: "Flowise" },
+  // Backend & Banco
+  { name: "Supabase" },
+  { name: "PostgreSQL" },
+  { name: "Redis" },
+  { name: "Node.js" },
+  { name: "Python" },
+  { name: "FastAPI" },
+  // Integrações & APIs
+  { name: "REST APIs" },
+  { name: "Webhooks" },
+  { name: "Instagram" },
+  { name: "Google Sheets" },
+  { name: "Make (Integromat)" },
+  { name: "Zapier" },
+  { name: "HubSpot" },
+  { name: "RD Station" },
+  // DevOps & Infra
+  { name: "Docker" },
+  { name: "VPS Linux" },
+  { name: "Nginx" },
+  { name: "GitHub Actions" },
+  { name: "Vercel" },
 ]
 
 export const VALUES = [

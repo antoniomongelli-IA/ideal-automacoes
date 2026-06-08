@@ -1,6 +1,16 @@
 @import "tailwindcss";
 
+html {
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
 @theme {
+  --font-sans: var(--font-jakarta), 'Inter', system-ui, sans-serif;
   --color-bg: #08070F;
   --color-surface: #110F1E;
   --color-accent: #A020F0;
@@ -28,6 +38,23 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes border-beam {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes scan-down {
+  0%   { top: -2px; opacity: 1; }
+  70%  { opacity: 0.7; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes glare-sweep {
+  0%   { transform: translateX(-200%) skewX(-20deg); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateX(300%) skewX(-20deg); opacity: 0; }
+}
+
 @layer base {
   :root {
     --accent: #A020F0;
@@ -43,4 +70,176 @@
     background-color: #A020F0;
     color: #F4F0FF;
   }
+}
+
+/* Partner cards - Evyon-style */
+@keyframes partner-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.partner-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.partner-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(circle, rgba(160, 32, 240, 0.10), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.partner-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(135deg, #CC44FF, #6B21F5);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.partner-card:hover {
+  border-color: #A020F0 !important;
+  transform: translateY(-8px) scale(1.05);
+  background: rgba(160, 32, 240, 0.06) !important;
+  box-shadow: rgba(160, 32, 240, 0.22) 0px 15px 40px, rgba(160, 32, 240, 0.05) 0px 0px 60px !important;
+}
+
+.partner-card:hover::before { opacity: 1; }
+.partner-card:hover::after { transform: translateX(-50%) scaleX(1); }
+
+.partner-card .partner-logo {
+  filter: grayscale(60%) opacity(0.7);
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.partner-card:hover .partner-logo {
+  filter: grayscale(0%) opacity(1);
+  transform: translateY(-10px) scale(1.05);
+}
+
+
+.partner-card .partner-name {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: #C084FC;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.partner-card:hover .partner-name {
+  bottom: 8px;
+  opacity: 1;
+}
+
+.partner-card:nth-child(1) { animation: partner-float 4s ease-in-out 0s infinite; }
+.partner-card:nth-child(2) { animation: partner-float 4s ease-in-out 0.5s infinite; }
+.partner-card:nth-child(3) { animation: partner-float 4s ease-in-out 1s infinite; }
+.partner-card:nth-child(4) { animation: partner-float 4s ease-in-out 1.5s infinite; }
+.partner-card:nth-child(5) { animation: partner-float 4s ease-in-out 2s infinite; }
+.partner-card:nth-child(6) { animation: partner-float 4s ease-in-out 2.5s infinite; }
+
+
+/* ── Section scroll reveal ─────────────────────────────── */
+section[id] {
+  position: relative;
+}
+
+section[id]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #A020F0, #CC44FF, transparent);
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+}
+
+section[id].section-revealed::before {
+  animation: sectionScanLine 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes sectionScanLine {
+  0%   { left: -60%; opacity: 1; }
+  70%  { opacity: 1; }
+  100% { left: 110%; opacity: 0; }
+}
+
+/* Section ambient glow on reveal */
+section[id]::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(160,32,240,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  z-index: 0;
+}
+
+section[id].section-revealed::after {
+  opacity: 1;
+}
+
+/* ── Edge ambient glow (left + right radial, 2-3% opacity) ── */
+.section-edge-glow {
+  background-image:
+    radial-gradient(ellipse 40% 60% at 0% 50%, rgba(160,32,240,0.03) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 60% at 100% 50%, rgba(160,32,240,0.025) 0%, transparent 100%);
+}
+
+/* ── Section divider glow line ────────────────────────────── */
+.section-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(160,32,240,0.18) 30%, rgba(204,68,255,0.28) 50%, rgba(160,32,240,0.18) 70%, transparent 100%);
+  overflow: visible;
+}
+
+.section-divider::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(160,32,240,0.18) 0%, transparent 80%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.section-divider-dim {
+  background: linear-gradient(90deg, transparent 0%, rgba(160,32,240,0.07) 35%, rgba(204,68,255,0.10) 50%, rgba(160,32,240,0.07) 65%, transparent 100%);
+}
+
+.section-divider-dim::before {
+  background: radial-gradient(ellipse, rgba(160,32,240,0.06) 0%, transparent 80%);
 }

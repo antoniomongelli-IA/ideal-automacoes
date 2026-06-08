@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="g" x1="90" y1="22" x2="155" y2="178" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#EE44FF"/>
+      <stop offset="45%"  stop-color="#9922EE"/>
+      <stop offset="100%" stop-color="#4400BB"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glow2" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Clip for triangle top half (slashes appear in front) -->
+    <clipPath id="triBottom">
+      <rect x="0" y="112" width="200" height="90"/>
+    </clipPath>
+    <clipPath id="triTop">
+      <rect x="0" y="0" width="200" height="112"/>
+    </clipPath>
+  </defs>
+
+  <!-- Triangle outline — bottom half (behind slashes) -->
+  <path
+    d="M100 26 C100 26 101 26 102 28 L170 155 C173 161 168 170 161 170 L39 170 C32 170 27 161 30 155 L98 28 C99 26 100 26 100 26 Z"
+    stroke="url(#g)" stroke-width="13" stroke-linejoin="round" fill="none"
+    filter="url(#glow)" clip-path="url(#triBottom)"
+  />
+
+  <!-- Slash 2 (back) -->
+  <path
+    d="M79 38 C77 70 68 120 58 163"
+    stroke="url(#g)" stroke-width="12" stroke-linecap="round" fill="none"
+    filter="url(#glow2)" opacity="0.75"
+  />
+
+  <!-- Slash 1 (front) -->
+  <path
+    d="M95 38 C93 70 84 120 74 163"
+    stroke="url(#g)" stroke-width="12" stroke-linecap="round" fill="none"
+    filter="url(#glow2)"
+  />
+
+  <!-- Triangle outline — top half (in front of slashes) -->
+  <path
+    d="M100 26 C100 26 101 26 102 28 L170 155 C173 161 168 170 161 170 L39 170 C32 170 27 161 30 155 L98 28 C99 26 100 26 100 26 Z"
+    stroke="url(#g)" stroke-width="13" stroke-linejoin="round" fill="none"
+    filter="url(#glow)" clip-path="url(#triTop)"
+  />
+</svg>

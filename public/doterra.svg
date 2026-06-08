@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" fill="none">
+  <!-- "do" lowercase -->
+  <text x="8" y="78" font-family="'Trebuchet MS', 'Gill Sans', Arial, sans-serif" font-size="68" font-weight="300" fill="currentColor" letter-spacing="-2">do</text>
+  <!-- macron (bar) over the o -->
+  <rect x="52" y="18" width="26" height="5.5" rx="2.75" fill="#B9A4C7"/>
+  <!-- "TERRA" uppercase, same font -->
+  <text x="94" y="78" font-family="'Trebuchet MS', 'Gill Sans', Arial, sans-serif" font-size="68" font-weight="300" fill="currentColor" letter-spacing="-2">TERRA</text>
+  <!-- registered -->
+  <text x="318" y="36" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="currentColor">®</text>
+</svg>

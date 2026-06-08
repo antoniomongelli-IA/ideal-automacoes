@@ -10,29 +10,47 @@ export function Sobre() {
     <section id="sobre" className="py-24 px-6 bg-surface">
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-accent text-sm font-semibold uppercase tracking-wide">Sobre o Fundador</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mt-2 mb-2">Antônio Mongelli</h2>
-            <p className="text-accent font-medium mb-6">Fundador & Especialista em IA e Automação</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-1 leading-tight">Antônio Mongelli</h2>
+            <p className="text-accent font-medium mb-1 text-sm">Fundador & Especialista em IA e Automação</p>
+            <p className="text-text-muted text-sm mb-6">📍 Campo Grande, MS</p>
 
-            <p className="text-text-muted leading-relaxed mb-8">
-              A Ideal Automações nasceu da convicção de que toda empresa, independente do tamanho, merece operar com a eficiência que a tecnologia atual permite. Nossa missão é automatizar processos empresariais com IA para que negócios cresçam com mais eficiência, produtividade e previsibilidade.
+            <p className="text-text-muted leading-relaxed mb-4">
+              23 anos, 5 na área de tecnologia, os últimos focados exclusivamente em automação e IA para negócios. Já entreguei mais de 50 automações em 11 estados diferentes, de lavanderias em Belém a parques temáticos em Gramado.
             </p>
 
-            <div className="flex gap-6">
+            <p className="text-text-muted leading-relaxed italic border-l-2 border-accent/40 pl-4 mb-8">
+              "Comecei automatizando meu próprio negócio e vi o resultado na prática. Aí decidi fazer isso para todo mundo."
+            </p>
+
+            {/* Stats inline */}
+            <div className="flex flex-wrap gap-x-6 gap-y-2 mb-8 text-sm border-t border-white/8 pt-6">
+              {[
+                { value: "+50", label: "automações entregues" },
+                { value: "11", label: "estados atendidos" },
+                { value: "5 anos", label: "em tecnologia" },
+              ].map((stat) => (
+                <div key={stat.label} className="flex items-baseline gap-1.5">
+                  <span className="text-accent font-bold text-lg leading-none">{stat.value}</span>
+                  <span className="text-text-muted">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Valores */}
+            <div className="flex flex-wrap gap-2">
               {VALUES.map((value) => {
                 const Icon = ICON_MAP[value.icon]
                 return (
-                  <div key={value.label} className="flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                      <Icon size={18} className="text-accent" />
-                    </div>
-                    <span className="text-text-muted text-xs font-medium">{value.label}</span>
+                  <div key={value.label} className="flex items-center gap-2 bg-bg border border-white/8 rounded-xl px-4 py-2.5 hover:border-accent/25 transition-colors">
+                    <Icon size={15} className="text-accent/70" />
+                    <span className="text-text-muted text-sm font-medium">{value.label}</span>
                   </div>
                 )
               })}
@@ -48,15 +66,13 @@ export function Sobre() {
           >
             <div className="relative">
               <div className="w-72 h-72 rounded-3xl bg-brand-gradient p-1 shadow-[0_0_60px_rgba(160,32,240,0.3)]">
-                <div className="w-full h-full rounded-3xl bg-surface flex items-center justify-center overflow-hidden">
-                  <div className="text-text-muted text-center">
-                    <div className="w-24 h-24 rounded-full bg-accent/20 mx-auto mb-3 flex items-center justify-center text-3xl font-bold text-accent">AM</div>
-                    <p className="text-sm">Adicionar foto</p>
-                  </div>
+                <div className="w-full h-full rounded-3xl overflow-hidden">
+                  <img src="/antonio.jpg" alt="Antônio Mongelli" className="w-full h-full object-cover object-[center_20%]" />
                 </div>
               </div>
             </div>
           </motion.div>
+
         </div>
       </div>
     </section>
