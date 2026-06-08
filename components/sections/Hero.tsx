@@ -87,12 +87,12 @@ export function Hero() {
             ✦ Automação & Inteligência Artificial
           </motion.span>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-text-primary leading-[1.05] mb-6 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-text-primary leading-[1.05] mb-6 tracking-tight">
             Sua empresa no{" "}
             <TypewriterWord />
           </h1>
 
-          <p className="text-text-muted text-lg md:text-xl max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+          <p className="text-text-muted text-base md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
             Agentes de IA e automações que eliminam trabalho manual, aceleram
             atendimento e{" "}
             <span className="text-text-primary font-medium">aumentam suas vendas</span>{" "}
@@ -101,7 +101,7 @@ export function Hero() {
 
           {/* Social proof mini */}
 
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+          <div className="flex flex-col xs:flex-row sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
             <GradientButton href="#contato">
               Quero automatizar meu negócio <ArrowRight size={16} />
             </GradientButton>

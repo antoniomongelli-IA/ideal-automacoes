@@ -65,7 +65,7 @@ export function Sobre() {
             className="flex justify-center"
           >
             <div className="relative">
-              <div className="w-72 h-72 rounded-3xl bg-brand-gradient p-1 shadow-[0_0_60px_rgba(160,32,240,0.3)]">
+              <div className="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-3xl bg-brand-gradient p-1 shadow-[0_0_60px_rgba(160,32,240,0.3)]">
                 <div className="w-full h-full rounded-3xl overflow-hidden">
                   <img src="/antonio.jpg" alt="Antônio Mongelli" className="w-full h-full object-cover object-[center_20%]" />
                 </div>

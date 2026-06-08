@@ -50,7 +50,7 @@ export function DotNav() {
   return (
     <nav
       aria-label="Navegação por seções"
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-40 flex flex-col items-end gap-2.5 transition-opacity duration-500"
+      className="hidden lg:flex fixed right-5 top-1/2 -translate-y-1/2 z-40 flex-col items-end gap-2.5 transition-opacity duration-500"
       style={{ opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none" }}
     >
       {SECTIONS.map(({ id, label }) => {

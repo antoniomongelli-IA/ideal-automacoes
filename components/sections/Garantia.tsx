@@ -47,7 +47,7 @@ export function Garantia() {
           {GARANTIAS.map((g) => (
             <div
               key={g.num}
-              className="group grid grid-cols-1 md:grid-cols-[80px_1fr_2fr] gap-4 md:gap-10 py-8 border-t border-white/8 hover:border-accent/20 transition-colors duration-300 items-start"
+              className="group grid grid-cols-1 md:grid-cols-[80px_1fr_2fr] gap-3 md:gap-10 py-6 md:py-8 border-t border-white/8 hover:border-accent/20 transition-colors duration-300 items-start"
             >
               <span
                 className="text-5xl font-bold leading-none select-none hidden md:block"
