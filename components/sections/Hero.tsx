@@ -53,7 +53,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-bg w-full"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-bg w-full pt-20 lg:pt-0"
     >
       {/* Neural network background */}
       <div className="absolute inset-0 z-0">
@@ -95,7 +95,7 @@ export function Hero() {
           <p className="text-text-muted text-base md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
             Agentes de IA e automações que eliminam trabalho manual, aceleram
             atendimento e{" "}
-            <span className="text-text-primary font-medium">aumentam suas vendas</span>{" "}
+            <span className="text-text-primary font-medium">aumentam suas vendas</span>
             , sem depender de mais pessoas.
           </p>
 
@@ -112,8 +112,12 @@ export function Hero() {
         </motion.div>
 
         {/* Right: robot */}
-        <div className="flex-shrink-0 flex items-center justify-center lg:w-[380px]">
+        <div className="flex-shrink-0 flex flex-col items-center justify-center lg:w-[380px] gap-2">
           <RobotMascot onOpen={handleRobotClick} chatOpen={chatOpen} flying={flying} />
+          {/* Mobile hint — só aparece em telas pequenas */}
+          <p className="lg:hidden text-xs text-text-muted/60 text-center">
+            Toque no robô para testar a IA
+          </p>
         </div>
 
       </div>

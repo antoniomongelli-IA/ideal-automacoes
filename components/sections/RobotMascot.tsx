@@ -9,7 +9,7 @@ interface Props {
 export function RobotMascot({ onOpen, chatOpen, flying = false }: Props) {
   return (
     <div
-      className="relative z-10 select-none hidden lg:block cursor-pointer"
+      className="relative z-10 select-none block cursor-pointer"
       style={{
         animation: flying
           ? "robotFlyToChat 0.65s cubic-bezier(0.55, 0, 1, 0.45) forwards"
@@ -32,7 +32,7 @@ export function RobotMascot({ onOpen, chatOpen, flying = false }: Props) {
         <img
           src="/robo3.png"
           alt="Assistente IA"
-          className="w-80 h-auto relative z-10"
+          className="w-44 sm:w-56 lg:w-80 h-auto relative z-10"
           style={{
             mixBlendMode: "screen",
             filter: "drop-shadow(0 0 32px rgba(160,32,240,0.5))",
