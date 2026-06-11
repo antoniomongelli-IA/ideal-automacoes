@@ -20,8 +20,10 @@ export function NeuralNetwork() {
 
     let animFrame: number
     const nodes: Node[] = []
-    const NODE_COUNT = 90
-    const CONNECTION_DIST = 200
+    const isMobile = window.innerWidth < 768
+    const isTablet = window.innerWidth < 1024
+    const NODE_COUNT = isMobile ? 35 : isTablet ? 55 : 90
+    const CONNECTION_DIST = isMobile ? 130 : isTablet ? 160 : 200
     const MOUSE = { x: -9999, y: -9999 }
 
     const resize = () => {
@@ -82,12 +84,13 @@ export function NeuralNetwork() {
           const dx = a.x - b.x, dy = a.y - b.y
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < CONNECTION_DIST) {
-            const alpha = (1 - dist / CONNECTION_DIST) * 0.75
+            const baseAlpha = isMobile ? 0.35 : isTablet ? 0.50 : 0.75
+            const alpha = (1 - dist / CONNECTION_DIST) * baseAlpha
             ctx.beginPath()
             ctx.moveTo(a.x, a.y)
             ctx.lineTo(b.x, b.y)
             ctx.strokeStyle = `rgba(180,60,255,${alpha})`
-            ctx.lineWidth = 1.2
+            ctx.lineWidth = isMobile ? 0.8 : 1.2
             ctx.stroke()
           }
         }
@@ -99,8 +102,10 @@ export function NeuralNetwork() {
         const r = 2 + pulse * 1.5
 
         // Glow
+        const glowAlpha = isMobile ? 0.20 + pulse * 0.15 : isTablet ? 0.30 + pulse * 0.20 : 0.45 + pulse * 0.3
+        const dotAlpha = isMobile ? 0.55 + pulse * 0.10 : isTablet ? 0.70 + pulse * 0.12 : 0.85 + pulse * 0.15
         const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 5)
-        grd.addColorStop(0, `rgba(160,32,240,${0.45 + pulse * 0.3})`)
+        grd.addColorStop(0, `rgba(160,32,240,${glowAlpha})`)
         grd.addColorStop(1, "rgba(160,32,240,0)")
         ctx.beginPath()
         ctx.arc(n.x, n.y, r * 5, 0, Math.PI * 2)
@@ -110,7 +115,7 @@ export function NeuralNetwork() {
         // Dot
         ctx.beginPath()
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(220,160,255,${0.85 + pulse * 0.15})`
+        ctx.fillStyle = `rgba(220,160,255,${dotAlpha})`
         ctx.fill()
       })
 
@@ -128,7 +133,7 @@ export function NeuralNetwork() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full opacity-90"
+      className="absolute inset-0 w-full h-full opacity-50 md:opacity-75 lg:opacity-90"
       style={{ pointerEvents: "none" }}
     />
   )
