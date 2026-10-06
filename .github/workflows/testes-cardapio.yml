@@ -23,6 +23,7 @@ jobs:
 
       - name: Conferir tipos e padrões de código
         run: |
+          npx next typegen
           npx tsc --noEmit
           npx eslint app/cardapio components/cardapio lib/cardapio e2e playwright.config.ts
 
