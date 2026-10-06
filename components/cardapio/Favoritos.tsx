@@ -75,6 +75,7 @@ export function FolhaFavoritos({ aberta, fechar, cliente, abrirConta, sair }: { 
 
 /** Criar conta (nome, telefone, senha) ou entrar (telefone, senha). */
 export function FolhaConta({ aberta, fechar, aoEntrar }: { aberta: boolean; fechar: () => void; aoEntrar: (c: Cliente) => void }) {
+  const { r } = useMenu()
   const [modo, setModo] = useState<"criar" | "entrar">("criar")
   const [nome, setNome] = useState("")
   const [telefone, setTelefone] = useState("")
@@ -86,7 +87,7 @@ export function FolhaConta({ aberta, fechar, aoEntrar }: { aberta: boolean; fech
     e.preventDefault()
     setErro("")
     setEnviando(true)
-    const res = modo === "criar" ? await cadastrarCliente(nome, telefone, senha) : await entrarCliente(telefone, senha)
+    const res = modo === "criar" ? await cadastrarCliente(nome, telefone, senha, r.slug) : await entrarCliente(telefone, senha)
     setEnviando(false)
     if (res.erro) setErro(res.erro)
     else if (res.cliente) aoEntrar(res.cliente)

@@ -95,7 +95,8 @@ export async function clienteAtual(): Promise<Cliente | null> {
   return (c as Cliente) ?? null
 }
 
-export async function cadastrarCliente(nome: string, telefone: string, senha: string): Promise<{ cliente?: Cliente; erro?: string }> {
+/** `origem`: link do estabelecimento onde a conta foi criada (vai para o aviso do webhook). */
+export async function cadastrarCliente(nome: string, telefone: string, senha: string, origem?: string): Promise<{ cliente?: Cliente; erro?: string }> {
   if (!supabaseConfigurado) return { erro: "Disponível quando o cardápio estiver ligado ao banco." }
   const tel = normalizarTelefone(telefone)
   if (nome.trim().length < 2) return { erro: "Digite seu nome." }
@@ -104,7 +105,7 @@ export async function cadastrarCliente(nome: string, telefone: string, senha: st
   const { data, error } = await sb.auth.signUp({
     email: emailDoTelefone(tel),
     password: senha,
-    options: { data: { tipo: "cliente", nome: nome.trim(), telefone: tel } },
+    options: { data: { tipo: "cliente", nome: nome.trim(), telefone: tel, origem } },
   })
   if (error) return { erro: traduzir(error.message) }
   if (!data.session) return { erro: traduzir("email not confirmed") }

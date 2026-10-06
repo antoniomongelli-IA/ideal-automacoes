@@ -67,6 +67,17 @@ select id from auth.users where email = 'seu@email.com';
 
 Como admin, no painel aparece uma lista para escolher qualquer estabelecimento.
 
+## 8. Aviso no webhook (n8n) a cada cadastro
+
+No **SQL Editor**, rode o arquivo [`supabase/webhook.sql`](../../supabase/webhook.sql) (copie pelo botão “Copy raw file” do GitHub).
+A partir daí, o banco manda um POST em JSON para o webhook:
+
+- `"evento": "novo_estabelecimento"` → nome, slug, link, nicho, cidade, WhatsApp, Instagram e e-mail do dono.
+- `"evento": "novo_cliente"` → nome, telefone e de qual estabelecimento a pessoa veio.
+
+No n8n, use um nó **Switch** no campo `evento` para tratar cada caso. Se o webhook estiver fora do ar, o cadastro continua funcionando normalmente (o aviso só é perdido).
+Para ver se os avisos saíram: **Database → Extensions → pg_net**, ou rode `select * from net._http_response order by created desc limit 10;`.
+
 ---
 
 ## Como ficam as fotos e os vídeos
