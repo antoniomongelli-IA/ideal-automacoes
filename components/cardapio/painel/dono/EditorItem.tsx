@@ -4,7 +4,7 @@ import { Crown, Film, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react"
 import { supabaseNavegador } from "@/lib/supabase/cliente"
 import type { CategoriaBanco, ItemBanco } from "@/lib/cardapio/mapear"
 import { tagInfo, TAGS_PAINEL } from "@/lib/cardapio/utils"
-import { apagarArquivo, comprimirFoto, enviarArquivo, lerVideo, LIMITE_VIDEO_MB } from "@/lib/cardapio/uploads"
+import { apagarArquivo, comprimirFoto, enviarArquivo, type InfoVideo, lerVideo, LIMITE_VIDEO_MB, mb } from "@/lib/cardapio/uploads"
 import { Campo } from "../../marca/EditorMarca"
 
 const SERVE = ["1 pessoa", "2 pessoas", "3 a 4 pessoas", "Família"]
@@ -66,6 +66,8 @@ export function EditorItem({
       : vazio(categoriaInicial ?? categorias[0]?.id ?? null),
   )
   const [enviando, setEnviando] = useState("")
+  // progresso do envio do vídeo: bytes enviados, total e hora de início (para estimar o tempo)
+  const [progresso, setProgresso] = useState<{ enviado: number; total: number; inicio: number; agora: number } | null>(null)
   const [erro, setErro] = useState("")
   const [aviso, setAviso] = useState("")
   const [novaTag, setNovaTag] = useState("")
@@ -97,19 +99,34 @@ export function EditorItem({
     if (!arq) return
     setErro("")
     setAviso("")
-    if (arq.size > LIMITE_VIDEO_MB * 1024 * 1024) return setErro(`O vídeo pode ter até ${LIMITE_VIDEO_MB} MB. Grave mais curto (6 a 20 segundos) ou em 1080p.`)
+    if (arq.size > LIMITE_VIDEO_MB * 1024 * 1024)
+      return setErro(`Este vídeo tem ${mb(arq.size)} e o limite é ${LIMITE_VIDEO_MB} MB. Grave em 1080p a 30 fps (não em 4K) e com 6 a 20 segundos.`)
     setEnviando("Lendo o vídeo…")
+    let info: InfoVideo | null = null
     try {
-      const info = await lerVideo(arq)
-      if (info.duracao > 30) setAviso("Dica: vídeos de 6 a 20 segundos prendem mais a atenção.")
-      if (info.largura > info.altura) setAviso("Dica: grave com o celular em pé (vertical). Vídeos deitados aparecem cortados.")
-      setEnviando("Enviando o vídeo… (pode levar alguns segundos)")
-      const [video, capa] = await Promise.all([enviarArquivo(estId, "videos", arq, arq.name), enviarArquivo(estId, "capas", info.capa)])
-      trocar([f.video_url, f.poster_url], [video, capa])
+      info = await lerVideo(arq)
+    } catch (e) {
+      // segue sem capa: o vídeo ainda pode tocar nos celulares
+      setAviso(e instanceof Error ? e.message : "Não consegui gerar a capa do vídeo.")
+    }
+    const dicas = []
+    if (arq.size > 25 * 1024 * 1024) dicas.push(`O vídeo tem ${mb(arq.size)}: grave em 1080p a 30 fps para enviar bem mais rápido.`)
+    if (info && info.duracao > 30) dicas.push("Vídeos de 6 a 20 segundos prendem mais a atenção.")
+    if (info && info.largura > info.altura) dicas.push("Grave com o celular em pé (vertical): vídeos deitados aparecem cortados.")
+    if (dicas.length) setAviso(dicas.join(" "))
+    try {
+      setEnviando("Enviando o vídeo…")
+      setProgresso({ enviado: 0, total: arq.size, inicio: Date.now(), agora: Date.now() })
+      const [video, capa] = await Promise.all([
+        enviarArquivo(estId, "videos", arq, arq.name, (enviado, total) => setProgresso((p) => ({ enviado, total, inicio: p?.inicio ?? Date.now(), agora: Date.now() }))),
+        info ? enviarArquivo(estId, "capas", info.capa) : Promise.resolve(null),
+      ])
+      trocar([f.video_url, f.poster_url], capa ? [video, capa] : [video])
       setF((x) => ({ ...x, video_url: video, poster_url: capa }))
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Falha ao enviar o vídeo")
     }
+    setProgresso(null)
     setEnviando("")
   }
 
@@ -207,6 +224,7 @@ export function EditorItem({
                   <Loader2 className="h-4 w-4 animate-spin" /> {enviando}
                 </p>
               )}
+              {progresso && <BarraProgresso {...progresso} />}
               {aviso && <p className="text-sm text-amber-200">{aviso}</p>}
             </div>
           </div>
@@ -359,6 +377,26 @@ export function EditorItem({
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+/** Barra do envio do vídeo: porcentagem, MB enviados e tempo que falta. */
+function BarraProgresso({ enviado, total, inicio, agora }: { enviado: number; total: number; inicio: number; agora: number }) {
+  const pct = total ? Math.min(100, Math.round((enviado / total) * 100)) : 0
+  const segundos = (agora - inicio) / 1000
+  const velocidade = segundos > 1 ? enviado / segundos : 0
+  const falta = velocidade ? Math.max(0, Math.round((total - enviado) / velocidade)) : null
+  return (
+    <div>
+      <div className="h-2 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full rounded-full bg-emerald-400 transition-[width] duration-300" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-1 text-xs tabular-nums text-white/60">
+        {pct}% · {mb(enviado)} de {mb(total)}
+        {falta !== null && pct < 100 ? ` · falta ${falta < 60 ? `${falta} s` : `${Math.ceil(falta / 60)} min`}` : ""}
+        {pct === 100 ? " · finalizando…" : ""}
+      </p>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 "use client"
-import { supabaseNavegador } from "@/lib/supabase/cliente"
+import { SUPABASE_CHAVE, SUPABASE_URL, supabaseNavegador } from "@/lib/supabase/cliente"
 
 // Preparação e envio de arquivos para o Storage (bucket "midia").
 // Tudo é feito no aparelho de quem envia: a foto é reduzida e a capa do vídeo
@@ -39,9 +39,12 @@ export function lerVideo(arquivo: File): Promise<InfoVideo> {
     v.playsInline = true
     v.preload = "auto"
     const falhou = () => {
+      clearTimeout(limite)
       URL.revokeObjectURL(url)
       erro(new Error("Este vídeo não abriu neste navegador. Grave em MP4 (no iPhone: Ajustes › Câmera › Formatos › Mais Compatível)."))
     }
+    // alguns formatos nunca terminam de abrir: depois de 12 s desiste (o envio segue sem capa)
+    const limite = setTimeout(falhou, 12000)
     v.onerror = falhou
     v.onloadedmetadata = () => {
       v.currentTime = Math.min(1, (v.duration || 2) / 3)
@@ -57,6 +60,7 @@ export function lerVideo(arquivo: File): Promise<InfoVideo> {
       canvas.getContext("2d")!.drawImage(v, 0, 0, canvas.width, canvas.height)
       canvas.toBlob(
         (capa) => {
+          clearTimeout(limite)
           URL.revokeObjectURL(url)
           if (!capa) return falhou()
           ok({ capa, duracao: v.duration, largura, altura })
@@ -74,15 +78,48 @@ const extensao = (tipo: string, nome?: string) =>
   nome?.split(".").pop()?.toLowerCase() ??
   "bin"
 
-/** Envia para midia/<id do estabelecimento>/<pasta>/<nome único> e devolve o endereço público. */
-export async function enviarArquivo(estId: string, pasta: "logo" | "fotos" | "videos" | "capas", arquivo: Blob, nome?: string): Promise<string> {
+/** Progresso de um envio: bytes enviados e total. */
+export type Progresso = (enviado: number, total: number) => void
+
+/**
+ * Envia para midia/<id do estabelecimento>/<pasta>/<nome único> e devolve o endereço público.
+ * Usa a API do Storage direto (XMLHttpRequest) para acompanhar o progresso do envio.
+ */
+export async function enviarArquivo(estId: string, pasta: "logo" | "fotos" | "videos" | "capas", arquivo: Blob, nome?: string, progresso?: Progresso): Promise<string> {
   const tipo = arquivo.type || "application/octet-stream"
   const caminho = `${estId}/${pasta}/${crypto.randomUUID()}.${extensao(tipo, nome)}`
   const sb = supabaseNavegador()
-  const { error } = await sb.storage.from("midia").upload(caminho, arquivo, { contentType: tipo, cacheControl: "31536000", upsert: false })
-  if (error) throw new Error(error.message.includes("exceeded") ? "Arquivo grande demais para o plano atual." : error.message)
+  const { data } = await sb.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) throw new Error("Sua sessão expirou. Entre de novo no painel.")
+
+  await new Promise<void>((ok, erro) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open("POST", `${SUPABASE_URL}/storage/v1/object/midia/${caminho}`)
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`)
+    xhr.setRequestHeader("apikey", SUPABASE_CHAVE)
+    xhr.setRequestHeader("Content-Type", tipo)
+    xhr.setRequestHeader("cache-control", "max-age=31536000")
+    xhr.setRequestHeader("x-upsert", "false")
+    xhr.upload.onprogress = (e) => e.lengthComputable && progresso?.(e.loaded, e.total)
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) return ok()
+      let msg = `Falha no envio (${xhr.status})`
+      try {
+        msg = JSON.parse(xhr.responseText).message ?? msg
+      } catch {
+        /* resposta sem JSON */
+      }
+      erro(new Error(/exceeded|too large|payload/i.test(msg) || xhr.status === 413 ? "Arquivo grande demais para o plano atual (máx. 50 MB)." : msg))
+    }
+    xhr.onerror = () => erro(new Error("A conexão caiu durante o envio. Tente de novo (de preferência no Wi-Fi)."))
+    xhr.send(arquivo)
+  })
   return sb.storage.from("midia").getPublicUrl(caminho).data.publicUrl
 }
+
+/** "12,4 MB" */
+export const mb = (bytes: number) => `${(bytes / 1024 / 1024).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} MB`
 
 /** Apaga um arquivo do Storage a partir do endereço público (ao trocar foto/vídeo). */
 export async function apagarArquivo(url?: string | null) {
