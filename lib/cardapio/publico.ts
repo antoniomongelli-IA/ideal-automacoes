@@ -67,10 +67,23 @@ export interface Cliente {
   telefone: string
 }
 
-/** Só números, com DDI 55 quando for número brasileiro (10 ou 11 dígitos). */
+/**
+ * Telefone sempre no formato 55 + DDD + número (só dígitos), pronto para WhatsApp.
+ * Aceita com ou sem +55, com zero na frente do DDD, espaços, traços e parênteses.
+ */
 export function normalizarTelefone(t: string) {
-  const d = t.replace(/\D/g, "")
-  return d.length === 10 || d.length === 11 ? `55${d}` : d
+  let d = t.replace(/\D/g, "").replace(/^0+/, "")
+  if (d.startsWith("55") && (d.length === 12 || d.length === 13)) d = d.slice(2)
+  return `55${d}`
+}
+
+/** Só a parte nacional (DDD + número) formatada para mostrar: (67) 99999-9999 */
+export function formatarTelefone(t: string) {
+  const d = t.replace(/\D/g, "").slice(0, 11)
+  if (d.length <= 2) return d ? `(${d}` : ""
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
 }
 
 // O login do cliente é telefone + senha. Por baixo, o Supabase usa um e-mail
@@ -109,7 +122,7 @@ export async function cadastrarCliente(nome: string, telefone: string, senha: st
   if (!supabaseConfigurado) return { erro: "Disponível quando o cardápio estiver ligado ao banco." }
   const tel = normalizarTelefone(telefone)
   if (nome.trim().length < 2) return { erro: "Digite seu nome." }
-  if (tel.length < 12) return { erro: "Digite o telefone com DDD." }
+  if (tel.length !== 12 && tel.length !== 13) return { erro: "Digite o telefone com DDD, ex.: (67) 99999-9999." }
   const sb = supabaseNavegador()
   const { data, error } = await sb.auth.signUp({
     email: emailDoTelefone(tel),

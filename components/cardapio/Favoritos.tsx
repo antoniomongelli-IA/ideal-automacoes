@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Heart, LogOut, Play } from "lucide-react"
 import { supabaseConfigurado } from "@/lib/supabase/cliente"
-import { cadastrarCliente, type Cliente, entrarCliente } from "@/lib/cardapio/publico"
+import { cadastrarCliente, type Cliente, entrarCliente, formatarTelefone } from "@/lib/cardapio/publico"
 import { brl } from "@/lib/cardapio/utils"
 import { Capa, Folha, useMenu } from "./ui"
 
@@ -115,7 +115,23 @@ export function FolhaConta({
       </p>
       <form onSubmit={enviar} className="mt-4 space-y-2.5">
         {modo === "criar" && <input id="conta-nome" className={campo} style={estiloCampo} placeholder="Seu nome" autoComplete="name" value={nome} onChange={(e) => setNome(e.target.value)} />}
-        <input id="conta-telefone" className={campo} style={estiloCampo} placeholder="Telefone com DDD" inputMode="tel" autoComplete="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+        <div className="flex items-center gap-2 pl-3.5" style={estiloCampo}>
+          <span className="shrink-0 text-[15px] font-semibold opacity-70">🇧🇷 +55</span>
+          <input
+            id="conta-telefone"
+            className="w-full bg-transparent py-3 pr-3.5 text-[15px] outline-none"
+            style={{ color: "var(--c-text)" }}
+            placeholder="(67) 99999-9999"
+            inputMode="tel"
+            autoComplete="tel-national"
+            value={telefone}
+            // se a pessoa colar com +55, tira o 55 da parte digitada (ele já está fixo ao lado)
+            onChange={(e) => {
+              const d = e.target.value.replace(/\D/g, "").replace(/^0+/, "")
+              setTelefone(formatarTelefone(d.length > 11 && d.startsWith("55") ? d.slice(2) : d))
+            }}
+          />
+        </div>
         <input
           id="conta-senha"
           className={campo}

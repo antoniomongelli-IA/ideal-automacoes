@@ -112,6 +112,7 @@ Conta rápida: uma pessoa que vê 10 vídeos baixa uns 20 a 40 MB. No plano grá
 - Na **primeira curtida**, aparece uma vez o convite “Salve seus favoritos”: nome, telefone e senha. É opcional.
 - O botão ❤️ no topo mostra **Meus favoritos**. Com conta, os favoritos aparecem em qualquer celular, em qualquer visita.
 - Nada é enviado por SMS ou e-mail: o login do cliente é telefone + senha.
+- O telefone é sempre salvo como **55 + DDD + número**, só dígitos (ex.: `5567999998888`), pronto para o WhatsApp. O campo já mostra o +55 fixo; a pessoa digita só DDD e número.
 
 ## Link de cada item
 

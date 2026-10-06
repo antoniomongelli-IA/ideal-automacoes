@@ -162,13 +162,24 @@ drop trigger if exists estabelecimentos_dono on public.estabelecimentos;
 create trigger estabelecimentos_dono before insert on public.estabelecimentos
   for each row execute function public.definir_dono();
 
+-- Telefone sempre como 55 + DDD + número (só dígitos), pronto para WhatsApp.
+create or replace function public.telefone_com_55(p text)
+returns text language sql immutable as $$
+  select case
+    when d = '' then ''
+    when d like '55%' and length(d) in (12, 13) then d
+    else '55' || d
+  end
+  from (select ltrim(regexp_replace(coalesce(p, ''), '\D', '', 'g'), '0') as d) x;
+$$;
+
 -- Ao criar conta de cliente final (feita pelo cardápio), cria o registro em "clientes".
 create or replace function public.criar_cliente()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if new.raw_user_meta_data ->> 'tipo' = 'cliente' then
     insert into public.clientes (id, nome, telefone)
-    values (new.id, coalesce(new.raw_user_meta_data ->> 'nome', ''), coalesce(new.raw_user_meta_data ->> 'telefone', ''))
+    values (new.id, coalesce(new.raw_user_meta_data ->> 'nome', ''), public.telefone_com_55(new.raw_user_meta_data ->> 'telefone'))
     on conflict (id) do nothing;
   end if;
   return new;
