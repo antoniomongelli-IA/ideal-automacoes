@@ -1,11 +1,6 @@
 import type { Metadata } from "next"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import "./globals.css"
-import { LenisProvider } from "@/components/shared/LenisProvider"
-import { ScrollEffects } from "@/components/shared/ScrollEffects"
-import { CustomCursor } from "@/components/shared/CustomCursor"
-import { PageLoader } from "@/components/shared/PageLoader"
-import { DotNav } from "@/components/shared/DotNav"
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,13 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body className={`${jakarta.variable} font-sans bg-bg text-text-primary antialiased`}>
-        <CustomCursor />
-        <PageLoader />
-        <DotNav />
-        <LenisProvider>
-          <ScrollEffects />
-          {children}
-        </LenisProvider>
+        {children}
       </body>
     </html>
   )
