@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getRestaurante, RESTAURANTES } from "@/lib/cardapio/data"
+import { getRestaurante, RESTAURANTES } from "@/lib/cardapio/restaurantes"
 import { Painel } from "@/components/cardapio/painel/Painel"
 
 export function generateStaticParams() {

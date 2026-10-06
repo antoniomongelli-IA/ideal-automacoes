@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useRef } from "react"
 import Image from "next/image"
 import { Crown, Flame } from "lucide-react"
-import type { Item, Restaurante } from "@/lib/cardapio/types"
+import type { Branding, Item, Restaurante } from "@/lib/cardapio/types"
 import { posterSrc, videoSrc } from "@/lib/cardapio/utils"
 
 export type Aba = "feed" | "top" | "mes" | "cardapio"
@@ -10,14 +10,13 @@ export type Aba = "feed" | "top" | "mes" | "cardapio"
 export interface MenuCtx {
   r: Restaurante
   ranks: Map<string, number>
-  carrinho: Record<string, number>
-  adicionar: (id: string) => void
-  remover: (id: string) => void
   curtidos: Set<string>
   curtir: (id: string, forcar?: boolean) => void
   /** abre o feed de vídeos já posicionado no item */
   abrirNoFeed: (id: string) => void
   abrirInfo: (id: string) => void
+  /** aviso rápido no topo (ex.: "Link copiado") */
+  avisar: (msg: string) => void
   item: (id: string) => Item | undefined
 }
 
@@ -87,6 +86,25 @@ export function SeloMes({ size = "sm" }: { size?: "sm" | "lg" }) {
     >
       <Crown className={size === "lg" ? "h-3.5 w-3.5" : "h-3 w-3"} fill="currentColor" />
       Item do mês
+    </span>
+  )
+}
+
+/** Selo da marca: a logo em imagem, quando existe; senão a sigla/emoji na cor principal. */
+export function LogoMarca({ b, size = 36, className = "" }: { b: Branding; size?: number; className?: string }) {
+  const raio = Math.min(b.radius, size * 0.4)
+  if (b.logo)
+    return (
+      // logo pode vir de upload (data URL) no painel, por isso <img> e não next/image
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={b.logo} alt={b.logoText} width={size} height={size} className={`shrink-0 object-contain ${className}`} style={{ width: size, height: size, borderRadius: raio }} />
+    )
+  return (
+    <span
+      className={`grid shrink-0 place-items-center font-bold ${className}`}
+      style={{ width: size, height: size, fontSize: size * 0.48, background: b.primary, color: b.onPrimary, borderRadius: raio, fontFamily: "var(--f-display)" }}
+    >
+      {b.logoMark}
     </span>
   )
 }

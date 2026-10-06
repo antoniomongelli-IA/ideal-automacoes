@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronUp, Clock, Heart, Info, Plus, Share2, Users } from "lucide-react"
+import { ChevronUp, Clock, Heart, Info, Share2, Users } from "lucide-react"
 import type { Item } from "@/lib/cardapio/types"
 import { brl, compacto, posterSrc, TAGS, videoSrc } from "@/lib/cardapio/utils"
 import { registrarView } from "@/lib/cardapio/personalizacao"
@@ -69,17 +69,15 @@ export function Feed({ itens, inicioId }: { itens: Item[]; inicioId?: string }) 
 }
 
 function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean; perto: boolean; prioridade: boolean }) {
-  const { r, ranks, adicionar, carrinho, curtidos, curtir, abrirInfo, abrirNoFeed, item: buscar } = useMenu()
+  const { r, ranks, curtidos, curtir, abrirInfo, abrirNoFeed, avisar, item: buscar } = useMenu()
   const video = useRef<HTMLVideoElement>(null)
   const barra = useRef<HTMLDivElement>(null)
   const ultimoToque = useRef(0)
   const [coracoes, setCoracoes] = useState<{ id: number; x: number; y: number }[]>([])
   const [aberto, setAberto] = useState(false)
-  const [pulso, setPulso] = useState(0)
   const rank = ranks.get(item.id) ?? 99
   const combina = item.combinaCom ? buscar(item.combinaCom) : undefined
   const curtido = curtidos.has(item.id)
-  const qtd = carrinho[item.id] ?? 0
 
   useEffect(() => {
     const v = video.current
@@ -118,16 +116,15 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
     const url = `${location.origin}/cardapio/${r.slug}?item=${item.id}`
     try {
       if (navigator.share) await navigator.share({ title: `${item.nome} · ${r.nome}`, url })
-      else await navigator.clipboard.writeText(url)
+      else {
+        await navigator.clipboard.writeText(url)
+        avisar("Link do prato copiado")
+      }
     } catch {
       /* cancelado */
     }
   }
 
-  const add = () => {
-    adicionar(item.id)
-    setPulso((p) => p + 1)
-  }
 
   return (
     <section className="relative h-full w-full snap-start snap-always overflow-hidden bg-black" onPointerUp={toque}>
@@ -166,7 +163,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
       </AnimatePresence>
 
       {/* trilho de ações à direita */}
-      <div className="absolute bottom-[132px] right-3 z-20 flex flex-col items-center gap-5 text-white" onPointerUp={(e) => e.stopPropagation()}>
+      <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+96px)] right-3 z-20 flex flex-col items-center gap-5 text-white" onPointerUp={(e) => e.stopPropagation()}>
         <RailBtn onClick={() => curtir(item.id)} label={compacto(item.curtidas + (curtido ? 1 : 0))}>
           <motion.span key={String(curtido)} initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 14 }}>
             <Heart className="h-8 w-8 drop-shadow" fill={curtido ? "var(--c-primary)" : "rgba(0,0,0,0.15)"} stroke={curtido ? "var(--c-primary)" : "white"} />
@@ -178,23 +175,10 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
         <RailBtn onClick={compartilhar} label="Enviar">
           <Share2 className="h-7 w-7 drop-shadow" />
         </RailBtn>
-        <button
-          onClick={add}
-          aria-label={`Adicionar ${item.nome} à comanda`}
-          className="relative grid h-14 w-14 place-items-center shadow-lg shadow-black/40 transition active:scale-90"
-          style={{ background: "var(--c-primary)", color: "var(--c-on-primary)", borderRadius: "999px" }}
-        >
-          <motion.span key={pulso} initial={{ rotate: pulso ? -90 : 0, scale: pulso ? 0.6 : 1 }} animate={{ rotate: 0, scale: 1 }}>
-            <Plus className="h-7 w-7" strokeWidth={3} />
-          </motion.span>
-          {qtd > 0 && (
-            <span className="absolute -right-1 -top-1 grid h-6 min-w-6 place-items-center rounded-full bg-white px-1 text-xs font-bold text-black">{qtd}</span>
-          )}
-        </button>
       </div>
 
       {/* legenda */}
-      <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-[calc(env(safe-area-inset-bottom)+92px)] pr-20 text-white">
+      <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-[calc(env(safe-area-inset-bottom)+28px)] pr-20 text-white">
         <div className="mb-2 flex flex-wrap gap-1.5">
           {item.destaqueDoMes && <SeloMes />}
           <SeloRank rank={rank} />

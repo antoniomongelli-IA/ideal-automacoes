@@ -2,13 +2,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { BellRing, Check, Clock, MapPin, Minus, Plus, Receipt, Users, X } from "lucide-react"
+import { Check, Clock, Flame, Users, X } from "lucide-react"
 import type { Restaurante } from "@/lib/cardapio/types"
 import { brandingVars, brl, ordemFeed, posterSrc, rankDe, TAGS } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, usePersonalizacao } from "@/lib/cardapio/personalizacao"
 import { Feed } from "./Feed"
 import { DoMes, Grade, MaisPedidos } from "./Abas"
-import { type Aba, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
+import { type Aba, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
 
 const ABAS: { id: Aba; label: string }[] = [
   { id: "feed", label: "Para você" },
@@ -19,13 +19,12 @@ const ABAS: { id: Aba; label: string }[] = [
 
 interface Props {
   restaurante: Restaurante
-  mesa?: string
   itemInicial?: string
   /** dentro do painel (pré-visualização): sem tela de abertura e sem ler o localStorage */
   embutido?: boolean
 }
 
-export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Props) {
+export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const [personalizacao] = usePersonalizacao(restaurante.slug)
   const r = useMemo(() => (embutido ? restaurante : aplicarPersonalizacao(restaurante, personalizacao)), [embutido, restaurante, personalizacao])
   const ranks = useMemo(() => rankDe(r.itens), [r.itens])
@@ -33,10 +32,8 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
 
   const [aba, setAba] = useState<Aba>("feed")
   const [feedInicio, setFeedInicio] = useState<{ id?: string; n: number }>({ id: itemInicial, n: 0 })
-  const [carrinho, setCarrinho] = useState<Record<string, number>>({})
   const [curtidos, setCurtidos] = useState<Set<string>>(new Set())
   const [info, setInfo] = useState<string | null>(null)
-  const [comanda, setComanda] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [splash, setSplash] = useState(!embutido)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -50,7 +47,7 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
   const avisar = useCallback((msg: string) => {
     setToast(msg)
     clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 2600)
+    toastTimer.current = setTimeout(() => setToast(null), 2200)
   }, [])
 
   const item = useCallback((id: string) => r.itens.find((i) => i.id === id), [r.itens])
@@ -58,21 +55,9 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
   const ctx: MenuCtx = {
     r,
     ranks,
-    carrinho,
     curtidos,
     item,
-    adicionar: (id) => {
-      setCarrinho((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }))
-      avisar(`${item(id)?.nome} na comanda`)
-    },
-    remover: (id) =>
-      setCarrinho((c) => {
-        const n = (c[id] ?? 0) - 1
-        const next = { ...c }
-        if (n <= 0) delete next[id]
-        else next[id] = n
-        return next
-      }),
+    avisar,
     curtir: (id, forcar) =>
       setCurtidos((s) => {
         const next = new Set(s)
@@ -88,15 +73,8 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
     abrirInfo: setInfo,
   }
 
-  const qtdTotal = Object.values(carrinho).reduce((a, b) => a + b, 0)
-  const total = Object.entries(carrinho).reduce((s, [id, q]) => s + (item(id)?.preco ?? 0) * q, 0)
   const b = r.branding
   const noFeed = aba === "feed"
-
-  const chamarGarcom = () => {
-    setComanda(false)
-    avisar(mesa ? `Garçom chamado para a mesa ${mesa} 🛎️` : "Garçom chamado! Já já alguém vem até você 🛎️")
-  }
 
   return (
     <MenuContext.Provider value={ctx}>
@@ -125,33 +103,11 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
               : { background: `color-mix(in srgb, ${b.bg} 88%, transparent)`, backdropFilter: "blur(14px)", color: b.text, borderBottom: `1px solid color-mix(in srgb, ${b.text} 8%, transparent)` }
           }
         >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <span
-                className="grid h-9 w-9 shrink-0 place-items-center text-lg font-bold"
-                style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.min(b.radius, 18), fontFamily: "var(--f-display)" }}
-              >
-                {b.logoMark}
-              </span>
-              <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
-                {b.logoText}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {mesa && (
-                <span className="rounded-full px-2.5 py-1 text-xs font-bold" style={noFeed ? { background: "rgba(0,0,0,.4)" } : { background: b.surface }}>
-                  Mesa {mesa}
-                </span>
-              )}
-              <button
-                onClick={chamarGarcom}
-                aria-label="Chamar garçom"
-                className="grid h-9 w-9 place-items-center rounded-full transition active:scale-90"
-                style={noFeed ? { background: "rgba(0,0,0,.4)" } : { background: b.surface }}
-              >
-                <BellRing className="h-[18px] w-[18px]" />
-              </button>
-            </div>
+          <div className="flex min-w-0 items-center gap-2">
+            <LogoMarca b={b} />
+            <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
+              {b.logoText}
+            </span>
           </div>
           <nav className="relative mt-2 flex justify-between">
             {ABAS.map((a) => {
@@ -171,92 +127,12 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
           </nav>
         </header>
 
-        {/* barra da comanda */}
-        <div className="absolute inset-x-0 bottom-0 z-20 px-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-          <motion.button
-            layout
-            onClick={() => (qtdTotal ? setComanda(true) : setAba("cardapio"))}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left shadow-2xl shadow-black/40"
-            style={{
-              borderRadius: Math.max(b.radius, 10),
-              background: qtdTotal ? b.primary : `color-mix(in srgb, ${b.surface} 82%, transparent)`,
-              color: qtdTotal ? b.onPrimary : b.text,
-              backdropFilter: "blur(14px)",
-            }}
-          >
-            <Receipt className="h-5 w-5 shrink-0" />
-            {qtdTotal ? (
-              <>
-                <span className="flex-1 text-sm font-bold">
-                  Minha comanda · {qtdTotal} {qtdTotal === 1 ? "item" : "itens"}
-                </span>
-                <motion.span key={total} initial={{ scale: 1.25 }} animate={{ scale: 1 }} className="text-base font-extrabold">
-                  {brl(total)}
-                </motion.span>
-              </>
-            ) : (
-              <span className="flex-1 text-sm font-semibold opacity-80">Toque em + para montar sua comanda</span>
-            )}
-          </motion.button>
-        </div>
-
         {/* folha de detalhes */}
         <Folha aberta={!!info} fechar={() => setInfo(null)}>
           {info && <Detalhes id={info} />}
         </Folha>
 
-        {/* folha da comanda */}
-        <Folha aberta={comanda} fechar={() => setComanda(false)}>
-          <h3 className="text-2xl" style={{ fontFamily: "var(--f-display)" }}>
-            Minha comanda {mesa && <span className="text-base opacity-60">· Mesa {mesa}</span>}
-          </h3>
-          <div className="mt-4 space-y-3">
-            {Object.entries(carrinho).map(([id, q]) => {
-              const it = item(id)
-              if (!it) return null
-              return (
-                <div key={id} className="flex items-center gap-3">
-                  <span className="relative h-12 w-12 shrink-0 overflow-hidden" style={{ borderRadius: "calc(var(--radius) * 0.75)" }}>
-                    <Image src={posterSrc(it.midia)} alt="" fill sizes="48px" className="object-cover" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{it.nome}</span>
-                    <span className="text-xs" style={{ color: "var(--c-muted)" }}>
-                      {brl(it.preco)}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <button onClick={() => ctx.remover(id)} className="grid h-8 w-8 place-items-center rounded-full" style={{ background: "color-mix(in srgb, var(--c-text) 10%, transparent)" }} aria-label="Remover um">
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <span className="w-5 text-center font-bold">{q}</span>
-                    <button onClick={() => ctx.adicionar(id)} className="grid h-8 w-8 place-items-center rounded-full" style={{ background: "var(--c-primary)", color: "var(--c-on-primary)" }} aria-label="Adicionar um">
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-          <div className="mt-5 flex items-center justify-between border-t pt-4" style={{ borderColor: "color-mix(in srgb, var(--c-text) 12%, transparent)" }}>
-            <span className="text-sm" style={{ color: "var(--c-muted)" }}>
-              Total estimado
-            </span>
-            <span className="text-2xl font-extrabold">{brl(total)}</span>
-          </div>
-          <button
-            onClick={chamarGarcom}
-            className="mt-4 flex w-full items-center justify-center gap-2 py-3.5 font-bold"
-            style={{ background: "var(--c-primary)", color: "var(--c-on-primary)", borderRadius: "var(--radius)" }}
-          >
-            <BellRing className="h-5 w-5" /> Chamar garçom para fazer o pedido
-          </button>
-          <p className="mt-2 text-center text-xs" style={{ color: "var(--c-muted)" }}>
-            A comanda fica salva no seu celular para mostrar ao garçom.
-          </p>
-        </Folha>
-
-        {/* toast */}
+        {/* aviso rápido (ex.: link copiado) */}
         <AnimatePresence>
           {toast && (
             <motion.div
@@ -272,7 +148,7 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
           )}
         </AnimatePresence>
 
-        {/* tela de abertura (simula a abertura pelo NFC/QR) */}
+        {/* tela de abertura (ao abrir pelo NFC/QR) */}
         <AnimatePresence>
           {splash && (
             <motion.div
@@ -282,14 +158,8 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
               className="absolute inset-0 z-[60] flex flex-col items-center justify-center px-8 text-center"
               style={{ background: b.bg, color: b.text }}
             >
-              <motion.span
-                initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 260, damping: 16 }}
-                className="grid h-24 w-24 place-items-center text-5xl shadow-2xl"
-                style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.min(b.radius * 2, 48), fontFamily: "var(--f-display)" }}
-              >
-                {b.logoMark}
+              <motion.span initial={{ scale: 0.3, rotate: -20, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="shadow-2xl">
+                <LogoMarca b={b} size={96} />
               </motion.span>
               <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-6 text-4xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
                 {r.nome}
@@ -297,11 +167,6 @@ export function MenuApp({ restaurante, mesa, itemInicial, embutido = false }: Pr
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }} className="mt-3 text-sm" style={{ color: b.muted }}>
                 {b.tagline}
               </motion.p>
-              {mesa && (
-                <motion.span initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="mt-6 rounded-full px-4 py-1.5 text-sm font-bold" style={{ background: b.surface }}>
-                  Bem-vindo à mesa {mesa} 👋
-                </motion.span>
-              )}
               <motion.span className="absolute bottom-10 h-1 w-24 overflow-hidden rounded-full" style={{ background: `color-mix(in srgb, ${b.text} 12%, transparent)` }}>
                 <motion.span className="block h-full" style={{ background: b.primary }} initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 1.5 }} />
               </motion.span>
@@ -344,7 +209,7 @@ function Folha({ aberta, fechar, children }: { aberta: boolean; fechar: () => vo
 }
 
 function Detalhes({ id }: { id: string }) {
-  const { item, ranks, adicionar, abrirNoFeed, r } = useMenu()
+  const { item, ranks, abrirNoFeed, r } = useMenu()
   const it = item(id)
   if (!it) return null
   const combina = it.combinaCom ? item(it.combinaCom) : undefined
@@ -361,6 +226,14 @@ function Detalhes({ id }: { id: string }) {
       <h3 className="text-3xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
         {it.nome}
       </h3>
+      <div className="mt-2 flex items-center gap-2">
+        <span className="text-2xl font-extrabold">{brl(it.preco)}</span>
+        {it.precoAntigo && (
+          <span className="text-sm line-through" style={{ color: "var(--c-muted)" }}>
+            {brl(it.precoAntigo)}
+          </span>
+        )}
+      </div>
       <p className="mt-3 text-[15px] leading-relaxed" style={{ color: "var(--c-muted)" }}>
         {it.descricao}
       </p>
@@ -368,7 +241,7 @@ function Detalhes({ id }: { id: string }) {
         {[
           { icone: <Clock className="mx-auto mb-1 h-4 w-4" />, v: it.tempoPreparo ?? "—", l: "preparo" },
           { icone: <Users className="mx-auto mb-1 h-4 w-4" />, v: it.serve ?? "1 pessoa", l: "serve" },
-          { icone: <MapPin className="mx-auto mb-1 h-4 w-4" />, v: it.pedidos30d.toLocaleString("pt-BR"), l: "pedidos/mês" },
+          { icone: <Flame className="mx-auto mb-1 h-4 w-4" />, v: it.pedidos30d.toLocaleString("pt-BR"), l: "pedidos/mês" },
         ].map((d) => (
           <div key={d.l} className="p-2.5" style={{ background: "color-mix(in srgb, var(--c-text) 6%, transparent)", borderRadius: "var(--radius)" }}>
             {d.icone}
@@ -386,7 +259,11 @@ function Detalhes({ id }: { id: string }) {
           ))}
         </div>
       )}
-      {it.notaDoChef && <blockquote className="mt-4 border-l-4 pl-3 text-sm italic" style={{ borderColor: "var(--c-primary)" }}>“{it.notaDoChef}” — Chef</blockquote>}
+      {it.notaDoChef && (
+        <blockquote className="mt-4 border-l-4 pl-3 text-sm italic" style={{ borderColor: "var(--c-primary)" }}>
+          “{it.notaDoChef}” — Chef
+        </blockquote>
+      )}
       {combina && (
         <button onClick={() => abrirNoFeed(combina.id)} className="mt-4 flex w-full items-center gap-3 p-2 text-left" style={{ background: "color-mix(in srgb, var(--c-text) 6%, transparent)", borderRadius: "var(--radius)" }}>
           <span className="relative h-12 w-12 shrink-0 overflow-hidden" style={{ borderRadius: "calc(var(--radius) * 0.7)" }}>
@@ -398,18 +275,15 @@ function Detalhes({ id }: { id: string }) {
             </span>
             <span className="block text-sm font-semibold">{combina.nome}</span>
           </span>
-          <span className="text-sm font-bold">+{brl(combina.preco)}</span>
+          <span className="text-sm font-bold">{brl(combina.preco)}</span>
         </button>
       )}
       <button
-        onClick={() => adicionar(it.id)}
-        className="mt-5 flex w-full items-center justify-between px-5 py-3.5 font-bold"
+        onClick={() => abrirNoFeed(it.id)}
+        className="mt-5 flex w-full items-center justify-center gap-2 py-3.5 font-bold"
         style={{ background: "var(--c-primary)", color: "var(--c-on-primary)", borderRadius: "var(--radius)" }}
       >
-        <span className="flex items-center gap-2">
-          <Plus className="h-5 w-5" /> Adicionar à comanda
-        </span>
-        <span>{brl(it.preco)}</span>
+        Ver o vídeo
       </button>
     </div>
   )

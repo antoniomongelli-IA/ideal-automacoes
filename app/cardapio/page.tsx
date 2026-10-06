@@ -1,18 +1,19 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, BarChart3, BellRing, Check, Crown, Flame, Globe, Heart, MessageCircle, Nfc, Palette, QrCode, Receipt, Smartphone, Sparkles, Wand2 } from "lucide-react"
-import { RESTAURANTES } from "@/lib/cardapio/data"
+import { ArrowRight, BarChart3, Check, Crown, Flame, Globe, Heart, MessageCircle, Nfc, Palette, QrCode, Search, Smartphone, Sparkles, Wand2 } from "lucide-react"
+import { RESTAURANTES } from "@/lib/cardapio/restaurantes"
 import { FONTES, posterSrc } from "@/lib/cardapio/utils"
 import { WHATSAPP_NUMBER } from "@/lib/constants"
 import { MenuApp } from "@/components/cardapio/MenuApp"
 import { QR } from "@/components/cardapio/QR"
+import { LogoMarca } from "@/components/cardapio/ui"
 
 const whats = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Oi! Quero o cardápio em vídeo no meu restaurante.")}`
 
 const PASSOS = [
   { icone: Nfc, t: "Aproxima ou escaneia", d: "Etiqueta NFC e QR Code em cada mesa. Abre direto no navegador, sem baixar app." },
   { icone: Smartphone, t: "Rola como no TikTok", d: "Cada prato e bebida em vídeo vertical, com preço, selos e sugestão do que combina." },
-  { icone: Receipt, t: "Monta a comanda", d: "O cliente toca no + e chama o garçom já sabendo o que quer. Menos espera, mais pedido." },
+  { icone: Flame, t: "Decide mais rápido", d: "Mais pedidos e itens do mês mostram o que a casa tem de melhor. O cliente chama o garçom já sabendo o que quer." },
   { icone: BarChart3, t: "Você vê os dados", d: "Quais vídeos prendem, o que mais sai, o que destacar no mês. Decisão com número." },
 ]
 
@@ -20,11 +21,11 @@ const RECURSOS = [
   { icone: Flame, t: "Aba Mais pedidos", d: "Ranking automático dos últimos 30 dias, com crescimento de cada item. Prova social que vende." },
   { icone: Crown, t: "Itens do mês", d: "O restaurante escolhe os destaques no painel; eles ganham coroa e sobem para o topo do feed." },
   { icone: Palette, t: "Branding de cada casa", d: "Cores, fontes, arredondamento, logo e frase de abertura. Cada cliente com a própria cara." },
-  { icone: Sparkles, t: "Combina com…", d: "Cada prato sugere a bebida ou acompanhamento ideal. Upsell sem garçom insistir." },
+  { icone: Sparkles, t: "Combina com…", d: "Cada prato sugere a bebida ou o acompanhamento ideal. Venda a mais sem o garçom insistir." },
   { icone: Heart, t: "Curtir com dois toques", d: "O gesto que todo mundo já conhece. Vira métrica de desejo por prato." },
-  { icone: BellRing, t: "Chamar garçom", d: "Botão na tela e comanda pronta para mostrar. Mesa identificada pelo NFC." },
-  { icone: QrCode, t: "Placas prontas", d: "QR Code e link NFC gerados por mesa, no visual do restaurante, prontos para imprimir." },
-  { icone: Globe, t: "Próximos passos", d: "Pedido direto na cozinha, integração com PDV e cardápio em inglês e espanhol para turistas." },
+  { icone: Search, t: "Cardápio completo", d: "Grade com todos os itens por categoria e busca por nome ou ingrediente." },
+  { icone: QrCode, t: "Placas prontas", d: "Placa de mesa com QR Code e NFC no visual do restaurante, pronta para imprimir." },
+  { icone: Globe, t: "Próximos passos", d: "Comanda pelo celular, pedido direto na cozinha e cardápio em inglês e espanhol." },
 ]
 
 const PLANOS = [
@@ -34,7 +35,7 @@ const PLANOS = [
     preco: "R$ 349",
     d: "O mais escolhido",
     destaque: true,
-    itens: ["Tudo do Essencial", "Itens ilimitados", "Painel com métricas de vídeo", "Combina com (upsell)", "Chamar garçom pela mesa"],
+    itens: ["Tudo do Essencial", "Itens ilimitados", "Painel com métricas de vídeo", "Combina com (sugestão de acompanhamento)", "Atualização de preços e itens"],
   },
   { nome: "Premium", preco: "R$ 590", d: "Conteúdo novo todo mês", itens: ["Tudo do Pro", "Gravação de novos vídeos todo mês", "Relatório mensal com recomendações", "Vídeos liberados para o Instagram"] },
 ]
@@ -61,7 +62,7 @@ export default function VitrinePage() {
               O cliente aproxima o celular da mesa e vê cada prato e bebida em vídeo, com preço, os mais pedidos da casa e os destaques do mês. Quem vê o prato em movimento pede mais.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={`/cardapio/${brasa.slug}?mesa=7`} className="inline-flex items-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 font-bold text-white shadow-lg shadow-accent/30">
+              <Link href={`/cardapio/${brasa.slug}`} className="inline-flex items-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 font-bold text-white shadow-lg shadow-accent/30">
                 Abrir demonstração <ArrowRight className="h-5 w-5" />
               </Link>
               <a href={whats} target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3.5 font-semibold hover:bg-white/5">
@@ -96,9 +97,9 @@ export default function VitrinePage() {
               <div className="mt-1 text-sm text-text-muted">escolhido no painel</div>
             </div>
             <div className="relative h-[680px] w-[330px] overflow-hidden rounded-[46px] border-[9px] border-[#1b1a1f] shadow-[0_40px_120px_-20px_rgba(160,32,240,0.45)]">
-              <MenuApp restaurante={brasa} mesa="7" embutido />
+              <MenuApp restaurante={brasa} embutido />
             </div>
-            <p className="mt-3 text-center text-xs text-text-muted">Interativo: deslize, toque duas vezes, adicione à comanda.</p>
+            <p className="mt-3 text-center text-xs text-text-muted">Interativo: deslize, toque duas vezes para curtir, troque de aba.</p>
           </div>
         </div>
       </section>
@@ -142,8 +143,8 @@ export default function VitrinePage() {
                 </div>
                 <div className="p-5">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-11 w-11 place-items-center text-xl font-bold" style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.min(b.radius, 14), fontFamily: FONTES[b.fontDisplay].css }}>
-                      {b.logoMark}
+                    <span style={{ fontFamily: FONTES[b.fontDisplay].css }}>
+                      <LogoMarca b={b} size={44} />
                     </span>
                     <div>
                       <h3 className="text-2xl leading-none" style={{ fontFamily: FONTES[b.fontDisplay].css }}>
@@ -161,10 +162,10 @@ export default function VitrinePage() {
                   </div>
                   <div className="mt-5 flex items-center gap-4">
                     <div className="h-24 w-24 shrink-0 rounded-xl bg-white p-1.5">
-                      <QR caminho={`/cardapio/${r.slug}?mesa=7`} className="h-full w-full" />
+                      <QR caminho={`/cardapio/${r.slug}`} className="h-full w-full" />
                     </div>
                     <div className="flex flex-1 flex-col gap-2">
-                      <Link href={`/cardapio/${r.slug}?mesa=7`} className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-bold" style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.max(b.radius - 4, 6) }}>
+                      <Link href={`/cardapio/${r.slug}`} className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-bold" style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.max(b.radius - 4, 6) }}>
                         Abrir cardápio <ArrowRight className="h-4 w-4" />
                       </Link>
                       <Link

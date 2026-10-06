@@ -3,13 +3,14 @@ import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { BarChart3, Check, Copy, Crown, ExternalLink, Eye, Nfc, Palette, Printer, RotateCcw, Smartphone, Sparkles, TrendingUp, Wand2 } from "lucide-react"
+import { BarChart3, Check, Copy, Crown, ExternalLink, Eye, ImageUp, Nfc, Palette, Printer, RotateCcw, Smartphone, Sparkles, Trash2, TrendingUp, Wand2 } from "lucide-react"
 import type { Branding, FontKey, Restaurante } from "@/lib/cardapio/types"
-import { RESTAURANTES } from "@/lib/cardapio/data"
+import { RESTAURANTES } from "@/lib/cardapio/restaurantes"
 import { brl, FONTES, maisPedidos, mesAtual, posterSrc } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, lerViews, usePersonalizacao } from "@/lib/cardapio/personalizacao"
 import { MenuApp } from "../MenuApp"
 import { QR } from "../QR"
+import { LogoMarca } from "../ui"
 import { GraficoBarras, GraficoLinha, type Ponto } from "./Graficos"
 
 const PRESETS: { nome: string; b: Partial<Branding> }[] = [
@@ -33,9 +34,9 @@ const CORES: { k: keyof Branding; l: string }[] = [
 
 const card = "rounded-2xl border border-white/[0.07] bg-[#15141a]"
 
-/** Série diária de demonstração: estável antes do cardápio em vídeo, crescendo depois. */
+/** Série diária de demonstração: vídeos assistidos, com alta depois dos vídeos novos do mês. */
 function serieDiaria(r: Restaurante): Ponto[] {
-  const total = r.itens.reduce((s, i) => s + i.pedidos30d, 0)
+  const total = r.itens.reduce((s, i) => s + Math.round(i.curtidas * 6.2 + i.pedidos30d * 3.1), 0)
   const base = total / 30 / 1.1
   let seed = r.slug.length * 97
   const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280)
@@ -56,7 +57,8 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
   const [destaques, setDestaques] = useState<string[]>(publicado.itens.filter((i) => i.destaqueDoMes).map((i) => i.id))
   const [views, setViews] = useState<Record<string, number>>({})
   const [ok, setOk] = useState(false)
-  const [mesas, setMesas] = useState(6)
+  const [copias, setCopias] = useState(4)
+  const [erroLogo, setErroLogo] = useState("")
 
   // quando a versão publicada muda (ex.: carregou do localStorage), o editor acompanha
   const [base, setBase] = useState(publicado)
@@ -95,10 +97,21 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
 
   const set = <K extends keyof Branding>(k: K, v: Branding[K]) => setBranding((b) => ({ ...b, [k]: v }))
 
+  const enviarLogo = (arquivo?: File) => {
+    if (!arquivo) return
+    if (arquivo.size > 300 * 1024) {
+      setErroLogo("Arquivo grande demais: use uma imagem de até 300 KB.")
+      return
+    }
+    setErroLogo("")
+    const leitor = new FileReader()
+    leitor.onload = () => set("logo", String(leitor.result))
+    leitor.readAsDataURL(arquivo)
+  }
+
   // métricas (demonstração)
   const ranking = maisPedidos(restaurante.itens)
-  const pedidos = ranking.reduce((s, i) => s + i.pedidos30d, 0)
-  const faturamento = ranking.reduce((s, i) => s + i.pedidos30d * i.preco, 0)
+  const curtidas = ranking.reduce((s, i) => s + i.curtidas, 0)
   const viewsVideo = ranking.reduce((s, i) => s + Math.round(i.curtidas * 6.2 + i.pedidos30d * 3.1), 0)
   const serie = useMemo(() => serieDiaria(restaurante), [restaurante])
   const totalViewsDemo = Object.values(views).reduce((a, b) => a + b, 0)
@@ -113,8 +126,8 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
             ← Cardápio em Vídeo
           </Link>
           <span className="text-white/20">/</span>
-          <span className="grid h-8 w-8 place-items-center rounded-lg text-sm font-bold" style={{ background: branding.primary, color: branding.onPrimary }}>
-            {branding.logoMark}
+          <span style={{ fontFamily: FONTES[branding.fontDisplay].css }}>
+            <LogoMarca b={branding} size={32} />
           </span>
           <h1 className="font-bold">{restaurante.nome}</h1>
           <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-xs text-white/60">Painel do restaurante</span>
@@ -131,7 +144,7 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
                 </option>
               ))}
             </select>
-            <a href={`/cardapio/${restaurante.slug}?mesa=1`} target="_blank" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5">
+            <a href={`/cardapio/${restaurante.slug}`} target="_blank" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5">
               <ExternalLink className="h-4 w-4" /> Abrir cardápio
             </a>
           </div>
@@ -142,13 +155,13 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
         <div className="min-w-0 space-y-6">
           {/* ---------------- resultados */}
           <section>
-            <Titulo icone={<BarChart3 className="h-5 w-5" />} titulo="Resultados · últimos 30 dias" sub="Números de demonstração. Em produção, cada visualização e cada “+” no cardápio vira dado real." />
+            <Titulo icone={<BarChart3 className="h-5 w-5" />} titulo="Resultados · últimos 30 dias" sub="Números de demonstração. Em produção, cada vídeo assistido, curtida e compartilhamento vira dado real." />
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               {[
                 { l: "Visualizações de vídeo", v: viewsVideo.toLocaleString("pt-BR"), d: "+41% vs mês anterior" },
-                { l: "Itens adicionados à comanda", v: pedidos.toLocaleString("pt-BR"), d: "+19% vs mês anterior" },
-                { l: "Faturamento influenciado", v: brl(faturamento).replace(/,\d\d$/, ""), d: "itens vistos em vídeo" },
-                { l: "Ticket médio por mesa", v: brl((faturamento / pedidos) * 2.6), d: "+14% após vídeos" },
+                { l: "Curtidas nos pratos", v: curtidas.toLocaleString("pt-BR"), d: "+27% vs mês anterior" },
+                { l: "Pessoas que abriram", v: Math.round(viewsVideo / 9.4).toLocaleString("pt-BR"), d: "+18% vs mês anterior" },
+                { l: "Tempo médio no cardápio", v: "3 min 40 s", d: "+52 s após vídeos" },
               ].map((k, i) => (
                 <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className={`${card} p-4`}>
                   <div className="text-xs text-white/50">{k.l}</div>
@@ -162,13 +175,14 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
             <div className="mt-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
               <div className={`${card} p-4`}>
                 <div className="mb-2 flex items-baseline justify-between">
-                  <h3 className="font-semibold">Itens pedidos por dia</h3>
+                  <h3 className="font-semibold">Vídeos assistidos por dia</h3>
                   <span className="text-xs text-white/40">passe o mouse no gráfico</span>
                 </div>
-                <GraficoLinha dados={serie} marco={{ indice: 12, texto: "Cardápio em vídeo no ar" }} unidade="itens" />
+                <GraficoLinha dados={serie} marco={{ indice: 12, texto: "Vídeos novos do mês" }} unidade="vídeos" />
               </div>
               <div className={`${card} p-4`}>
-                <h3 className="mb-3 font-semibold">Mais pedidos (vira a aba “Mais pedidos”)</h3>
+                <h3 className="font-semibold">Mais pedidos no caixa</h3>
+                <p className="mb-3 mt-0.5 text-xs text-white/45">Vendas do mês informadas pelo restaurante. Vira a aba “Mais pedidos”.</p>
                 <GraficoBarras dados={ranking.map((i) => ({ rotulo: i.nome, valor: i.pedidos30d }))} />
               </div>
             </div>
@@ -262,6 +276,24 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
                     </span>
                     <input type="range" min={0} max={28} value={branding.radius} onChange={(e) => set("radius", +e.target.value)} className="w-full accent-white" />
                   </label>
+                  <div>
+                    <span className="mb-1 block text-xs text-white/50">Logo</span>
+                    <div className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5">
+                      <span style={{ fontFamily: FONTES[branding.fontDisplay].css }}>
+                        <LogoMarca b={branding} size={48} />
+                      </span>
+                      <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/5">
+                        <ImageUp className="h-4 w-4" /> {branding.logo ? "Trocar logo" : "Enviar logo"}
+                        <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="sr-only" onChange={(e) => enviarLogo(e.target.files?.[0])} />
+                      </label>
+                      {branding.logo && (
+                        <button onClick={() => setBranding((b) => ({ ...b, logo: undefined }))} className="grid h-9 w-9 place-items-center rounded-lg text-white/60 hover:bg-white/5" aria-label="Remover logo">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-white/40">{erroLogo || "PNG, SVG ou JPG quadrado, até 300 KB. Sem logo, usa o selo abaixo."}</p>
+                  </div>
                   <div className="grid grid-cols-[72px_1fr] gap-2">
                     <Campo l="Selo" v={branding.logoMark} on={(v) => set("logoMark", v.slice(0, 3))} />
                     <Campo l="Nome no topo" v={branding.logoText} on={(v) => set("logoText", v)} />
@@ -304,19 +336,19 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
 
           {/* ---------------- mesas & NFC */}
           <section>
-            <Titulo icone={<Nfc className="h-5 w-5" />} titulo="Mesas · NFC e QR Code" sub="Cada mesa tem um link próprio. Grave o link numa etiqueta NFC (NTAG213) e imprima a placa com o QR Code." />
+            <Titulo icone={<Nfc className="h-5 w-5" />} titulo="Placas · NFC e QR Code" sub="Uma placa por mesa, todas com o mesmo link do cardápio. Grave o link numa etiqueta NFC (NTAG213) e cole atrás da placa." />
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-white/60">Mostrar</span>
-              {[6, 12, restaurante.mesas].map((n) => (
-                <button key={n} onClick={() => setMesas(n)} className={`rounded-full px-3 py-1 text-sm ${mesas === n ? "bg-white text-black" : "bg-white/[0.06]"}`}>
-                  {n === restaurante.mesas ? `todas (${n})` : `${n} mesas`}
+              <span className="text-sm text-white/60">Cópias para imprimir</span>
+              {[4, 12, 24].map((n) => (
+                <button key={n} onClick={() => setCopias(n)} className={`rounded-full px-3 py-1 text-sm ${copias === n ? "bg-white text-black" : "bg-white/[0.06]"}`}>
+                  {n}
                 </button>
               ))}
               <button onClick={() => window.print()} className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-black">
                 <Printer className="h-4 w-4" /> Imprimir placas
               </button>
             </div>
-            <Placas r={rascunho} n={mesas} />
+            <Placas r={rascunho} n={Math.min(copias, 4)} />
           </section>
         </div>
 
@@ -329,7 +361,7 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
             {alterado && <span className="rounded-full bg-amber-300/15 px-2 py-0.5 text-xs text-amber-200">alterações não publicadas</span>}
           </div>
           <div className="relative mx-auto h-[720px] w-[350px] overflow-hidden rounded-[44px] border-[9px] border-[#1f1e25] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)]">
-            <MenuApp restaurante={rascunho} mesa="7" embutido />
+            <MenuApp restaurante={rascunho} embutido />
           </div>
           <div className="mx-auto mt-4 flex w-[350px] gap-2">
             <button onClick={restaurar} className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-3 text-sm hover:bg-white/5" title="Voltar ao padrão">
@@ -351,7 +383,7 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
 
       {/* versão impressa das placas */}
       <div className="so-print hidden grid-cols-2 gap-6 p-6">
-        <PlacasImpressao r={rascunho} n={mesas} />
+        <PlacasImpressao r={rascunho} n={copias} />
       </div>
     </div>
   )
@@ -378,16 +410,16 @@ function Campo({ l, v, on }: { l: string; v: string; on: (v: string) => void }) 
   )
 }
 
-function Placa({ r, mesa }: { r: Restaurante; mesa: number }) {
+function Placa({ r }: { r: Restaurante }) {
   const b = r.branding
-  const caminho = `/cardapio/${r.slug}?mesa=${mesa}`
+  const caminho = `/cardapio/${r.slug}`
   const [copiado, setCopiado] = useState(false)
   return (
     <div className="overflow-hidden text-center shadow-xl" style={{ background: b.bg, color: b.text, borderRadius: Math.max(b.radius, 8), fontFamily: FONTES[b.fontBody].css }}>
       <div className="px-4 pb-4 pt-5">
-        <div className="mx-auto grid h-11 w-11 place-items-center text-xl font-bold" style={{ background: b.primary, color: b.onPrimary, borderRadius: Math.min(b.radius, 14), fontFamily: FONTES[b.fontDisplay].css }}>
-          {b.logoMark}
-        </div>
+        <span className="inline-block" style={{ fontFamily: FONTES[b.fontDisplay].css }}>
+          <LogoMarca b={b} size={44} />
+        </span>
         <div className="mt-2 text-xl leading-none" style={{ fontFamily: FONTES[b.fontDisplay].css }}>
           {b.logoText}
         </div>
@@ -400,7 +432,7 @@ function Placa({ r, mesa }: { r: Restaurante; mesa: number }) {
         </div>
       </div>
       <div className="flex items-center justify-between px-4 py-2.5 text-sm font-bold" style={{ background: b.primary, color: b.onPrimary }}>
-        <span>Mesa {String(mesa).padStart(2, "0")}</span>
+        <span>Cardápio em vídeo</span>
         <button
           onClick={() => {
             navigator.clipboard?.writeText(new URL(caminho, location.origin).toString()).catch(() => {})
@@ -421,7 +453,7 @@ function Placas({ r, n }: { r: Restaurante; n: number }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: n }, (_, i) => (
-        <Placa key={i} r={r} mesa={i + 1} />
+        <Placa key={i} r={r} />
       ))}
     </div>
   )
@@ -431,7 +463,7 @@ function PlacasImpressao({ r, n }: { r: Restaurante; n: number }) {
   return (
     <>
       {Array.from({ length: n }, (_, i) => (
-        <Placa key={i} r={r} mesa={i + 1} />
+        <Placa key={i} r={r} />
       ))}
     </>
   )

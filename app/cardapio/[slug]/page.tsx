@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { notFound } from "next/navigation"
-import { getRestaurante, RESTAURANTES } from "@/lib/cardapio/data"
+import { getRestaurante, RESTAURANTES } from "@/lib/cardapio/restaurantes"
 import { MenuApp } from "@/components/cardapio/MenuApp"
 import { DesktopMoldura } from "@/components/cardapio/DesktopMoldura"
 
@@ -28,12 +28,11 @@ export default async function CardapioPage({ params, searchParams }: PageProps<"
   const sp = await searchParams
   const r = getRestaurante(slug)
   if (!r) notFound()
-  const mesa = typeof sp.mesa === "string" ? sp.mesa : undefined
   const item = typeof sp.item === "string" ? sp.item : undefined
 
   return (
     <DesktopMoldura restaurante={r}>
-      <MenuApp restaurante={r} mesa={mesa} itemInicial={item} />
+      <MenuApp restaurante={r} itemInicial={item} />
     </DesktopMoldura>
   )
 }

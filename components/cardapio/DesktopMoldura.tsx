@@ -23,10 +23,10 @@ export function DesktopMoldura({ restaurante: r, children }: { restaurante: Rest
             {r.tipo} · {r.cidade}
           </p>
           <div className="mt-6 rounded-2xl bg-white p-3 shadow-2xl">
-            <QR caminho={`/cardapio/${r.slug}?mesa=7`} className="aspect-square w-full" />
+            <QR caminho={`/cardapio/${r.slug}`} className="aspect-square w-full" />
           </div>
           <p className="mt-3 flex items-center gap-2 text-sm text-white/70">
-            <Nfc className="h-4 w-4" /> Aponte a câmera (ou aproxime o NFC) para abrir no celular, como se estivesse na mesa 7.
+            <Nfc className="h-4 w-4" /> Aponte a câmera (ou aproxime o NFC) para abrir no celular.
           </p>
         </aside>
 
@@ -38,7 +38,7 @@ export function DesktopMoldura({ restaurante: r, children }: { restaurante: Rest
         <aside className="hidden w-64 space-y-3 text-white lg:block">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/50">Experimente</p>
           {[
-            { href: `/cardapio/${r.slug}/painel`, icone: <Palette className="h-5 w-5" />, t: "Painel do restaurante", d: "Mude cores, fontes e itens do mês ao vivo" },
+            { href: `/cardapio/${r.slug}/painel`, icone: <Palette className="h-5 w-5" />, t: "Painel do restaurante", d: "Mude logo, cores, fontes e itens do mês ao vivo" },
             { href: "/cardapio", icone: <LayoutGrid className="h-5 w-5" />, t: "Outros restaurantes", d: "Mesmo sistema, branding diferente" },
           ].map((l) => (
             <Link key={l.href} href={l.href} className="group flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10">
@@ -56,7 +56,7 @@ export function DesktopMoldura({ restaurante: r, children }: { restaurante: Rest
           <ul className="space-y-2 pt-3 text-sm text-white/60">
             <li>👆 Deslize para cima para ver o próximo prato</li>
             <li>❤️ Toque duas vezes no vídeo para curtir</li>
-            <li>➕ Monte a comanda e chame o garçom</li>
+            <li>📋 Veja os mais pedidos e os itens do mês</li>
           </ul>
         </aside>
       </div>

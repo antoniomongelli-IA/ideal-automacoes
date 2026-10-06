@@ -1,6 +1,6 @@
 # Cardápio em Vídeo (MVP)
 
-Cardápio digital estilo TikTok: o cliente aproxima o celular da mesa (NFC) ou lê o QR Code e rola os pratos em vídeo vertical.
+Cardápio digital estilo TikTok: o cliente aproxima o celular da mesa (NFC) ou lê o QR Code e rola os pratos em vídeo vertical. Esta versão só mostra o cardápio: não tem comanda, pedido nem integração com o caixa.
 
 ![Telas no celular](telas-celular.png)
 
@@ -8,30 +8,59 @@ Cardápio digital estilo TikTok: o cliente aproxima o celular da mesa (NFC) ou l
 
 | Rota | O que é |
 |---|---|
-| `/cardapio` | Vitrine do produto (para vender aos restaurantes): demo interativa, 3 restaurantes, recursos e planos |
-| `/cardapio/[slug]?mesa=7` | O cardápio do cliente. `mesa` vem do link gravado na etiqueta NFC / QR da mesa |
-| `/cardapio/[slug]/painel` | Painel do restaurante: métricas, editor de branding com prévia ao vivo, itens do mês e placas NFC/QR |
+| `/cardapio` | Página de vendas do produto: demo interativa, restaurantes de exemplo, recursos e planos |
+| `/cardapio/<slug>` | O cardápio do cliente. É o link gravado na etiqueta NFC e no QR Code |
+| `/cardapio/<slug>/painel` | Painel do restaurante: métricas, logo e cores com prévia ao vivo, itens do mês e placas para imprimir |
 
-Restaurantes de demonstração (fictícios): `brasa-burger`, `kaze-sushi`, `cantina-nonna`.
+Restaurantes de exemplo (fictícios): `brasa-burger`, `kaze-sushi`, `cantina-nonna`.
 
 ## Abas do cardápio
 
-- **Para você**: feed vertical em vídeo (deslizar, dois toques para curtir, + para a comanda, “combina com” para upsell).
-- **Mais pedidos**: ranking automático dos últimos 30 dias (pódio com vídeo, barras e crescimento), com filtro por categoria.
-- **Do mês**: itens escolhidos no painel, com coroa e nota do chef. Também sobem para o topo do feed.
-- **Cardápio**: grade completa com busca e categorias.
+- **Para você**: feed vertical em vídeo. Deslizar, dois toques para curtir, detalhes, compartilhar e “Combina com” (sugere a bebida ou o acompanhamento).
+- **Mais pedidos**: ranking dos itens mais vendidos no mês, com pódio em vídeo, barras e crescimento. Filtra por categoria.
+- **Do mês**: itens escolhidos pelo restaurante, com coroa e nota do chef. Também sobem para o topo do feed.
+- **Cardápio**: grade com todos os itens, por categoria e com busca.
 
-Ainda: tela de abertura com a marca e a mesa, comanda com total, botão de chamar garçom.
+## Um sistema para todos os restaurantes
 
-## Branding por restaurante
+O código é o mesmo para todos. Cada restaurante novo é só:
 
-Cada restaurante tem cores (principal, destaque, fundo, cartões, textos), fonte dos títulos, arredondamento, selo, nome e frase de abertura (`lib/cardapio/types.ts` → `Branding`). Tudo vira variáveis CSS (`brandingVars`) e o mesmo código assume a cara de cada casa.
+```
+lib/cardapio/restaurantes/<slug>.ts     dados: nome, marca (cores, fonte, logo), categorias e itens
+public/midia/<slug>/logo.png            logo (opcional)
+public/midia/<slug>/videos/*.mp4|webm   vídeos dos pratos
+public/midia/<slug>/posters/*.jpg       capa de cada vídeo
+```
 
-No painel, a edição muda a prévia na hora; “Publicar” salva no navegador (demo) e o cardápio aberto em outra aba atualiza sozinho. Em produção isso vira uma tabela no banco.
+### Passo a passo para colocar um restaurante novo
 
-## Vídeos
+1. **Grave os vídeos** no celular, em pé, de 6 a 15 segundos por prato. Dê a cada arquivo o nome do prato (ex.: `Bacon Duplo.mov`).
+2. **Prepare os vídeos** (corta em 9:16, comprime, tira o áudio e gera as capas):
+   ```bash
+   python scripts/cardapio/preparar_videos.py pizzaria-do-ze ~/videos-ze --logo ~/logo-ze.png
+   ```
+   O script imprime os itens prontos para colar no arquivo do restaurante.
+3. **Crie o arquivo do restaurante**: copie `lib/cardapio/restaurantes/_modelo.ts` para `pizzaria-do-ze.ts`, cole os itens e preencha preço, descrição, categoria, cores e fonte.
+4. **Registre** o restaurante em `lib/cardapio/restaurantes/index.ts` (um import e um item na lista).
+5. **Publique.** O cardápio fica em `/cardapio/pizzaria-do-ze`. Imprima as placas pelo painel e grave o mesmo link nas etiquetas NFC.
 
-Os 20 vídeos são animações geradas por código (Cairo + ffmpeg), em loop de 6s, 540×960, H.264 + fallback WebM, com poster `.jpg`:
+### O que muda de um restaurante para outro
+
+- **Logo**: imagem em `branding.logo`; sem imagem, usa a sigla/emoji de `logoMark`.
+- **Cores**: principal, texto no botão, destaque, fundo, cartões, texto e texto suave.
+- **Fonte dos títulos**: anton, fraunces, shippori, bricolage, playfair ou jakarta.
+- **Arredondamento** dos cartões e botões, nome no topo e frase da tela de abertura.
+- **Itens**, categorias, preços, vídeos, “Combina com” e itens do mês.
+
+No painel dá para testar logo, cores e fontes com prévia ao vivo antes de colocar no arquivo. Nesta versão, “Publicar” salva só no navegador; em produção isso vira um banco de dados.
+
+## “Mais pedidos”
+
+O ranking usa `pedidos30d` e `pedidosMesAnterior` de cada item: as vendas do mês tiradas do relatório do caixa do restaurante. Atualize uma vez por mês (ou integre com o sistema de caixa no futuro).
+
+## Vídeos de demonstração
+
+Os 20 vídeos dos restaurantes de exemplo são animações geradas por código (Cairo + ffmpeg):
 
 ```bash
 pip install pycairo numpy
@@ -39,11 +68,10 @@ python scripts/cardapio/gerar_videos.py            # todos
 python scripts/cardapio/gerar_videos.py ramen-tonkotsu
 ```
 
-Para um restaurante real, basta trocar os arquivos em `public/cardapio/videos/<midia>.mp4|.webm` e `public/cardapio/posters/<midia>.jpg` por vídeos gravados (vertical 9:16, 6–15s, sem áudio). Em escala, use um serviço de streaming (Bunny Stream, Cloudflare Stream ou Mux).
+Para restaurantes reais, use `preparar_videos.py` com os vídeos gravados. Com muitos clientes, vale mover os vídeos para um serviço de streaming (Bunny Stream, Cloudflare Stream ou Mux).
 
-## Próximos passos para produção
+## Próximos passos
 
-1. Banco + login do restaurante (ex.: Supabase) no lugar de `lib/cardapio/data.ts` e do localStorage.
-2. Upload de vídeo pelo painel direto para o serviço de streaming.
-3. Eventos reais (visualização, curtida, “+”) alimentando “Mais pedidos” e as métricas.
-4. Chamar garçom via WhatsApp/n8n ou tablet do salão; depois, pedido direto para a cozinha/PDV.
+1. Banco de dados e login do restaurante, para ele mesmo trocar preços, itens e vídeos pelo painel.
+2. Métricas reais (vídeos assistidos, curtidas, compartilhamentos).
+3. Depois, se fizer sentido: comanda pelo celular, mesa compartilhada e pedido direto para a cozinha.

@@ -6,8 +6,19 @@ export const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency",
 export const compacto = (n: number) =>
   n >= 1000 ? `${(n / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : String(n)
 
-export const videoSrc = (midia: string, ext: "mp4" | "webm" = "mp4") => `/cardapio/videos/${midia}.${ext}`
-export const posterSrc = (midia: string) => `/cardapio/posters/${midia}.jpg`
+/** `midia` chega como "<slug>/<arquivo>" (ver restaurantes/index.ts). */
+const partes = (midia: string) => {
+  const [slug, arquivo] = midia.split("/")
+  return { slug, arquivo }
+}
+export const videoSrc = (midia: string, ext: "mp4" | "webm" = "mp4") => {
+  const { slug, arquivo } = partes(midia)
+  return `/midia/${slug}/videos/${arquivo}.${ext}`
+}
+export const posterSrc = (midia: string) => {
+  const { slug, arquivo } = partes(midia)
+  return `/midia/${slug}/posters/${arquivo}.jpg`
+}
 
 export function maisPedidos(itens: Item[]) {
   return [...itens].sort((a, b) => b.pedidos30d - a.pedidos30d)

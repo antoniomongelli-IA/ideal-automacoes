@@ -10,7 +10,7 @@ Uso:
     python scripts/cardapio/gerar_videos.py            # todos
     python scripts/cardapio/gerar_videos.py smash-classico ramen-tonkotsu
 
-Saída: public/cardapio/videos/<id>.mp4 (+ .webm) e public/cardapio/posters/<id>.jpg
+Saída: public/midia/<restaurante>/videos/<id>.mp4 (+ .webm) e public/midia/<restaurante>/posters/<id>.jpg
 """
 
 import math
@@ -28,8 +28,7 @@ FRAMES = FPS * DUR
 TAU = math.tau
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-OUT_VIDEO = os.path.join(ROOT, "public", "cardapio", "videos")
-OUT_POSTER = os.path.join(ROOT, "public", "cardapio", "posters")
+MIDIA = os.path.join(ROOT, "public", "midia")
 
 
 # ---------------------------------------------------------------- helpers
@@ -1464,9 +1463,9 @@ def dessert(ctx, p, cfg):
 
 # ---------------------------------------------------------------- catálogo
 
-BRASA = {"bg": "#160b06", "glow": "#ff6a1a", "table": "wood", "seed": 7}
-KAZE = {"bg": "#0b0a0f", "glow": "#e8443a", "table": "slate", "seed": 11}
-NONNA = {"bg": "#120d08", "glow": "#f2b45a", "table": "toalha", "seed": 4}
+BRASA = {"slug": "brasa-burger", "bg": "#160b06", "glow": "#ff6a1a", "table": "wood", "seed": 7}
+KAZE = {"slug": "kaze-sushi", "bg": "#0b0a0f", "glow": "#e8443a", "table": "slate", "seed": 11}
+NONNA = {"slug": "cantina-nonna", "bg": "#120d08", "glow": "#f2b45a", "table": "toalha", "seed": 4}
 
 SCENES = {
     # Brasa Burger & Co.
@@ -1497,6 +1496,8 @@ SCENES = {
 
 def render(name):
     theme, fn, cfg = SCENES[name]
+    OUT_VIDEO = os.path.join(MIDIA, theme["slug"], "videos")
+    OUT_POSTER = os.path.join(MIDIA, theme["slug"], "posters")
     os.makedirs(OUT_VIDEO, exist_ok=True)
     os.makedirs(OUT_POSTER, exist_ok=True)
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)

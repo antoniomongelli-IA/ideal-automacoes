@@ -19,8 +19,10 @@ export interface Branding {
   radius: number
   /** Nome curto exibido no topo */
   logoText: string
-  /** Sigla/emoji do selo do logo */
+  /** Sigla/emoji usado quando não há logo em imagem */
   logoMark: string
+  /** Logo em imagem (ex.: "/midia/<slug>/logo.svg"). Se existir, substitui o logoMark. */
+  logo?: string
   tagline: string
 }
 
@@ -39,8 +41,9 @@ export interface Item {
   preco: number
   precoAntigo?: number
   categoria: string
-  /** Arquivo em /public/cardapio/videos e /posters */
+  /** Nome do arquivo (sem extensão) em public/midia/<slug>/videos e /posters */
   midia: string
+  /** Vendas dos últimos 30 dias (relatório do caixa). Alimenta a aba "Mais pedidos". */
   pedidos30d: number
   pedidosMesAnterior: number
   curtidas: number
@@ -61,7 +64,6 @@ export interface Restaurante {
   endereco: string
   horario: string
   instagram: string
-  mesas: number
   branding: Branding
   categorias: Categoria[]
   itens: Item[]

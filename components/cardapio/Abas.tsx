@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ChefHat, Crown, Flame, Play, Plus, Search, TrendingDown, TrendingUp } from "lucide-react"
+import { ChefHat, Crown, Flame, Play, Search, TrendingDown, TrendingUp } from "lucide-react"
 import { brl, compacto, crescimento, maisPedidos, mesAtual, posterSrc } from "@/lib/cardapio/utils"
 import { AutoVideo, SeloMes, SeloRank, useMenu } from "./ui"
 
@@ -46,25 +46,6 @@ function Crescimento({ pct }: { pct: number }) {
   )
 }
 
-function BotaoAdd({ id }: { id: string }) {
-  const { adicionar, carrinho } = useMenu()
-  const qtd = carrinho[id] ?? 0
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation()
-        adicionar(id)
-      }}
-      aria-label="Adicionar à comanda"
-      className="relative grid h-9 w-9 shrink-0 place-items-center transition active:scale-90"
-      style={{ background: "var(--c-primary)", color: "var(--c-on-primary)", borderRadius: "999px" }}
-    >
-      <Plus className="h-5 w-5" strokeWidth={3} />
-      {qtd > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[10px] font-bold text-black shadow">{qtd}</span>}
-    </button>
-  )
-}
-
 const Titulo = ({ icone, titulo, sub }: { icone: React.ReactNode; titulo: string; sub: string }) => (
   <div className="mb-4">
     <h2 className="flex items-center gap-2 text-[34px] leading-none" style={{ fontFamily: "var(--f-display)" }}>
@@ -88,7 +69,7 @@ export function MaisPedidos() {
 
   return (
     <div className="px-4 pb-32">
-      <Titulo icone={<Flame className="h-8 w-8" style={{ color: "var(--c-primary)" }} fill="currentColor" />} titulo="Mais pedidos" sub="Ranking real dos últimos 30 dias · atualiza todo dia" />
+      <Titulo icone={<Flame className="h-8 w-8" style={{ color: "var(--c-primary)" }} fill="currentColor" />} titulo="Mais pedidos" sub="Os mais vendidos da casa nos últimos 30 dias" />
       <Chips valor={cat} onChange={setCat} />
 
       {p1 && (
@@ -177,7 +158,6 @@ export function MaisPedidos() {
               </span>
             </span>
             <span className="text-sm font-bold">{brl(it.preco)}</span>
-            <BotaoAdd id={it.id} />
           </div>
         ))}
       </div>
@@ -237,16 +217,13 @@ export function DoMes() {
                     {compacto(it.curtidas)} curtidas · {compacto(it.pedidos30d)} pedidos
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => abrirNoFeed(it.id)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold"
-                    style={{ borderRadius: "var(--radius)", border: "1px solid color-mix(in srgb, var(--c-text) 18%, transparent)" }}
-                  >
-                    <Play className="h-4 w-4" /> Vídeo
-                  </button>
-                  <BotaoAdd id={it.id} />
-                </div>
+                <button
+                  onClick={() => abrirNoFeed(it.id)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold"
+                  style={{ borderRadius: "var(--radius)", border: "1px solid color-mix(in srgb, var(--c-text) 18%, transparent)" }}
+                >
+                  <Play className="h-4 w-4" /> Ver vídeo
+                </button>
               </div>
             </div>
           </motion.article>
@@ -307,10 +284,7 @@ export function Grade() {
                       </span>
                       <span className="block p-2.5">
                         <span className="line-clamp-2 block text-sm font-semibold leading-tight">{it.nome}</span>
-                        <span className="mt-2 flex items-center justify-between">
-                          <span className="font-extrabold">{brl(it.preco)}</span>
-                          <BotaoAdd id={it.id} />
-                        </span>
+                        <span className="mt-2 block font-extrabold">{brl(it.preco)}</span>
                       </span>
                     </div>
                   )
