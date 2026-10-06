@@ -1,0 +1,76 @@
+<template>
+  <style>
+    @font-face { font-family: "Anton"; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Plus Jakarta Sans"; src: url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; }
+
+    #root { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: hidden; font-family: "Plus Jakarta Sans", sans-serif; color: #FFF4EA; }
+    .f10-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 700px 600px at 540px 640px, rgba(255, 106, 26, 0.16), rgba(255, 106, 26, 0) 70%), #0F0805; }
+    .f10-kicker { position: absolute; left: 60px; top: 120px; display: flex; align-items: center; gap: 18px; font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: #FF6A1A; }
+    .f10-kicker i { width: 36px; height: 2px; background: #FF6A1A; display: block; }
+
+    .f10-stage { position: absolute; inset: 0; perspective: 2400px; perspective-origin: 540px 700px; }
+    /* tela do cadastro (computador) em perspectiva */
+    .f10-screen { position: absolute; left: 40px; top: 230px; width: 1000px; height: 625px; border-radius: 22px; overflow: hidden; border: 10px solid #1E120B; box-shadow: 0 0 0 2px #3A2A20, 0 60px 120px rgba(0, 0, 0, 0.75); background: #050302; }
+    .f10-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .f10-logo { position: absolute; left: 400px; top: 1000px; width: 280px; height: 280px; border-radius: 40px; overflow: hidden; box-shadow: 0 40px 90px rgba(0, 0, 0, 0.8); border: 4px solid #3A2A20; background: #1E120B; }
+    .f10-logo img { width: 100%; height: 100%; display: block; }
+
+    .f10-sw { position: absolute; top: 1010px; width: 170px; height: 220px; border-radius: 28px; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7); display: flex; align-items: flex-end; padding: 16px; box-sizing: border-box; font-family: "IBM Plex Mono", monospace; font-size: 18px; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.92); }
+
+    .f10-title { position: absolute; left: 0; right: 0; top: 1310px; text-align: center; font-family: "Anton", sans-serif; font-size: 112px; line-height: 0.92; letter-spacing: -0.03em; text-transform: lowercase; }
+    .f10-title b { color: #FF6A1A; font-weight: 400; }
+  </style>
+
+  <div id="root" data-composition-id="07b-marca" data-width="1080" data-height="1920" data-duration="5.899">
+    <div id="f10-bg" class="f10-bg clip" data-start="0" data-duration="5.899" data-track-index="0"></div>
+    <div id="f10-kicker" class="f10-kicker clip" data-start="0" data-duration="5.899" data-track-index="1"><i></i><span>cadastro em 3 passos</span></div>
+
+    <div id="f10-stage" class="f10-stage clip" data-start="0" data-duration="5.899" data-track-index="2">
+      <div id="f10-screen" class="f10-screen">
+        <img id="f10-antes" class="f10-shot" src="assets/21-cadastro-marca-antes.png" alt="" />
+        <img id="f10-depois" class="f10-shot" src="assets/22-cadastro-marca-logo.png" alt="" />
+      </div>
+      <div id="f10-logo" class="f10-logo"><img src="assets/logo-exemplo.png" alt="" /></div>
+      <div id="f10-sw1" class="f10-sw" style="left: 150px; background: #0c7748">#0C7748</div>
+      <div id="f10-sw2" class="f10-sw" style="left: 455px; background: #f2b604; color: rgba(15, 8, 5, 0.8)">#F2B604</div>
+      <div id="f10-sw3" class="f10-sw" style="left: 760px; background: #d6253c">#D6253C</div>
+    </div>
+
+    <div id="f10-title" class="f10-title clip" data-start="0" data-duration="5.899" data-track-index="3">cores <b>automáticas</b></div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const q = (id) => document.getElementById(id);
+      const screen = q("f10-screen"), depois = q("f10-depois"), logo = q("f10-logo"), title = q("f10-title");
+      const sws = [q("f10-sw1"), q("f10-sw2"), q("f10-sw3")];
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0–1.6s): a tela do cadastro entra em perspectiva (antes da logo: cardápio laranja)
+      tl.fromTo(q("f10-kicker"), { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.05);
+      tl.fromTo(screen, { opacity: 0, z: -400, rotationX: 24, rotationY: -14 }, { opacity: 1, z: 0, rotationX: 12, rotationY: -8, duration: 0.9, ease: "power3.out" }, 0);
+      tl.fromTo(depois, { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo([logo, ...sws, title], { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+
+      // Scene 2 (1.6–2.3s): "logo" — a logo sobe e entra na tela; a tela vira a versão com as cores da logo
+      tl.fromTo(logo, { opacity: 0, y: 260, z: 300, rotation: -10, scale: 1.1 }, { opacity: 1, y: 0, z: 120, rotation: -4, scale: 1, duration: 0.55, ease: "power3.out" }, 1.55);
+      tl.to(logo, { y: -560, x: -250, z: -120, scale: 0.35, opacity: 0, duration: 0.5, ease: "power3.in" }, 2.1);
+      tl.to(depois, { opacity: 1, duration: 0.35, ease: "power2.out" }, 2.5);
+
+      // Scene 3 (2.25–4.3s): "as cores" — as três cores saem da tela em camadas, uma a uma
+      sws.forEach((s, i) => {
+        tl.fromTo(s, { opacity: 0, y: -380, z: -300, rotationX: 30, scale: 0.6 }, { opacity: 1, y: 0, z: 140 - i * 40, rotationX: 10, scale: 1, duration: 0.6, ease: "power3.out" }, 2.7 + i * 0.22);
+      });
+
+      // Scene 4 (4.3–5.4s): "automaticamente" — título bate e tudo segura
+      tl.fromTo(title, { opacity: 0, y: 40, scale: 1.08 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" }, 4.3);
+
+      tl.set({}, {}, 5.399);
+      window.__timelines["07b-marca"] = tl;
+    })();
+  </script>
+</template>

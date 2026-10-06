@@ -1,0 +1,383 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Anton";
+      src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "IBM Plex Mono";
+      src: url("assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+    }
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Anton", sans-serif;
+      color: #FFF4EA;
+    }
+
+    /* ---- background (full-bleed clip) ---- */
+    [id="01-hook-bg"] {
+      position: absolute;
+      inset: 0;
+      background: #0F0805;
+      overflow: hidden;
+    }
+    [id="01-hook-glow"] {
+      position: absolute;
+      left: -260px;
+      top: 260px;
+      width: 1600px;
+      height: 1300px;
+      background: radial-gradient(closest-side, rgba(255, 106, 26, 0.20), rgba(255, 106, 26, 0.06) 55%, rgba(255, 106, 26, 0) 100%);
+    }
+    [id="01-hook-dim"] {
+      position: absolute;
+      inset: 0;
+      background: #0F0805;
+      opacity: 0;
+    }
+
+    /* ---- camera wrapper (slow push underneath) ---- */
+    [id="01-hook-cam"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 540px 900px;
+    }
+
+    /* ---- 3D paper stage ---- */
+    [id="01-hook-stage"] {
+      position: absolute;
+      inset: 0;
+      perspective: 1600px;
+      perspective-origin: 540px 900px;
+    }
+
+    /* menu sheet: jitter wrapper -> fall element */
+    [id="01-hook-sheet-jit"] {
+      position: absolute;
+      left: 260px;
+      top: 560px;
+      width: 560px;
+      height: 780px;
+      transform-style: preserve-3d;
+    }
+    [id="01-hook-sheet"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(118deg, rgba(15, 8, 5, 0) 0 38%, rgba(15, 8, 5, 0.10) 38.4%, rgba(255, 244, 234, 0.10) 39.4%, rgba(15, 8, 5, 0) 40%),
+        linear-gradient(64deg, rgba(15, 8, 5, 0) 0 61%, rgba(15, 8, 5, 0.12) 61.3%, rgba(255, 244, 234, 0.12) 62.2%, rgba(15, 8, 5, 0) 62.8%),
+        linear-gradient(176deg, rgba(15, 8, 5, 0) 0 47%, rgba(15, 8, 5, 0.09) 47.3%, rgba(15, 8, 5, 0) 48.5%),
+        #D9C4B3;
+      padding: 54px 50px;
+      box-sizing: border-box;
+      color: #0F0805;
+    }
+    [id="01-hook-sheet-title"] {
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 72px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      text-transform: lowercase;
+      opacity: 0.8;
+    }
+    [id="01-hook-sheet-rule"] {
+      width: 36px;
+      height: 3px;
+      background: #0F0805;
+      margin: 22px 0 34px;
+    }
+    [class~="01-hook-row"] {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 64px;
+    }
+    [class~="01-hook-row-name"] {
+      height: 14px;
+      background: rgba(15, 8, 5, 0.55);
+    }
+    [class~="01-hook-row-lead"] {
+      flex: 1;
+      height: 0;
+      border-top: 3px dotted rgba(15, 8, 5, 0.30);
+    }
+    [class~="01-hook-row-price"] {
+      width: 54px;
+      height: 14px;
+      background: rgba(15, 8, 5, 0.40);
+    }
+
+    /* PDF card: jitter wrapper -> fall element */
+    [id="01-hook-card-jit"] {
+      position: absolute;
+      left: 200px;
+      top: 1262px;
+      width: 680px;
+      height: 196px;
+      transform-style: preserve-3d;
+    }
+    [id="01-hook-card"] {
+      position: absolute;
+      inset: 0;
+      background: #FFF4EA;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 0 34px 0 28px;
+      box-sizing: border-box;
+      color: #0F0805;
+    }
+    [id="01-hook-badge"] {
+      flex: none;
+      width: 112px;
+      height: 140px;
+      background: #FF6A1A;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 14px;
+      box-sizing: border-box;
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 46px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: #0F0805;
+    }
+    [id="01-hook-card-text"] {
+      flex: 1;
+      min-width: 0;
+    }
+    [id="01-hook-file"] {
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      font-size: 29px;
+      line-height: 1.2;
+      color: #0F0805;
+      white-space: nowrap;
+    }
+    [id="01-hook-status"] {
+      margin-top: 16px;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      font-size: 19px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.55);
+    }
+    [id="01-hook-bar"] {
+      margin-top: 14px;
+      height: 6px;
+      background: rgba(17, 17, 17, 0.12);
+      position: relative;
+    }
+    [id="01-hook-bar-fill"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 9%;
+      background: #FF6A1A;
+    }
+    [id="01-hook-spin"] {
+      flex: none;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 7px solid rgba(17, 17, 17, 0.14);
+      border-top-color: #FF6A1A;
+      box-sizing: border-box;
+    }
+
+    /* ---- type layer ---- */
+    [id="01-hook-l1"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 600px;
+      text-align: center;
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 236px;
+      line-height: 0.88;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      transform-origin: 50% 50%;
+      opacity: 0;
+    }
+    [class~="01-hook-accent"] {
+      color: #FF6A1A;
+    }
+    [id="01-hook-l2"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 636px;
+      text-align: center;
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 212px;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+    }
+    [class~="01-hook-w"] {
+      display: block;
+      transform-origin: 50% 55%;
+      opacity: 0;
+    }
+    [id="01-hook-strike-wrap"] {
+      position: relative;
+      display: inline-block;
+    }
+    [id="01-hook-strike-text"] {
+      position: relative;
+      z-index: 0;
+    }
+    [id="01-hook-strike-svg"] {
+      position: absolute;
+      left: -18px;
+      width: calc(100% + 36px);
+      top: 47%;
+      height: 46px;
+      margin-top: -23px;
+      z-index: 1;
+      overflow: visible;
+    }
+  </style>
+
+  <div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920" data-duration="3.751">
+    <!-- full-bleed ground -->
+    <div id="01-hook-bg" class="clip" data-start="0" data-duration="3.815" data-track-index="0">
+      <div id="01-hook-glow"></div>
+      <div id="01-hook-dim"></div>
+    </div>
+
+    <div id="01-hook-cam">
+      <!-- back plane: 3D falling papers -->
+      <div id="01-hook-stage">
+        <div id="01-hook-sheet-jit">
+          <div id="01-hook-sheet">
+            <div id="01-hook-sheet-title">cardápio</div>
+            <div id="01-hook-sheet-rule"></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 190px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 240px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 150px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 210px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 170px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 260px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 130px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+            <div class="01-hook-row"><span class="01-hook-row-name" style="width: 200px"></span><span class="01-hook-row-lead"></span><span class="01-hook-row-price"></span></div>
+          </div>
+        </div>
+
+        <div id="01-hook-card-jit">
+          <div id="01-hook-card">
+            <div id="01-hook-badge">pdf</div>
+            <div id="01-hook-card-text">
+              <div id="01-hook-file">cardapio_final_v3.pdf</div>
+              <div id="01-hook-status">carregando…</div>
+              <div id="01-hook-bar"><div id="01-hook-bar-fill"></div></div>
+            </div>
+            <div id="01-hook-spin"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- front plane: kinetic type -->
+      <div id="01-hook-l1">cardápio<br />de <span class="01-hook-accent">papel?</span></div>
+
+      <div id="01-hook-l2">
+        <span class="01-hook-w" id="01-hook-w1">pdf que</span>
+        <span class="01-hook-w" id="01-hook-w2"><span id="01-hook-strike-wrap"><span id="01-hook-strike-text">ninguém</span><svg id="01-hook-strike-svg" viewBox="0 0 500 46" preserveAspectRatio="none"><path id="01-hook-strike-path" pathLength="1" d="M4,28 Q60,10 125,24 Q190,38 250,20 Q312,4 375,22 Q440,38 496,16" fill="none" stroke="#FF6A1A" stroke-width="13" stroke-linecap="round" vector-effect="non-scaling-stroke" /></svg></span></span>
+        <span class="01-hook-w" id="01-hook-w3">abre?</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (function () {
+      var root = document.querySelector('[data-composition-id="01-hook"]');
+      function q(id) {
+        return root.querySelector('[id="01-hook-' + id + '"]');
+      }
+
+      var bg = q("glow"), dim = q("dim"), cam = q("cam");
+      var sheetJit = q("sheet-jit"), sheet = q("sheet");
+      var cardJit = q("card-jit"), card = q("card"), spin = q("spin"), barFill = q("bar-fill");
+      var l1 = q("l1"), w1 = q("w1"), w2 = q("w2"), w3 = q("w3"), strike = q("strike-path");
+
+      gsap.set(strike, { strokeDasharray: 1, strokeDashoffset: 1 });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // camera: slow push under the whole shot
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.045, duration: 3.315, ease: "none" }, 0);
+      tl.fromTo(bg, { opacity: 0.55 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+
+      // ---- Scene 1 (0.0–1.1): "cardápio de papel?" flash-in, menu sheet falls in depth ----
+      tl.fromTo(l1, { opacity: 0, scale: 1.16 }, { opacity: 1, scale: 1, duration: 0.14, ease: "power4.out" }, 0);
+
+      tl.fromTo(
+        sheet,
+        { z: 1150, y: -220, rotationX: 64, rotationZ: -46, opacity: 0.95 },
+        { z: 0, y: 0, rotationX: 14, rotationZ: -9, opacity: 0.34, duration: 0.88, ease: "power2.in" },
+        0.04
+      );
+      // landing settle on the back plane
+      tl.fromTo(sheet, { rotationX: 14 }, { rotationX: 9, duration: 0.22, ease: "back.out(2)" }, 0.92);
+
+      // ---- Scene 2 (1.1–2.4): scale-swap; PDF card drops onto the sheet; strike on "ninguém" ----
+      // outgoing: shrink + rise (stays as a small echo above)
+      tl.to(l1, { scale: 0.44, y: -430, opacity: 0.5, duration: 0.4, ease: "power3.inOut" }, 1.118);
+
+      // PDF card falls from the top and hits on "PDF"
+      tl.fromTo(
+        card,
+        { y: -1500, z: 320, rotationZ: 20, rotationX: -24 },
+        { y: 0, z: 0, rotationZ: -4, rotationX: 6, duration: 0.56, ease: "power3.in" },
+        1.13
+      );
+      tl.fromTo(card, { scaleY: 0.93, scaleX: 1.03 }, { scaleY: 1, scaleX: 1, duration: 0.24, ease: "back.out(3)" }, 1.69);
+      // impact knocks the sheet
+      tl.fromTo(sheetJit, { y: 14, rotationZ: 1.2 }, { y: 0, rotationZ: 0, duration: 0.3, ease: "power2.out" }, 1.69);
+
+      // spinner + stuck progress — loads forever
+      tl.fromTo(spin, { rotation: 0 }, { rotation: 1170, duration: 3.315 - 1.2, ease: "none" }, 1.2);
+      tl.fromTo(barFill, { scaleX: 0.6 }, { scaleX: 1, duration: 1.2, ease: "power2.out", transformOrigin: "0% 50%" }, 1.7);
+
+      // incoming phrase pops in chunk by chunk on the voice
+      tl.fromTo(w1, { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.32, ease: "back.out(2.2)" }, 1.64);
+      tl.fromTo(w2, { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.2)" }, 2.02);
+      tl.fromTo(strike, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.32, ease: "power1.inOut" }, 2.13);
+      tl.fromTo(w3, { opacity: 0, scale: 0.45 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.2)" }, 2.42);
+
+      // ---- Scene 3 (2.4–3.3): hold; papers jitter; ground darkens ----
+      var jit = [1.1, -0.8, 0.9, -1.2, 0.6, -0.5, 0.3];
+      var jx = [3, -2, 2, -3, 1, -1, 0];
+      for (var i = 0; i < jit.length; i++) {
+        var t = 2.5 + i * 0.11;
+        tl.to(sheetJit, { rotationZ: jit[i] * 0.7, x: jx[i], duration: 0.11, ease: "sine.inOut" }, t);
+        tl.to(cardJit, { rotationZ: -jit[i], x: -jx[i], duration: 0.11, ease: "sine.inOut" }, t);
+      }
+      tl.to(bg, { opacity: 0.35, duration: 0.45, ease: "power1.in" }, 2.86);
+      tl.fromTo(dim, { opacity: 0 }, { opacity: 0.28, duration: 0.45, ease: "power1.in" }, 2.86);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>
