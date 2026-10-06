@@ -10,7 +10,12 @@ Cardápio digital estilo TikTok: o cliente aproxima o celular da mesa (NFC) ou l
 |---|---|
 | `/cardapio` | Página de vendas do produto: demo interativa, restaurantes de exemplo, recursos e planos |
 | `/cardapio/<slug>` | O cardápio do cliente. É o link gravado na etiqueta NFC e no QR Code |
-| `/cardapio/<slug>/painel` | Painel do restaurante: métricas, logo e cores com prévia ao vivo, itens do mês e placas para imprimir |
+| `/cardapio/cadastro` | Cadastro de um estabelecimento novo: dados, logo (as cores saem da logo) e acesso |
+| `/cardapio/entrar` | Login do dono |
+| `/cardapio/painel` | Painel do dono: resultados reais, itens (foto/vídeo, etiquetas), categorias, marca e dados |
+| `/cardapio/<slug>/painel` | Painel de demonstração (sem banco, salva só no navegador) |
+
+**Banco de dados:** veja o passo a passo em [SUPABASE.md](SUPABASE.md).
 
 Restaurantes de exemplo (fictícios): `brasa-burger`, `kaze-sushi`, `cantina-nonna`.
 

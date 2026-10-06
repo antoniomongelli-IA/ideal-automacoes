@@ -1,10 +1,10 @@
 "use client"
 import { useMemo, useState } from "react"
-import Image from "next/image"
 import { motion } from "framer-motion"
+import type { Item } from "@/lib/cardapio/types"
 import { ChefHat, Crown, Flame, Play, Search, TrendingDown, TrendingUp } from "lucide-react"
-import { brl, compacto, crescimento, maisPedidos, mesAtual, posterSrc } from "@/lib/cardapio/utils"
-import { AutoVideo, SeloMes, SeloRank, useMenu } from "./ui"
+import { brl, compacto, crescimento, maisPedidos, mesAtual, rankingPorVendas } from "@/lib/cardapio/utils"
+import { AutoVideo, Capa, SeloMes, SeloRank, useMenu } from "./ui"
 
 const card = { borderRadius: "var(--radius)", background: "var(--c-surface)" }
 
@@ -35,7 +35,8 @@ function Chips({ valor, onChange }: { valor: string; onChange: (v: string) => vo
   )
 }
 
-function Crescimento({ pct }: { pct: number }) {
+function Crescimento({ pct }: { pct: number | null }) {
+  if (pct === null) return null
   const sobe = pct >= 0
   return (
     <span className={`inline-flex items-center gap-0.5 text-xs font-bold ${sobe ? "text-emerald-500" : "text-rose-400"}`}>
@@ -64,13 +65,17 @@ export function MaisPedidos() {
   const { r, abrirNoFeed } = useMenu()
   const [cat, setCat] = useState("todos")
   const lista = useMemo(() => maisPedidos(r.itens.filter((i) => cat === "todos" || i.categoria === cat)), [r.itens, cat])
-  const topo = lista[0]?.pedidos30d ?? 1
+  // sem vendas informadas pelo estabelecimento, o ranking vira "Em alta" (vídeos vistos + curtidas)
+  const porVendas = rankingPorVendas(r.itens)
+  const valor = (it: Item) => (porVendas ? it.pedidos30d : (it.vistos30d ?? 0) + it.curtidas * 3)
+  const legenda = (it: Item) => (porVendas ? `${it.pedidos30d.toLocaleString("pt-BR")} pedidos` : `${compacto(it.curtidas)} curtidas`)
+  const topo = Math.max(1, lista[0] ? valor(lista[0]) : 1)
   const ids = lista.map((i) => i.id)
   const [p1, p2, p3, ...resto] = lista
 
   return (
     <div className="px-4 pb-32">
-      <Titulo icone={<Flame className="h-8 w-8" style={{ color: "var(--c-primary)" }} fill="currentColor" />} titulo="Mais pedidos" sub="Os mais vendidos da casa nos últimos 30 dias" />
+      <Titulo icone={<Flame className="h-8 w-8" style={{ color: "var(--c-primary)" }} fill="currentColor" />} titulo={porVendas ? "Mais pedidos" : "Em alta"} sub={porVendas ? "Os mais vendidos da casa nos últimos 30 dias" : "Os mais vistos e curtidos no cardápio"} />
       <Chips valor={cat} onChange={setCat} />
 
       {p1 && (
@@ -81,7 +86,7 @@ export function MaisPedidos() {
           className="relative mt-4 block aspect-[4/5] w-full overflow-hidden text-left text-white"
           style={{ borderRadius: "var(--radius)" }}
         >
-          <AutoVideo midia={p1.midia} className="absolute inset-0" priority />
+          <AutoVideo item={p1} className="absolute inset-0" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30" />
           <span
             className="absolute left-3 top-3 grid h-14 w-14 place-items-center text-3xl shadow-xl"
@@ -94,14 +99,14 @@ export function MaisPedidos() {
           </span>
           <div className="absolute inset-x-0 bottom-0 p-4">
             <div className="mb-1 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--c-accent)" }}>
-              O mais pedido da casa
+              {porVendas ? "O mais pedido da casa" : "O queridinho do momento"}
             </div>
             <div className="text-[30px] leading-none" style={{ fontFamily: "var(--f-display)" }}>
               {p1.nome}
             </div>
             <div className="mt-2 flex items-center gap-3 text-sm">
               <span className="font-extrabold">{brl(p1.preco)}</span>
-              <span className="text-white/75">{p1.pedidos30d.toLocaleString("pt-BR")} pedidos</span>
+              <span className="text-white/75">{legenda(p1)}</span>
               <Crescimento pct={crescimento(p1)} />
             </div>
           </div>
@@ -112,7 +117,7 @@ export function MaisPedidos() {
         <div className="mt-3 grid grid-cols-2 gap-3">
           {[p2, p3].filter(Boolean).map((it, i) => (
             <button key={it.id} onClick={() => abrirNoFeed(it.id, ids)} className="relative aspect-[3/4] overflow-hidden text-left text-white" style={{ borderRadius: "var(--radius)" }}>
-              <AutoVideo midia={it.midia} className="absolute inset-0" />
+              <AutoVideo item={it} className="absolute inset-0" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
               <span
                 className="absolute left-2.5 top-2.5 grid h-10 w-10 place-items-center text-xl"
@@ -141,7 +146,7 @@ export function MaisPedidos() {
               {i + 4}
             </span>
             <span className="relative h-14 w-14 shrink-0 overflow-hidden" style={{ borderRadius: "calc(var(--radius) * 0.75)" }}>
-              <Image src={posterSrc(it.midia)} alt="" fill sizes="56px" className="object-cover" />
+              <Capa item={it} sizes="56px" />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate font-semibold">{it.nome}</span>
@@ -150,12 +155,12 @@ export function MaisPedidos() {
                   className="block h-full rounded-full"
                   style={{ background: "var(--c-primary)" }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${(it.pedidos30d / topo) * 100}%` }}
+                  animate={{ width: `${(valor(it) / topo) * 100}%` }}
                   transition={{ duration: 0.8, delay: i * 0.05 }}
                 />
               </span>
               <span className="mt-1 flex items-center gap-2 text-xs" style={{ color: "var(--c-muted)" }}>
-                {it.pedidos30d.toLocaleString("pt-BR")} pedidos <Crescimento pct={crescimento(it)} />
+                {legenda(it)} <Crescimento pct={crescimento(it)} />
               </span>
             </span>
             <span className="text-sm font-bold">{brl(it.preco)}</span>
@@ -193,7 +198,7 @@ export function DoMes() {
             style={card}
           >
             <button onClick={() => abrirNoFeed(it.id, idsMes)} className="relative block aspect-[4/3] w-full text-left">
-              <AutoVideo midia={it.midia} className="absolute inset-0" priority={i === 0} />
+              <AutoVideo item={it} className="absolute inset-0" priority={i === 0} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
               <div className="absolute left-3 top-3 flex gap-1.5">
                 <SeloMes size="lg" />
@@ -216,7 +221,7 @@ export function DoMes() {
                 <div>
                   <div className="text-xl font-extrabold">{brl(it.preco)}</div>
                   <div className="text-xs" style={{ color: "var(--c-muted)" }}>
-                    {compacto(it.curtidas)} curtidas · {compacto(it.pedidos30d)} pedidos
+                    {compacto(it.curtidas)} curtidas{it.pedidos30d ? ` · ${compacto(it.pedidos30d)} pedidos` : ""}
                   </div>
                 </div>
                 <button
@@ -279,7 +284,7 @@ export function Grade() {
                   return (
                     <div key={it.id} role="button" tabIndex={0} onClick={() => abrirNoFeed(it.id, idsGrade)} className="cursor-pointer overflow-hidden text-left" style={card}>
                       <span className="relative block aspect-[4/5]">
-                        <Image src={posterSrc(it.midia)} alt="" fill sizes="220px" className="object-cover" />
+                        <Capa item={it} sizes="220px" />
                         <span className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                         <span className="absolute left-2 top-2 flex flex-col items-start gap-1">
                           {it.destaqueDoMes && <SeloMes />}

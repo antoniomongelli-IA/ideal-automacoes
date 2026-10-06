@@ -1,16 +1,17 @@
 "use client"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, ChevronLeft, Clock, Flame, Users, X } from "lucide-react"
+import { Check, ChevronLeft, Clock, Flame, Heart, Users } from "lucide-react"
 import type { Item, Restaurante } from "@/lib/cardapio/types"
-import { brandingVars, brl, ordemFeed, posterSrc, rankDe, TAGS } from "@/lib/cardapio/utils"
+import { brandingVars, brl, ordemFeed, rankDe, rankingPorVendas, tagInfo } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, usePersonalizacao } from "@/lib/cardapio/personalizacao"
 import { type Tela, useNavegacao } from "@/lib/cardapio/navegacao"
+import { type Cliente, clienteAtual, curtidasSalvas, curtirNoBanco, favoritosNoBanco, registrarEvento, sairCliente, salvarCurtidas } from "@/lib/cardapio/publico"
 import { ArrastarVoltar } from "./ArrastarVoltar"
+import { FolhaConta, FolhaFavoritos } from "./Favoritos"
 import { Feed } from "./Feed"
 import { DoMes, Grade, MaisPedidos } from "./Abas"
-import { type Aba, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
+import { type Aba, Capa, Folha, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
 
 const ABAS: { id: Aba; label: string }[] = [
   { id: "feed", label: "Para você" },
@@ -18,6 +19,21 @@ const ABAS: { id: Aba; label: string }[] = [
   { id: "mes", label: "Do mês" },
   { id: "cardapio", label: "Cardápio" },
 ]
+
+const jaOfereceuConta = () => {
+  try {
+    return localStorage.getItem("cardapio:ofereceu-conta") === "1"
+  } catch {
+    return true
+  }
+}
+const marcarOfereceuConta = () => {
+  try {
+    localStorage.setItem("cardapio:ofereceu-conta", "1")
+  } catch {
+    /* ignora */
+  }
+}
 
 interface Props {
   restaurante: Restaurante
@@ -28,13 +44,22 @@ interface Props {
 
 export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const [personalizacao] = usePersonalizacao(restaurante.slug)
-  const r = useMemo(() => (embutido ? restaurante : aplicarPersonalizacao(restaurante, personalizacao)), [embutido, restaurante, personalizacao])
+  // a personalização salva no navegador só vale para as demos (no banco, o painel grava direto)
+  const r = useMemo(
+    () => (embutido || restaurante.fonte === "banco" ? restaurante : aplicarPersonalizacao(restaurante, personalizacao)),
+    [embutido, restaurante, personalizacao],
+  )
   const ranks = useMemo(() => rankDe(r.itens), [r.itens])
   const feed = useMemo(() => ordemFeed(r.itens), [r.itens])
 
   const { tela, podeVoltar, ir, atualizar, voltar } = useNavegacao({ aba: "feed", feedId: itemInicial, n: 0 }, embutido)
   const aba = tela.aba
   const [curtidos, setCurtidos] = useState<Set<string>>(new Set())
+  // curtidas que já vinham contadas no total do servidor quando a página abriu
+  const [curtidosNaCarga, setCurtidosNaCarga] = useState<Set<string>>(new Set())
+  const [totais, setTotais] = useState<Map<string, number>>(new Map())
+  const [cliente, setCliente] = useState<Cliente | null>(null)
+  const [folha, setFolha] = useState<"favoritos" | "conta" | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [splash, setSplash] = useState(!embutido)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -44,6 +69,27 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
     const t = setTimeout(() => setSplash(false), 1700)
     return () => clearTimeout(t)
   }, [splash])
+
+  // carrega favoritos (do aparelho e, com banco, da conta) e registra a abertura do cardápio
+  useEffect(() => {
+    if (embutido) return
+    let vivo = true
+    ;(async () => {
+      const locais = curtidasSalvas(r.slug)
+      const banco = r.id ? await favoritosNoBanco(r.id) : null
+      const c = await clienteAtual()
+      if (!vivo) return
+      const lista = banco ?? locais
+      setCurtidos(new Set(lista))
+      // com banco, o total que veio do servidor já inclui as curtidas desta pessoa
+      setCurtidosNaCarga(new Set(banco ?? []))
+      setCliente(c)
+    })()
+    registrarEvento(r.id, "abriu")
+    return () => {
+      vivo = false
+    }
+  }, [embutido, r.id, r.slug, r.fonte])
 
   const avisar = useCallback((msg: string) => {
     setToast(msg)
@@ -59,13 +105,31 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
     curtidos,
     item,
     avisar,
-    curtir: (id, forcar) =>
-      setCurtidos((s) => {
-        const next = new Set(s)
-        if (forcar || !next.has(id)) next.add(id)
-        else next.delete(id)
-        return next
-      }),
+    curtir: (id, forcar) => {
+      const vaiCurtir = forcar || !curtidos.has(id)
+      if (vaiCurtir === curtidos.has(id)) return
+      const next = new Set(curtidos)
+      if (vaiCurtir) next.add(id)
+      else next.delete(id)
+      setCurtidos(next)
+      salvarCurtidas(r.slug, [...next])
+      if (r.fonte === "banco")
+        curtirNoBanco(id, vaiCurtir).then((total) => {
+          if (total === null) return
+          setTotais((m) => new Map(m).set(id, total))
+        })
+      // primeira curtida sem conta: oferece salvar os favoritos (uma vez só)
+      if (vaiCurtir && !cliente && !embutido && r.fonte === "banco" && !jaOfereceuConta()) {
+        marcarOfereceuConta()
+        setTimeout(() => setFolha("conta"), 900)
+      }
+    },
+    curtidasDe: (id) => {
+      const it = item(id)
+      if (totais.has(id)) return totais.get(id)!
+      const base = it?.curtidas ?? 0
+      return base + (curtidos.has(id) ? 1 : 0) - (curtidosNaCarga.has(id) ? 1 : 0)
+    },
     abrirNoFeed: (id, lista) => {
       const base: Tela = { ...tela, info: undefined }
       let proxima: Tela
@@ -82,7 +146,10 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
       if (tela.info) atualizar(proxima)
       else ir(proxima)
     },
-    abrirInfo: (id) => ir({ ...tela, info: id }),
+    abrirInfo: (id) => {
+      registrarEvento(r.id, "detalhes", id)
+      ir({ ...tela, info: id })
+    },
   }
 
   const trocarAba = (nova: Aba) => {
@@ -99,7 +166,8 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   // depende só da lista (mesma referência enquanto o vídeo está aberto), não da posição atual
   const listaVideo = video?.lista
   const itensVideo = useMemo(() => (listaVideo ? listaVideo.map(item).filter((i): i is Item => !!i) : []), [listaVideo, item])
-  const nomeAba = ABAS.find((a) => a.id === aba)?.label ?? "Cardápio"
+  const abas = rankingPorVendas(r.itens) ? ABAS : ABAS.map((a) => (a.id === "top" ? { ...a, label: "Em alta" } : a))
+  const nomeAba = abas.find((a) => a.id === aba)?.label ?? "Cardápio"
 
   const b = r.branding
   // topo transparente sobre vídeo (feed ou vídeo aberto por cima de uma lista)
@@ -180,9 +248,24 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
                   <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
                     {b.logoText}
                   </span>
+                  {!embutido && (
+                    <button
+                      onClick={() => setFolha("favoritos")}
+                      aria-label="Meus favoritos"
+                      className="relative ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full transition active:scale-90"
+                      style={noFeed ? { background: "rgba(0,0,0,.35)" } : { background: `color-mix(in srgb, ${b.text} 8%, transparent)` }}
+                    >
+                      <Heart className="h-[18px] w-[18px]" fill={curtidos.size ? b.primary : "none"} stroke={curtidos.size ? b.primary : "currentColor"} />
+                      {curtidos.size > 0 && (
+                        <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold" style={{ background: b.primary, color: b.onPrimary }}>
+                          {curtidos.size}
+                        </span>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <nav className="relative mt-2 flex justify-between">
-                  {ABAS.map((a) => {
+                  {abas.map((a) => {
                     const on = a.id === aba
                     return (
                       <button
@@ -205,6 +288,33 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
             <Folha aberta={!!tela.info} fechar={voltar}>
               {tela.info && <Detalhes id={tela.info} />}
             </Folha>
+
+            {/* favoritos e conta do cliente */}
+            <FolhaFavoritos
+              aberta={folha === "favoritos"}
+              fechar={() => setFolha(null)}
+              cliente={cliente}
+              abrirConta={() => setFolha("conta")}
+              sair={async () => {
+                await sairCliente()
+                setCliente(null)
+                avisar("Você saiu da sua conta")
+              }}
+            />
+            <FolhaConta
+              aberta={folha === "conta"}
+              fechar={() => setFolha(null)}
+              aoEntrar={async (c) => {
+                setCliente(c)
+                setFolha(null)
+                avisar(`Pronto, ${c.nome.split(" ")[0]}! Seus favoritos estão salvos`)
+                const ids = r.id ? await favoritosNoBanco(r.id) : null
+                if (ids) {
+                  setCurtidos(new Set(ids))
+                  salvarCurtidas(r.slug, ids)
+                }
+              }}
+            />
           </div>
         </ArrastarVoltar>
 
@@ -254,36 +364,6 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   )
 }
 
-function Folha({ aberta, fechar, children }: { aberta: boolean; fechar: () => void; children: React.ReactNode }) {
-  return (
-    <AnimatePresence>
-      {aberta && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={fechar} className="absolute inset-0 z-40 bg-black/55" />
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 320 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.6 }}
-            onDragEnd={(_, i) => i.offset.y > 120 && fechar()}
-            className="absolute inset-x-0 bottom-0 z-50 max-h-[82%] overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-3"
-            style={{ background: "var(--c-surface)", color: "var(--c-text)", borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
-          >
-            <div className="mx-auto mb-3 h-1.5 w-10 rounded-full" style={{ background: "color-mix(in srgb, var(--c-text) 20%, transparent)" }} />
-            <button onClick={fechar} aria-label="Fechar" className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full" style={{ background: "color-mix(in srgb, var(--c-text) 8%, transparent)" }}>
-              <X className="h-4 w-4" />
-            </button>
-            {children}
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-
 function Detalhes({ id }: { id: string }) {
   const { item, ranks, abrirNoFeed, r } = useMenu()
   const it = item(id)
@@ -330,7 +410,7 @@ function Detalhes({ id }: { id: string }) {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {it.tags.map((t) => (
             <span key={t} className="rounded-full px-2.5 py-1 text-xs font-semibold" style={{ background: "color-mix(in srgb, var(--c-text) 8%, transparent)" }}>
-              {TAGS[t].emoji} {TAGS[t].label}
+              {tagInfo(t).emoji} {tagInfo(t).label}
             </span>
           ))}
         </div>
@@ -343,7 +423,7 @@ function Detalhes({ id }: { id: string }) {
       {combina && (
         <button onClick={() => abrirNoFeed(combina.id)} className="mt-4 flex w-full items-center gap-3 p-2 text-left" style={{ background: "color-mix(in srgb, var(--c-text) 6%, transparent)", borderRadius: "var(--radius)" }}>
           <span className="relative h-12 w-12 shrink-0 overflow-hidden" style={{ borderRadius: "calc(var(--radius) * 0.7)" }}>
-            <Image src={posterSrc(combina.midia)} alt="" fill sizes="48px" className="object-cover" />
+            <Capa item={combina} sizes="48px" />
           </span>
           <span className="flex-1">
             <span className="block text-[10px] uppercase tracking-wider" style={{ color: "var(--c-muted)" }}>

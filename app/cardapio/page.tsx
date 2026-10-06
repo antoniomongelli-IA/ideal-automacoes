@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, BarChart3, Check, Crown, Flame, Globe, Heart, MessageCircle, Nfc, Palette, QrCode, Search, Smartphone, Sparkles, Wand2 } from "lucide-react"
 import { RESTAURANTES } from "@/lib/cardapio/restaurantes"
-import { FONTES, posterSrc } from "@/lib/cardapio/utils"
+import { FONTES, capaDe } from "@/lib/cardapio/utils"
 import { WHATSAPP_NUMBER } from "@/lib/constants"
 import { MenuApp } from "@/components/cardapio/MenuApp"
 import { QR } from "@/components/cardapio/QR"
@@ -65,8 +65,11 @@ export default function VitrinePage() {
               <Link href={`/cardapio/${brasa.slug}`} className="inline-flex items-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 font-bold text-white shadow-lg shadow-accent/30">
                 Abrir demonstração <ArrowRight className="h-5 w-5" />
               </Link>
-              <a href={whats} target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3.5 font-semibold hover:bg-white/5">
-                <MessageCircle className="h-5 w-5" /> Quero no meu restaurante
+              <Link href="/cardapio/cadastro" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3.5 font-semibold hover:bg-white/5">
+                Criar meu cardápio
+              </Link>
+              <a href={whats} target="_blank" className="inline-flex items-center gap-2 px-2 py-3.5 text-sm font-semibold text-text-muted hover:text-white">
+                <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
               </a>
             </div>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
@@ -137,7 +140,7 @@ export default function VitrinePage() {
                 <div className="grid h-56 grid-cols-3 gap-1 p-1">
                   {r.itens.slice(0, 3).map((it) => (
                     <div key={it.id} className="relative overflow-hidden" style={{ borderRadius: Math.max(b.radius - 4, 4) }}>
-                      <Image src={posterSrc(it.midia)} alt={it.nome} fill sizes="160px" className="object-cover" />
+                      <Image src={capaDe(it)} alt={it.nome} fill sizes="160px" className="object-cover" />
                     </div>
                   ))}
                 </div>

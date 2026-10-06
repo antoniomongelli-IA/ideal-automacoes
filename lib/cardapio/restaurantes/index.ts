@@ -9,10 +9,15 @@ import { cantinaNonna } from "./cantina-nonna"
 // 3. importe aqui e adicione na lista abaixo
 const CADASTRO: Restaurante[] = [brasaBurger, kazeSushi, cantinaNonna]
 
-/** Os itens apontam só o nome do arquivo; aqui viram o caminho completo `<slug>/<arquivo>`. */
+/** Os itens apontam só o nome do arquivo; aqui viram os endereços do vídeo e da capa. */
 export const RESTAURANTES: Restaurante[] = CADASTRO.map((r) => ({
   ...r,
-  itens: r.itens.map((i) => ({ ...i, midia: `${r.slug}/${i.midia}` })),
+  fonte: "demo",
+  itens: r.itens.map((i) => ({
+    ...i,
+    video: i.midia ? `/midia/${r.slug}/videos/${i.midia}.mp4` : i.video,
+    poster: i.midia ? `/midia/${r.slug}/posters/${i.midia}.jpg` : i.poster,
+  })),
 }))
 
 export function getRestaurante(slug: string) {

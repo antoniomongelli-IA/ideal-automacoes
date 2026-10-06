@@ -1,12 +1,12 @@
 "use client"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronUp, Clock, Heart, Info, Share2, Users } from "lucide-react"
 import type { Item } from "@/lib/cardapio/types"
-import { brl, compacto, posterSrc, TAGS, videoSrc } from "@/lib/cardapio/utils"
+import { brl, capaDe, compacto, tagInfo, videosDe } from "@/lib/cardapio/utils"
 import { registrarView } from "@/lib/cardapio/personalizacao"
-import { SeloMes, SeloRank, useMenu } from "./ui"
+import { registrarEvento } from "@/lib/cardapio/publico"
+import { Capa, SeloMes, SeloRank, useMenu } from "./ui"
 
 export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: string; onAtivo?: (id: string) => void }) {
   const { r } = useMenu()
@@ -30,9 +30,12 @@ export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: s
   useEffect(() => {
     const it = itens[ativo]
     if (!it) return
-    const t = setTimeout(() => registrarView(r.slug, it.id), 1200)
+    const t = setTimeout(() => {
+      registrarView(r.slug, it.id)
+      registrarEvento(r.id, "viu", it.id)
+    }, 1200)
     return () => clearTimeout(t)
-  }, [ativo, itens, r.slug])
+  }, [ativo, itens, r.slug, r.id])
 
   // guarda em que prato o feed está, para o "voltar" retornar ao mesmo ponto
   useEffect(() => {
@@ -76,7 +79,7 @@ export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: s
 }
 
 function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean; perto: boolean; prioridade: boolean }) {
-  const { r, ranks, curtidos, curtir, abrirInfo, abrirNoFeed, avisar, item: buscar } = useMenu()
+  const { r, ranks, curtidos, curtir, curtidasDe, abrirInfo, abrirNoFeed, avisar, item: buscar } = useMenu()
   const video = useRef<HTMLVideoElement>(null)
   const barra = useRef<HTMLDivElement>(null)
   const ultimoToque = useRef(0)
@@ -85,6 +88,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
   const rank = ranks.get(item.id) ?? 99
   const combina = item.combinaCom ? buscar(item.combinaCom) : undefined
   const curtido = curtidos.has(item.id)
+  const fontes = videosDe(item)
 
   useEffect(() => {
     const v = video.current
@@ -122,6 +126,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
   const compartilhar = async () => {
     const url = `${location.origin}/cardapio/${r.slug}?item=${item.id}`
     try {
+      registrarEvento(r.id, "compartilhou", item.id)
       if (navigator.share) await navigator.share({ title: `${item.nome} · ${r.nome}`, url })
       else {
         await navigator.clipboard.writeText(url)
@@ -135,19 +140,12 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
 
   return (
     <section className="relative h-full w-full snap-start snap-always overflow-hidden bg-black" onPointerUp={toque}>
-      <Image src={posterSrc(item.midia)} alt={item.nome} fill sizes="440px" className="object-cover" priority={prioridade} />
-      {perto && (
-        <video
-          ref={video}
-          poster={posterSrc(item.midia)}
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="absolute inset-0 h-full w-full object-cover"
-        >
-          <source src={videoSrc(item.midia)} type="video/mp4" />
-          <source src={videoSrc(item.midia, "webm")} type="video/webm" />
+      <Capa item={item} sizes="440px" priority={prioridade} zoom={!fontes.length} />
+      {perto && fontes.length > 0 && (
+        <video ref={video} poster={capaDe(item) || undefined} muted loop playsInline preload="auto" className="absolute inset-0 h-full w-full object-cover">
+          {fontes.map((f) => (
+            <source key={f.src} src={f.src} type={f.type} />
+          ))}
         </video>
       )}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 to-transparent" />
@@ -171,7 +169,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
 
       {/* trilho de ações à direita */}
       <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+96px)] right-3 z-20 flex flex-col items-center gap-5 text-white" onPointerUp={(e) => e.stopPropagation()}>
-        <RailBtn onClick={() => curtir(item.id)} label={compacto(item.curtidas + (curtido ? 1 : 0))}>
+        <RailBtn onClick={() => curtir(item.id)} label={compacto(curtidasDe(item.id))}>
           <motion.span key={String(curtido)} initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 14 }}>
             <Heart className="h-8 w-8 drop-shadow" fill={curtido ? "var(--c-primary)" : "rgba(0,0,0,0.15)"} stroke={curtido ? "var(--c-primary)" : "white"} />
           </motion.span>
@@ -191,7 +189,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
           <SeloRank rank={rank} />
           {item.tags?.map((t) => (
             <span key={t} className="rounded-full bg-white/15 px-2 py-1 text-[10px] font-semibold backdrop-blur">
-              {TAGS[t].emoji} {TAGS[t].label}
+              {tagInfo(t).emoji} {tagInfo(t).label}
             </span>
           ))}
         </div>
@@ -228,7 +226,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
             style={{ borderRadius: "var(--radius)" }}
           >
             <span className="relative h-9 w-9 shrink-0 overflow-hidden" style={{ borderRadius: "calc(var(--radius) * 0.7)" }}>
-              <Image src={posterSrc(combina.midia)} alt="" fill sizes="36px" className="object-cover" />
+              <Capa item={combina} sizes="36px" />
             </span>
             <span className="min-w-0">
               <span className="block text-[10px] uppercase tracking-wider text-white/60">Combina com</span>

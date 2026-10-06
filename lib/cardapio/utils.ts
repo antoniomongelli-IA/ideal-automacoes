@@ -1,27 +1,29 @@
 import type { CSSProperties } from "react"
-import type { Branding, FontKey, Item, Tag } from "./types"
+import type { Branding, FontKey, Item } from "./types"
 
 export const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
 
 export const compacto = (n: number) =>
   n >= 1000 ? `${(n / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : String(n)
 
-/** `midia` chega como "<slug>/<arquivo>" (ver restaurantes/index.ts). */
-const partes = (midia: string) => {
-  const [slug, arquivo] = midia.split("/")
-  return { slug, arquivo }
-}
-export const videoSrc = (midia: string, ext: "mp4" | "webm" = "mp4") => {
-  const { slug, arquivo } = partes(midia)
-  return `/midia/${slug}/videos/${arquivo}.${ext}`
-}
-export const posterSrc = (midia: string) => {
-  const { slug, arquivo } = partes(midia)
-  return `/midia/${slug}/posters/${arquivo}.jpg`
+/** Imagem que representa o item (capa do vídeo ou foto). */
+export const capaDe = (it: { poster?: string; foto?: string }) => it.poster || it.foto || ""
+
+/** Fontes do vídeo. Os vídeos da demo também têm versão .webm (navegadores sem H.264). */
+export function videosDe(it: { video?: string }) {
+  if (!it.video) return []
+  const lista = [{ src: it.video, type: it.video.endsWith(".webm") ? "video/webm" : "video/mp4" }]
+  if (it.video.startsWith("/midia/") && it.video.endsWith(".mp4")) lista.push({ src: it.video.replace(/\.mp4$/, ".webm"), type: "video/webm" })
+  return lista
 }
 
+/** O ranking usa as vendas do mês quando o estabelecimento informa; senão, vídeos vistos + curtidas. */
+export const rankingPorVendas = (itens: Item[]) => itens.some((i) => i.pedidos30d > 0)
+const pontos = (it: Item, porVendas: boolean) => (porVendas ? it.pedidos30d : (it.vistos30d ?? 0) + it.curtidas * 3)
+
 export function maisPedidos(itens: Item[]) {
-  return [...itens].sort((a, b) => b.pedidos30d - a.pedidos30d)
+  const porVendas = rankingPorVendas(itens)
+  return [...itens].sort((a, b) => pontos(b, porVendas) - pontos(a, porVendas))
 }
 
 export function rankDe(itens: Item[]) {
@@ -30,7 +32,9 @@ export function rankDe(itens: Item[]) {
   return map
 }
 
+/** Crescimento das vendas vs. mês anterior (null quando não dá para calcular). */
 export function crescimento(it: Item) {
+  if (!it.pedidos30d || !it.pedidosMesAnterior) return null
   return Math.round(((it.pedidos30d - it.pedidosMesAnterior) / it.pedidosMesAnterior) * 100)
 }
 
@@ -44,14 +48,32 @@ export const mesAtual = () => {
   return m.charAt(0).toUpperCase() + m.slice(1)
 }
 
-export const TAGS: Record<Tag, { label: string; emoji: string }> = {
+/** Etiquetas prontas que o estabelecimento marca nos itens. */
+export const TAGS: Record<string, { label: string; emoji: string }> = {
+  "+18": { label: "+18", emoji: "🔞" },
+  alcoolico: { label: "+18", emoji: "🔞" },
   vegetariano: { label: "Vegetariano", emoji: "🌱" },
+  vegano: { label: "Vegano", emoji: "🥬" },
+  "sem-gluten": { label: "Sem glúten", emoji: "🌾" },
+  "sem-lactose": { label: "Sem lactose", emoji: "🥛" },
   picante: { label: "Picante", emoji: "🌶️" },
   novo: { label: "Novidade", emoji: "✨" },
-  "sem-gluten": { label: "Sem glúten", emoji: "🌾" },
   compartilhar: { label: "Para dividir", emoji: "👥" },
-  alcoolico: { label: "+18", emoji: "🔞" },
+  "mais-vendido": { label: "Mais vendido", emoji: "🔥" },
+  "do-chef": { label: "Sugestão do chef", emoji: "👨‍🍳" },
+  promocao: { label: "Promoção", emoji: "🏷️" },
+  "zero-acucar": { label: "Zero açúcar", emoji: "🍬" },
+  fit: { label: "Fit", emoji: "💪" },
+  gelado: { label: "Gelado", emoji: "🧊" },
+  quente: { label: "Quente", emoji: "♨️" },
+  kids: { label: "Kids", emoji: "🧒" },
 }
+
+/** Etiquetas oferecidas no painel (sem repetir o +18). */
+export const TAGS_PAINEL = Object.keys(TAGS).filter((t) => t !== "alcoolico")
+
+/** Rótulo de qualquer etiqueta: as prontas têm emoji; as livres aparecem como foram escritas. */
+export const tagInfo = (t: string) => TAGS[t] ?? { label: t, emoji: "🏷️" }
 
 export const FONTES: Record<FontKey, { label: string; css: string }> = {
   anton: { label: "Anton — impacto", css: "var(--font-anton), Impact, sans-serif" },

@@ -3,13 +3,12 @@ import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { BarChart3, Check, Copy, Crown, ExternalLink, Eye, ImageUp, Nfc, Palette, Printer, RotateCcw, Smartphone, Sparkles, Trash2, TrendingUp, Wand2 } from "lucide-react"
+import { BarChart3, Check, Crown, ExternalLink, Eye, ImageUp, Palette, RotateCcw, Smartphone, Sparkles, Trash2, TrendingUp, Wand2 } from "lucide-react"
 import type { Branding, FontKey, Restaurante } from "@/lib/cardapio/types"
 import { RESTAURANTES } from "@/lib/cardapio/restaurantes"
-import { brl, FONTES, maisPedidos, mesAtual, posterSrc } from "@/lib/cardapio/utils"
+import { brl, FONTES, maisPedidos, mesAtual, capaDe } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, lerViews, usePersonalizacao } from "@/lib/cardapio/personalizacao"
 import { MenuApp } from "../MenuApp"
-import { QR } from "../QR"
 import { LogoMarca } from "../ui"
 import { GraficoBarras, GraficoLinha, type Ponto } from "./Graficos"
 
@@ -57,7 +56,6 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
   const [destaques, setDestaques] = useState<string[]>(publicado.itens.filter((i) => i.destaqueDoMes).map((i) => i.id))
   const [views, setViews] = useState<Record<string, number>>({})
   const [ok, setOk] = useState(false)
-  const [copias, setCopias] = useState(4)
   const [erroLogo, setErroLogo] = useState("")
 
   // quando a versão publicada muda (ex.: carregou do localStorage), o editor acompanha
@@ -118,7 +116,6 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
 
   return (
     <div className="min-h-[100dvh] bg-[#0c0b10] text-white">
-      <style>{`@media print { .no-print { display: none !important } .so-print { display: grid !important } body { background: white } }`}</style>
 
       <header className="no-print sticky top-0 z-30 border-b border-white/[0.06] bg-[#0c0b10]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-3 px-4 py-3 md:px-8">
@@ -203,7 +200,7 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
                 {ranking.map((i) => (
                   <div key={i.id} className="flex shrink-0 items-center gap-2 rounded-xl bg-white/[0.04] p-1.5 pr-3">
                     <span className="relative h-9 w-9 overflow-hidden rounded-lg">
-                      <Image src={posterSrc(i.midia)} alt="" fill sizes="36px" className="object-cover" />
+                      <Image src={capaDe(i)} alt="" fill sizes="36px" className="object-cover" />
                     </span>
                     <span className="text-xs">
                       <span className="block max-w-[120px] truncate text-white/70">{i.nome}</span>
@@ -317,7 +314,7 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
                     className={`flex items-center gap-3 rounded-2xl border p-2 text-left transition ${on ? "border-amber-300/60 bg-amber-300/[0.07]" : "border-white/[0.07] bg-[#15141a] hover:bg-white/5"}`}
                   >
                     <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-                      <Image src={posterSrc(i.midia)} alt="" fill sizes="56px" className="object-cover" />
+                      <Image src={capaDe(i)} alt="" fill sizes="56px" className="object-cover" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-semibold">{i.nome}</span>
@@ -332,23 +329,6 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
                 )
               })}
             </div>
-          </section>
-
-          {/* ---------------- mesas & NFC */}
-          <section>
-            <Titulo icone={<Nfc className="h-5 w-5" />} titulo="Placas · NFC e QR Code" sub="Uma placa por mesa, todas com o mesmo link do cardápio. Grave o link numa etiqueta NFC (NTAG213) e cole atrás da placa." />
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-white/60">Cópias para imprimir</span>
-              {[4, 12, 24].map((n) => (
-                <button key={n} onClick={() => setCopias(n)} className={`rounded-full px-3 py-1 text-sm ${copias === n ? "bg-white text-black" : "bg-white/[0.06]"}`}>
-                  {n}
-                </button>
-              ))}
-              <button onClick={() => window.print()} className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-black">
-                <Printer className="h-4 w-4" /> Imprimir placas
-              </button>
-            </div>
-            <Placas r={rascunho} n={Math.min(copias, 4)} />
           </section>
         </div>
 
@@ -381,10 +361,6 @@ export function Painel({ restaurante }: { restaurante: Restaurante }) {
         </aside>
       </div>
 
-      {/* versão impressa das placas */}
-      <div className="so-print hidden grid-cols-2 gap-6 p-6">
-        <PlacasImpressao r={rascunho} n={copias} />
-      </div>
     </div>
   )
 }
@@ -407,64 +383,5 @@ function Campo({ l, v, on }: { l: string; v: string; on: (v: string) => void }) 
       <span className="mb-1 block text-xs text-white/50">{l}</span>
       <input value={v} onChange={(e) => on(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm outline-none focus:border-white/30" />
     </label>
-  )
-}
-
-function Placa({ r }: { r: Restaurante }) {
-  const b = r.branding
-  const caminho = `/cardapio/${r.slug}`
-  const [copiado, setCopiado] = useState(false)
-  return (
-    <div className="overflow-hidden text-center shadow-xl" style={{ background: b.bg, color: b.text, borderRadius: Math.max(b.radius, 8), fontFamily: FONTES[b.fontBody].css }}>
-      <div className="px-4 pb-4 pt-5">
-        <span className="inline-block" style={{ fontFamily: FONTES[b.fontDisplay].css }}>
-          <LogoMarca b={b} size={44} />
-        </span>
-        <div className="mt-2 text-xl leading-none" style={{ fontFamily: FONTES[b.fontDisplay].css }}>
-          {b.logoText}
-        </div>
-        <div className="mt-3 text-sm font-semibold">Veja nossos pratos em vídeo</div>
-        <div className="mx-auto mt-3 w-32 rounded-xl bg-white p-2">
-          <QR caminho={caminho} className="aspect-square w-full" />
-        </div>
-        <div className="mt-3 flex items-center justify-center gap-1.5 text-xs" style={{ color: b.muted }}>
-          <Nfc className="h-4 w-4" /> ou aproxime o celular aqui
-        </div>
-      </div>
-      <div className="flex items-center justify-between px-4 py-2.5 text-sm font-bold" style={{ background: b.primary, color: b.onPrimary }}>
-        <span>Cardápio em vídeo</span>
-        <button
-          onClick={() => {
-            navigator.clipboard?.writeText(new URL(caminho, location.origin).toString()).catch(() => {})
-            setCopiado(true)
-            setTimeout(() => setCopiado(false), 1500)
-          }}
-          className="no-print inline-flex items-center gap-1 text-xs font-semibold opacity-80 hover:opacity-100"
-          title="Copiar link para gravar na etiqueta NFC"
-        >
-          {copiado ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} {copiado ? "copiado" : "link NFC"}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function Placas({ r, n }: { r: Restaurante; n: number }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: n }, (_, i) => (
-        <Placa key={i} r={r} />
-      ))}
-    </div>
-  )
-}
-
-function PlacasImpressao({ r, n }: { r: Restaurante; n: number }) {
-  return (
-    <>
-      {Array.from({ length: n }, (_, i) => (
-        <Placa key={i} r={r} />
-      ))}
-    </>
   )
 }

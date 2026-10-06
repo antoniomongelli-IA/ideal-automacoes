@@ -32,7 +32,8 @@ export interface Categoria {
   emoji: string
 }
 
-export type Tag = "vegetariano" | "picante" | "novo" | "sem-gluten" | "compartilhar" | "alcoolico"
+/** Etiqueta do item. As conhecidas estão em TAGS (utils); qualquer outro texto vira etiqueta livre. */
+export type Tag = string
 
 export interface Item {
   id: string
@@ -41,12 +42,20 @@ export interface Item {
   preco: number
   precoAntigo?: number
   categoria: string
-  /** Nome do arquivo (sem extensão) em public/midia/<slug>/videos e /posters */
-  midia: string
+  /** Demo: nome do arquivo em public/midia/<slug>/. No banco, fica vazio e valem video/poster/foto. */
+  midia?: string
+  /** Endereço do vídeo vertical (opcional) */
+  video?: string
+  /** Capa do vídeo */
+  poster?: string
+  /** Foto, usada quando não há vídeo */
+  foto?: string
   /** Vendas dos últimos 30 dias (relatório do caixa). Alimenta a aba "Mais pedidos". */
   pedidos30d: number
   pedidosMesAnterior: number
   curtidas: number
+  /** Vídeo assistido nos últimos 30 dias (do banco). Ranqueia quando não há vendas informadas. */
+  vistos30d?: number
   tempoPreparo?: string
   serve?: string
   tags?: Tag[]
@@ -57,6 +66,8 @@ export interface Item {
 }
 
 export interface Restaurante {
+  /** id no banco (vazio nos restaurantes de demonstração) */
+  id?: string
   slug: string
   nome: string
   tipo: string
@@ -64,6 +75,10 @@ export interface Restaurante {
   endereco: string
   horario: string
   instagram: string
+  whatsapp?: string
+  nicho?: string
+  /** "banco" = Supabase; "demo" = arquivos do projeto */
+  fonte?: "banco" | "demo"
   branding: Branding
   categorias: Categoria[]
   itens: Item[]
