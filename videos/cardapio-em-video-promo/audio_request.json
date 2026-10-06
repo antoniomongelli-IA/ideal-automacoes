@@ -1,14 +1,14 @@
 {
   "provider": "kokoro",
-  "speed": "1.05",
+  "speed": "1.08",
   "lines": [
     {
       "id": "01",
-      "text": "Cardápio de papel? Aquele PDF que ninguém abre?"
+      "text": "Cardápio de papel? Aquele pê dê éfe que ninguém abre?"
     },
     {
       "id": "02",
-      "text": "O cliente não vê o prato. Pede o de sempre. E você vende menos."
+      "text": "O cliente não vê o prato. Pede o de sempre. E você vende menos!"
     },
     {
       "id": "03",
@@ -16,27 +16,27 @@
     },
     {
       "id": "04",
-      "text": "e o seu cardápio vira um TikTok dos seus pratos. Em vídeo, com preço, e o mais pedido da casa."
+      "text": "e o seu cardápio vira um tíque tóque dos seus pratos! Em vídeo, com preço, e o mais pedido da casa!"
     },
     {
       "id": "05",
-      "text": "Happy hour? A promoção aparece sozinha, só no horário que você marcar."
+      "text": "Répi áuer? A promoção aparece sozinha, só no horário que você marcar!"
     },
     {
       "id": "06",
-      "text": "Ele curte, salva os favoritos, e pede direto no seu WhatsApp."
+      "text": "Ele curte, salva os favoritos, e pede direto no seu uótsápi!"
     },
     {
       "id": "07",
-      "text": "E você vê tudo no painel: quem abriu, o que mais vendeu. Acabou o prato? Pausa com um toque."
+      "text": "E você vê tudo no painel: quem abriu, o que mais vendeu. Acabou o prato? Pausa com um toque!"
     },
     {
       "id": "08",
-      "text": "Sem app pra baixar. Sem reimprimir cardápio. Pronto em um dia, e cabe no seu orçamento."
+      "text": "Sem aplicativo pra baixar. Sem reimprimir cardápio. Pronto em um dia, e cabe no seu orçamento!"
     },
     {
       "id": "09",
-      "text": "Cardápio em Vídeo, da Ideal Automações. Chama a gente no WhatsApp."
+      "text": "Cardápio em Vídeo, da Ideal Automações! Chama a gente no uótsápi!"
     }
   ],
   "bgm": {
@@ -45,5 +45,5 @@
     "blob": "Seu cardápio vira um TikTok dos seus pratos: o cliente encosta o celular na mesa, vê os pratos em vídeo e pede mais — sem app, pronto em 1 dia e cabendo no bolso do restaurante.",
     "arc": "PAS with feature-benefit progression — hook → pain → product intro → demo (feed, promo, pedido, painel) → value stack (budget) → CTA"
   },
-  "voice": "pm_alex"
+  "voice": "pf_dora"
 }

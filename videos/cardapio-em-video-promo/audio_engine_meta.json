@@ -1,6 +1,6 @@
 {
   "tts_provider": "kokoro",
-  "voice_id": "pm_alex",
+  "voice_id": "pf_dora",
   "bgm": null,
   "bgm_pending": false,
   "bgm_provider": null,
@@ -14,13 +14,13 @@
     {
       "id": "01",
       "path": "assets/voice/01.wav",
-      "duration_s": 2.965,
+      "duration_s": 2.901,
       "words": []
     },
     {
       "id": "02",
       "path": "assets/voice/02.wav",
-      "duration_s": 3.733,
+      "duration_s": 3.648,
       "words": []
     },
     {
@@ -32,40 +32,40 @@
     {
       "id": "04",
       "path": "assets/voice/04.wav",
-      "duration_s": 5.717,
+      "duration_s": 5.632,
       "words": []
     },
     {
       "id": "05",
       "path": "assets/voice/05.wav",
-      "duration_s": 3.712,
+      "duration_s": 3.819,
       "words": []
     },
     {
       "id": "06",
       "path": "assets/voice/06.wav",
-      "duration_s": 3.733,
+      "duration_s": 3.584,
       "words": []
     },
     {
       "id": "07",
       "path": "assets/voice/07.wav",
-      "duration_s": 4.949,
+      "duration_s": 4.864,
       "words": []
     },
     {
       "id": "08",
       "path": "assets/voice/08.wav",
-      "duration_s": 5.013,
+      "duration_s": 5.525,
       "words": []
     },
     {
       "id": "09",
       "path": "assets/voice/09.wav",
-      "duration_s": 3.989,
+      "duration_s": 3.861,
       "words": []
     }
   ],
   "sfx": [],
-  "total_duration_s": 36.328
+  "total_duration_s": 36.351
 }

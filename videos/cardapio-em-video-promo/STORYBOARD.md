@@ -23,7 +23,7 @@ music: upbeat warm modern food commercial, light funky percussion, positive and 
 
 - scene: Letras gigantes "cardápio de papel?" e "pdf que ninguém abre?" batem na tela enquanto uma folha de cardápio amassada e um ícone de PDF caem em profundidade 3D
 - voiceover: "Cardápio de papel? Aquele PDF que ninguém abre?"
-- duration: 3.315s
+- duration: 3.251s
 - transition_in: cut
 - status: animated
 - src: compositions/frames/01-hook.html
@@ -48,7 +48,7 @@ keyMessage: o cardápio de hoje não vende.
 
 - scene: Três frases curtas entram sozinhas, uma por vez, em camadas que se afastam: "não vê o prato", "pede o de sempre", "você vende menos" — a última em laranja
 - voiceover: "O cliente não vê o prato. Pede o de sempre. E você vende menos."
-- duration: 4.133s
+- duration: 4.048s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/02-dor.html
@@ -98,7 +98,7 @@ keyMessage: abrir é instantâneo.
 
 - scene: Dentro do celular em perspectiva, o feed desliza de prato em prato (bacon, chopp, milkshake); ao redor, cartões com os vídeos reais dos pratos flutuam em camadas de profundidade; título "Cardápio em Vídeo" entra grande
 - voiceover: "…e o seu cardápio vira um TikTok dos seus pratos. Em vídeo, com preço, e o mais pedido da casa."
-- duration: 6.317s
+- duration: 6.232s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/04-tiktok.html
@@ -125,7 +125,7 @@ keyMessage: o prato se vende sozinho em vídeo.
 
 - scene: O celular mostra o chopp com selo "HAPPY HOUR" e preço riscado; um relógio 3D gira até 18h e a faixa de promoção acende; ao fundo, o card do painel "Ter a Sex · 18h às 20h"
 - voiceover: "Happy hour? A promoção aparece sozinha, só no horário que você marcar."
-- duration: 4.062s
+- duration: 4.169s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/05-promo.html
@@ -150,7 +150,7 @@ keyMessage: promoção automática.
 
 - scene: Toque duplo: um coração laranja explode na tela; a folha de detalhes sobe e o botão verde "Pedir pelo WhatsApp" pulsa e se destaca em camada à frente do celular
 - voiceover: "Ele curte, salva os favoritos… e pede direto no seu WhatsApp."
-- duration: 4.133s
+- duration: 3.984s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/06-pedido.html
@@ -175,7 +175,7 @@ keyMessage: do vídeo ao pedido em um toque.
 
 - scene: O painel do dono aparece num notebook/celular em 3D; os números contam (1.486 pessoas, 5.932 vídeos vistos, 214 pedidos pelo WhatsApp); corte para a lista de itens onde a Batata é pausada com um toque
 - voiceover: "E você vê tudo no painel: quem abriu, o que mais vendeu. Acabou o prato? Pausa com um toque."
-- duration: 5.549s
+- duration: 5.464s
 - transition_in: zoom-through
 - status: animated
 - src: compositions/frames/07-painel.html
@@ -200,7 +200,7 @@ keyMessage: dado e controle na mão do dono.
 
 - scene: Três cartões empilham em camadas 3D, um por vez: "sem app pra baixar", "sem reimprimir cardápio", "pronto em 1 dia"; selo laranja "cabe no seu orçamento"
 - voiceover: "Sem app pra baixar. Sem reimprimir cardápio. Pronto em um dia, e cabe no seu orçamento."
-- duration: 5.463s
+- duration: 5.975s
 - transition_in: crossfade
 - status: animated
 - src: compositions/frames/08-bolso.html
@@ -226,7 +226,7 @@ keyMessage: barato e simples de começar.
 
 - scene: Marca "Cardápio em Vídeo" se monta no centro com a chama laranja; abaixo "por Ideal Automações" e o botão "Chame no WhatsApp"; ao fundo, os cartões dos pratos giram lentamente em órbita
 - voiceover: "Cardápio em Vídeo, da Ideal Automações. Chama a gente no WhatsApp."
-- duration: 6.189s
+- duration: 6.061s
 - transition_in: zoom-through
 - status: animated
 - src: compositions/frames/09-cta.html
