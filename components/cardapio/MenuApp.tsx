@@ -2,10 +2,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, Clock, Flame, Users, X } from "lucide-react"
+import { Check, ChevronLeft, Clock, Flame, Users, X } from "lucide-react"
 import type { Restaurante } from "@/lib/cardapio/types"
 import { brandingVars, brl, ordemFeed, posterSrc, rankDe, TAGS } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, usePersonalizacao } from "@/lib/cardapio/personalizacao"
+import { useNavegacao } from "@/lib/cardapio/navegacao"
+import { ArrastarVoltar } from "./ArrastarVoltar"
 import { Feed } from "./Feed"
 import { DoMes, Grade, MaisPedidos } from "./Abas"
 import { type Aba, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
@@ -30,10 +32,9 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const ranks = useMemo(() => rankDe(r.itens), [r.itens])
   const feed = useMemo(() => ordemFeed(r.itens), [r.itens])
 
-  const [aba, setAba] = useState<Aba>("feed")
-  const [feedInicio, setFeedInicio] = useState<{ id?: string; n: number }>({ id: itemInicial, n: 0 })
+  const { tela, podeVoltar, ir, atualizar, voltar } = useNavegacao({ aba: "feed", feedId: itemInicial, n: 0 }, embutido)
+  const aba = tela.aba
   const [curtidos, setCurtidos] = useState<Set<string>>(new Set())
-  const [info, setInfo] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [splash, setSplash] = useState(!embutido)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -66,12 +67,19 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
         return next
       }),
     abrirNoFeed: (id) => {
-      setInfo(null)
-      setAba("feed")
-      setFeedInicio((f) => ({ id, n: f.n + 1 }))
+      const proxima = { aba: "feed" as Aba, feedId: id, n: tela.n + 1 }
+      // vindo da folha de detalhes, troca a tela em vez de empilhar: o voltar pula a folha
+      if (tela.info) atualizar({ ...proxima, info: undefined })
+      else ir(proxima)
     },
-    abrirInfo: setInfo,
+    abrirInfo: (id) => ir({ ...tela, info: id }),
   }
+
+  const trocarAba = (nova: Aba) => {
+    if (nova === aba) return
+    ir(nova === "feed" ? { aba: "feed", n: tela.n + 1 } : { aba: nova, n: tela.n })
+  }
+  const lembrarPrato = useCallback((id: string) => atualizar({ feedId: id }), [atualizar])
 
   const b = r.branding
   const noFeed = aba === "feed"
@@ -79,58 +87,72 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   return (
     <MenuContext.Provider value={ctx}>
       <div className="relative h-full w-full overflow-hidden" style={brandingVars(b)}>
-        {/* conteúdo */}
-        {noFeed ? (
-          <Feed key={feedInicio.n} itens={feed} inicioId={feedInicio.id} />
-        ) : (
-          <div className="absolute inset-0 overflow-y-auto pt-[calc(env(safe-area-inset-top)+108px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <AnimatePresence mode="wait">
-              <motion.div key={aba} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                {aba === "top" && <MaisPedidos />}
-                {aba === "mes" && <DoMes />}
-                {aba === "cardapio" && <Grade />}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
+        <ArrastarVoltar podeVoltar={podeVoltar} voltar={voltar} embutido={embutido}>
+          <div className="absolute inset-0" style={{ background: b.bg }}>
+            {/* conteúdo */}
+            {noFeed ? (
+              <Feed key={tela.n} itens={feed} inicioId={tela.feedId} onAtivo={lembrarPrato} />
+            ) : (
+              <div className="absolute inset-0 overflow-y-auto pt-[calc(env(safe-area-inset-top)+108px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <AnimatePresence mode="wait">
+                  <motion.div key={aba} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                    {aba === "top" && <MaisPedidos />}
+                    {aba === "mes" && <DoMes />}
+                    {aba === "cardapio" && <Grade />}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
 
-        {/* topo */}
-        <header
-          className="absolute inset-x-0 top-0 z-20 px-4 pt-[calc(env(safe-area-inset-top)+10px)]"
-          style={
-            noFeed
-              ? { color: "#fff" }
-              : { background: `color-mix(in srgb, ${b.bg} 88%, transparent)`, backdropFilter: "blur(14px)", color: b.text, borderBottom: `1px solid color-mix(in srgb, ${b.text} 8%, transparent)` }
-          }
-        >
-          <div className="flex min-w-0 items-center gap-2">
-            <LogoMarca b={b} />
-            <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
-              {b.logoText}
-            </span>
-          </div>
-          <nav className="relative mt-2 flex justify-between">
-            {ABAS.map((a) => {
-              const on = a.id === aba
-              return (
-                <button
-                  key={a.id}
-                  onClick={() => (a.id === "feed" ? ctx.abrirNoFeed(feed[0].id) : setAba(a.id))}
-                  className={`relative whitespace-nowrap px-1 pb-2.5 pt-1.5 text-[13.5px] font-bold transition ${on ? "" : "opacity-60"}`}
-                  style={noFeed ? { textShadow: "0 1px 6px rgba(0,0,0,.5)" } : undefined}
-                >
-                  {a.label}
-                  {on && <motion.span layoutId="aba-ativa" className="absolute inset-x-2 bottom-1 h-[3px] rounded-full" style={{ background: b.primary }} />}
-                </button>
-              )
-            })}
-          </nav>
-        </header>
+            {/* topo */}
+            <header
+              className="absolute inset-x-0 top-0 z-20 px-4 pt-[calc(env(safe-area-inset-top)+10px)]"
+              style={
+                noFeed
+                  ? { color: "#fff" }
+                  : { background: `color-mix(in srgb, ${b.bg} 88%, transparent)`, backdropFilter: "blur(14px)", color: b.text, borderBottom: `1px solid color-mix(in srgb, ${b.text} 8%, transparent)` }
+              }
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                {podeVoltar && (
+                  <button
+                    onClick={voltar}
+                    aria-label="Voltar"
+                    className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-full transition active:scale-90"
+                    style={noFeed ? { background: "rgba(0,0,0,.35)" } : { background: `color-mix(in srgb, ${b.text} 8%, transparent)` }}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                )}
+                <LogoMarca b={b} />
+                <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
+                  {b.logoText}
+                </span>
+              </div>
+              <nav className="relative mt-2 flex justify-between">
+                {ABAS.map((a) => {
+                  const on = a.id === aba
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => trocarAba(a.id)}
+                      className={`relative whitespace-nowrap px-1 pb-2.5 pt-1.5 text-[13.5px] font-bold transition ${on ? "" : "opacity-60"}`}
+                      style={noFeed ? { textShadow: "0 1px 6px rgba(0,0,0,.5)" } : undefined}
+                    >
+                      {a.label}
+                      {on && <motion.span layoutId="aba-ativa" className="absolute inset-x-2 bottom-1 h-[3px] rounded-full" style={{ background: b.primary }} />}
+                    </button>
+                  )
+                })}
+              </nav>
+            </header>
 
-        {/* folha de detalhes */}
-        <Folha aberta={!!info} fechar={() => setInfo(null)}>
-          {info && <Detalhes id={info} />}
-        </Folha>
+            {/* folha de detalhes */}
+            <Folha aberta={!!tela.info} fechar={voltar}>
+              {tela.info && <Detalhes id={tela.info} />}
+            </Folha>
+          </div>
+        </ArrastarVoltar>
 
         {/* aviso rápido (ex.: link copiado) */}
         <AnimatePresence>

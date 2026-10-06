@@ -5,7 +5,7 @@ import { Crown, Flame } from "lucide-react"
 import type { Branding, Item, Restaurante } from "@/lib/cardapio/types"
 import { posterSrc, videoSrc } from "@/lib/cardapio/utils"
 
-export type Aba = "feed" | "top" | "mes" | "cardapio"
+export type { Aba } from "@/lib/cardapio/navegacao"
 
 export interface MenuCtx {
   r: Restaurante

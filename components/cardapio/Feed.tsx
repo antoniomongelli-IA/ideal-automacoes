@@ -8,10 +8,11 @@ import { brl, compacto, posterSrc, TAGS, videoSrc } from "@/lib/cardapio/utils"
 import { registrarView } from "@/lib/cardapio/personalizacao"
 import { SeloMes, SeloRank, useMenu } from "./ui"
 
-export function Feed({ itens, inicioId }: { itens: Item[]; inicioId?: string }) {
+export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: string; onAtivo?: (id: string) => void }) {
   const { r } = useMenu()
   const ref = useRef<HTMLDivElement>(null)
-  const inicio = Math.max(0, itens.findIndex((i) => i.id === inicioId))
+  // o prato inicial só vale na montagem; depois quem manda é a rolagem
+  const [inicio] = useState(() => Math.max(0, itens.findIndex((i) => i.id === inicioId)))
   const [ativo, setAtivo] = useState(inicio)
   const [dica, setDica] = useState(true)
 
@@ -32,6 +33,12 @@ export function Feed({ itens, inicioId }: { itens: Item[]; inicioId?: string }) 
     const t = setTimeout(() => registrarView(r.slug, it.id), 1200)
     return () => clearTimeout(t)
   }, [ativo, itens, r.slug])
+
+  // guarda em que prato o feed está, para o "voltar" retornar ao mesmo ponto
+  useEffect(() => {
+    const it = itens[ativo]
+    if (it) onAtivo?.(it.id)
+  }, [ativo, itens, onAtivo])
 
   const onScroll = () => {
     const el = ref.current
