@@ -74,7 +74,17 @@ export function FolhaFavoritos({ aberta, fechar, cliente, abrirConta, sair }: { 
 }
 
 /** Criar conta (nome, telefone, senha) ou entrar (telefone, senha). */
-export function FolhaConta({ aberta, fechar, aoEntrar }: { aberta: boolean; fechar: () => void; aoEntrar: (c: Cliente) => void }) {
+export function FolhaConta({
+  aberta,
+  fechar,
+  aoEntrar,
+  motivo,
+}: {
+  aberta: boolean
+  fechar: () => void
+  aoEntrar: (c: Cliente) => void
+  motivo?: { acao: "curtiu" | "compartilhou"; itemId: string; itemNome?: string } | null
+}) {
   const { r } = useMenu()
   const [modo, setModo] = useState<"criar" | "entrar">("criar")
   const [nome, setNome] = useState("")
@@ -87,7 +97,7 @@ export function FolhaConta({ aberta, fechar, aoEntrar }: { aberta: boolean; fech
     e.preventDefault()
     setErro("")
     setEnviando(true)
-    const res = modo === "criar" ? await cadastrarCliente(nome, telefone, senha, r.slug) : await entrarCliente(telefone, senha)
+    const res = modo === "criar" ? await cadastrarCliente(nome, telefone, senha, { origem: r.slug, acao: motivo?.acao, itemId: motivo?.itemId, itemNome: motivo?.itemNome }) : await entrarCliente(telefone, senha)
     setEnviando(false)
     if (res.erro) setErro(res.erro)
     else if (res.cliente) aoEntrar(res.cliente)
@@ -96,10 +106,12 @@ export function FolhaConta({ aberta, fechar, aoEntrar }: { aberta: boolean; fech
   return (
     <Folha aberta={aberta} fechar={fechar}>
       <h3 className="text-2xl" style={{ fontFamily: "var(--f-display)" }}>
-        {modo === "criar" ? "Salve seus favoritos" : "Entrar"}
+        {modo === "entrar" ? "Entrar" : motivo?.itemNome ? `Você ${motivo.acao === "curtiu" ? "curtiu" : "compartilhou"} ${motivo.itemNome}! ❤️` : "Salve seus favoritos"}
       </h3>
       <p className="mt-1 text-sm" style={{ color: "var(--c-muted)" }}>
-        {modo === "criar" ? "Com a conta, o que você curtiu fica guardado para a próxima visita." : "Use o telefone e a senha da sua conta."}
+        {modo === "criar"
+          ? "Crie sua conta e receba no WhatsApp o link para ver de novo sempre que quiser. Seus favoritos ficam guardados para a próxima visita."
+          : "Use o telefone e a senha da sua conta."}
       </p>
       <form onSubmit={enviar} className="mt-4 space-y-2.5">
         {modo === "criar" && <input id="conta-nome" className={campo} style={estiloCampo} placeholder="Seu nome" autoComplete="name" value={nome} onChange={(e) => setNome(e.target.value)} />}

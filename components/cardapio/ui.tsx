@@ -21,6 +21,8 @@ export interface MenuCtx {
    */
   abrirNoFeed: (id: string, lista?: string[]) => void
   abrirInfo: (id: string) => void
+  /** a pessoa compartilhou um item (pode oferecer a conta) */
+  compartilhou: (id: string) => void
   /** aviso rápido no topo (ex.: "Link copiado") */
   avisar: (msg: string) => void
   item: (id: string) => Item | undefined

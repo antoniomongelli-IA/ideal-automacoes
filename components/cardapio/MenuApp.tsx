@@ -20,16 +20,17 @@ const ABAS: { id: Aba; label: string }[] = [
   { id: "cardapio", label: "Cardápio" },
 ]
 
-const jaOfereceuConta = () => {
+// O convite para criar conta aparece uma vez por celular para cada ação (curtir e compartilhar)
+const jaOfereceuConta = (acao: "curtiu" | "compartilhou") => {
   try {
-    return localStorage.getItem("cardapio:ofereceu-conta") === "1"
+    return localStorage.getItem(`cardapio:ofereceu-conta:${acao}`) === "1"
   } catch {
     return true
   }
 }
-const marcarOfereceuConta = () => {
+const marcarOfereceuConta = (acao: "curtiu" | "compartilhou") => {
   try {
-    localStorage.setItem("cardapio:ofereceu-conta", "1")
+    localStorage.setItem(`cardapio:ofereceu-conta:${acao}`, "1")
   } catch {
     /* ignora */
   }
@@ -60,6 +61,8 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const [totais, setTotais] = useState<Map<string, number>>(new Map())
   const [cliente, setCliente] = useState<Cliente | null>(null)
   const [folha, setFolha] = useState<"favoritos" | "conta" | null>(null)
+  // o que levou ao convite de conta (vai para a mensagem de boas-vindas)
+  const [motivoConta, setMotivoConta] = useState<{ acao: "curtiu" | "compartilhou"; itemId: string } | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [splash, setSplash] = useState(!embutido)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -119,11 +122,9 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
           setTotais((m) => new Map(m).set(id, total))
         })
       // primeira curtida sem conta: oferece salvar os favoritos (uma vez só)
-      if (vaiCurtir && !cliente && !embutido && r.fonte === "banco" && !jaOfereceuConta()) {
-        marcarOfereceuConta()
-        setTimeout(() => setFolha("conta"), 900)
-      }
+      if (vaiCurtir) oferecerConta("curtiu", id)
     },
+    compartilhou: (id) => oferecerConta("compartilhou", id),
     curtidasDe: (id) => {
       const it = item(id)
       if (totais.has(id)) return totais.get(id)!
@@ -150,6 +151,14 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
       registrarEvento(r.id, "detalhes", id)
       ir({ ...tela, info: id })
     },
+  }
+
+  // depois de curtir ou compartilhar, sem conta: convida para salvar os favoritos (uma vez por ação)
+  function oferecerConta(acao: "curtiu" | "compartilhou", itemId: string) {
+    if (cliente || embutido || r.fonte !== "banco" || jaOfereceuConta(acao)) return
+    marcarOfereceuConta(acao)
+    setMotivoConta({ acao, itemId })
+    setTimeout(() => setFolha("conta"), acao === "curtiu" ? 900 : 400)
   }
 
   const trocarAba = (nova: Aba) => {
@@ -294,7 +303,10 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
               aberta={folha === "favoritos"}
               fechar={() => setFolha(null)}
               cliente={cliente}
-              abrirConta={() => setFolha("conta")}
+              abrirConta={() => {
+                setMotivoConta(null)
+                setFolha("conta")
+              }}
               sair={async () => {
                 await sairCliente()
                 setCliente(null)
@@ -302,6 +314,7 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
               }}
             />
             <FolhaConta
+              motivo={motivoConta ? { ...motivoConta, itemNome: item(motivoConta.itemId)?.nome } : null}
               aberta={folha === "conta"}
               fechar={() => setFolha(null)}
               aoEntrar={async (c) => {

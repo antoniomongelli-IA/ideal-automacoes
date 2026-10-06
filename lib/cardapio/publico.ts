@@ -95,8 +95,17 @@ export async function clienteAtual(): Promise<Cliente | null> {
   return (c as Cliente) ?? null
 }
 
-/** `origem`: link do estabelecimento onde a conta foi criada (vai para o aviso do webhook). */
-export async function cadastrarCliente(nome: string, telefone: string, senha: string, origem?: string): Promise<{ cliente?: Cliente; erro?: string }> {
+/** De onde veio o cadastro: vai junto para o aviso do webhook (mensagem de boas-vindas). */
+export interface ContextoConta {
+  /** slug do estabelecimento */
+  origem: string
+  /** o que a pessoa fez antes de criar a conta */
+  acao?: "curtiu" | "compartilhou"
+  itemId?: string
+  itemNome?: string
+}
+
+export async function cadastrarCliente(nome: string, telefone: string, senha: string, ctx?: ContextoConta): Promise<{ cliente?: Cliente; erro?: string }> {
   if (!supabaseConfigurado) return { erro: "Disponível quando o cardápio estiver ligado ao banco." }
   const tel = normalizarTelefone(telefone)
   if (nome.trim().length < 2) return { erro: "Digite seu nome." }
@@ -105,7 +114,20 @@ export async function cadastrarCliente(nome: string, telefone: string, senha: st
   const { data, error } = await sb.auth.signUp({
     email: emailDoTelefone(tel),
     password: senha,
-    options: { data: { tipo: "cliente", nome: nome.trim(), telefone: tel, origem } },
+    options: {
+      data: {
+        tipo: "cliente",
+        nome: nome.trim(),
+        telefone: tel,
+        origem: ctx?.origem,
+        acao: ctx?.acao,
+        item_id: ctx?.itemId,
+        item_nome: ctx?.itemNome,
+        // links completos, prontos para a mensagem de boas-vindas
+        link_cardapio: ctx ? `${location.origin}/cardapio/${ctx.origem}` : undefined,
+        link_item: ctx?.itemId ? `${location.origin}/cardapio/${ctx.origem}?item=${ctx.itemId}` : undefined,
+      },
+    },
   })
   if (error) return { erro: traduzir(error.message) }
   if (!data.session) return { erro: traduzir("email not confirmed") }

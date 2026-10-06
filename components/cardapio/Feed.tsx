@@ -79,7 +79,7 @@ export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: s
 }
 
 function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean; perto: boolean; prioridade: boolean }) {
-  const { r, ranks, curtidos, curtir, curtidasDe, abrirInfo, abrirNoFeed, avisar, item: buscar } = useMenu()
+  const { r, ranks, curtidos, curtir, curtidasDe, abrirInfo, abrirNoFeed, avisar, compartilhou, item: buscar } = useMenu()
   const video = useRef<HTMLVideoElement>(null)
   const barra = useRef<HTMLDivElement>(null)
   const ultimoToque = useRef(0)
@@ -132,6 +132,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
         await navigator.clipboard.writeText(url)
         avisar("Link do prato copiado")
       }
+      compartilhou(item.id)
     } catch {
       /* cancelado */
     }

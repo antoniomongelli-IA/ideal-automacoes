@@ -8,6 +8,7 @@
 --  Eventos enviados (campo "evento"):
 --    novo_estabelecimento → um dono terminou o cadastro do cardápio
 --    novo_cliente         → um cliente final criou conta para salvar favoritos
+--                           (com o item que curtiu/compartilhou e os links prontos)
 --
 --  Se o webhook estiver fora do ar, o cadastro NÃO é afetado: o aviso é perdido.
 -- =====================================================================
@@ -71,15 +72,24 @@ returns trigger
 language plpgsql security definer set search_path = public
 as $$
 declare
-  v_origem text := (select raw_user_meta_data ->> 'origem' from auth.users where id = new.id);
+  v_meta   jsonb := (select raw_user_meta_data from auth.users where id = new.id);
+  v_origem text := v_meta ->> 'origem';
 begin
   perform public.avisar_webhook(jsonb_build_object(
     'evento', 'novo_cliente',
     'id', new.id,
     'nome', new.nome,
+    'primeiro_nome', split_part(new.nome, ' ', 1),
     'telefone', new.telefone,
     'estabelecimento_slug', v_origem,
     'estabelecimento_nome', (select nome from estabelecimentos where slug = v_origem),
+    -- o que a pessoa fez antes de criar a conta: "curtiu" ou "compartilhou" (vazio se criou pelo menu)
+    'acao', v_meta ->> 'acao',
+    'item_id', v_meta ->> 'item_id',
+    'item_nome', v_meta ->> 'item_nome',
+    -- links completos para a mensagem de boas-vindas
+    'link_cardapio', v_meta ->> 'link_cardapio',
+    'link_item', v_meta ->> 'link_item',
     'criado_em', new.criado_em
   ));
   return new;
