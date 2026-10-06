@@ -1,0 +1,253 @@
+<template>
+  <style>
+    @font-face { font-family: "Anton"; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Plus Jakarta Sans"; src: url("assets/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); font-weight: 800; font-style: normal; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      color: #FFF4EA;
+    }
+
+    /* fundo: ink-black com brilho laranja suave atrás do celular */
+    .f04-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 620px 760px at 540px 820px, rgba(255, 106, 26, 0.22), rgba(255, 106, 26, 0) 70%), #0F0805;
+    }
+
+    /* palavra gigante atrás do celular */
+    .f04-word {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 70px;
+      text-align: center;
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 150px;
+      line-height: 0.86;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: #FF6A1A;
+    }
+
+    .f04-stage {
+      position: absolute;
+      inset: 0;
+      perspective: 2200px;
+      perspective-origin: 540px 860px;
+    }
+
+    /* celular — mesmo mockup das cenas 03–07 */
+    .f04-phone {
+      position: absolute;
+      left: 256px;
+      top: 261.5px;
+      width: 540px;
+      height: 1169px;
+      border: 14px solid #1E120B;
+      border-radius: 64px;
+      box-shadow: 0 0 0 2px #3A2A20, 0 60px 120px rgba(0, 0, 0, 0.75), 0 24px 48px rgba(0, 0, 0, 0.55);
+      background: #050302;
+      overflow: hidden;
+      box-sizing: content-box;
+    }
+    .f04-screen {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 50px;
+    }
+    .f04-shot {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .f04-island {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 150px;
+      height: 42px;
+      margin-left: -75px;
+      border-radius: 21px;
+      background: #050302;
+    }
+
+    /* cartões dos pratos em camadas de profundidade */
+    .f04-card {
+      position: absolute;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 3px solid #3A2A20;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+      background: #1E120B;
+    }
+    .f04-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .f04-card-tag {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #FFF4EA;
+      background: rgba(15, 8, 5, 0.72);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    /* chip de preço */
+    .f04-chip {
+      position: absolute;
+      left: 760px;
+      top: 1130px;
+      padding: 18px 26px;
+      background: #FFF4EA;
+      color: #0F0805;
+      border-radius: 20px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    }
+    .f04-chip-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(15, 8, 5, 0.6);
+    }
+    .f04-chip-value {
+      font-family: "Anton", sans-serif;
+      font-size: 64px;
+      line-height: 1;
+      color: #FF6A1A;
+    }
+
+    /* cartão "mais pedidos" (recorte do topo da aba) */
+    .f04-top {
+      position: absolute;
+      left: 40px;
+      top: 880px;
+      width: 380px;
+      height: 600px;
+      border-radius: 32px;
+      overflow: hidden;
+      border: 3px solid #FF6A1A;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), 0 0 60px rgba(255, 106, 26, 0.35);
+      background: #0F0805;
+    }
+    .f04-top img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transform-origin: 50% 0%;
+    }
+  </style>
+
+  <div id="root" data-composition-id="04-tiktok" data-width="1080" data-height="1920" data-duration="6.817">
+    <div class="f04-bg clip" data-start="0" data-duration="6.817" data-track-index="0"></div>
+
+    <div id="f04-word" class="f04-word clip" data-start="0" data-duration="6.817" data-track-index="1">vira um tiktok</div>
+
+    <div class="f04-stage clip" data-start="0" data-duration="6.817" data-track-index="2">
+      <!-- cartões de fundo (atrás do celular) -->
+      <div id="f04-card-b" class="f04-card" style="left: 700px; top: 330px; width: 300px; height: 533px">
+        <img src="assets/milkshake-morango.jpg" alt="" />
+      </div>
+      <div id="f04-card-c" class="f04-card" style="left: 90px; top: 280px; width: 260px; height: 462px">
+        <img src="assets/chopp-pilsen.jpg" alt="" />
+      </div>
+
+      <div id="f04-phone" class="f04-phone">
+        <div class="f04-screen">
+          <img id="f04-s1" class="f04-shot" src="assets/feed-bacon-duplo.png" alt="" />
+          <img id="f04-s2" class="f04-shot" src="assets/feed-chopp-pilsen.png" alt="" />
+          <img id="f04-s3" class="f04-shot" src="assets/feed-milkshake-morango.png" alt="" />
+          <div class="f04-island"></div>
+        </div>
+      </div>
+
+      <!-- cartão de primeiro plano (nítido) -->
+      <div id="f04-card-a" class="f04-card" style="left: 30px; top: 560px; width: 300px; height: 533px">
+        <img src="assets/bacon-duplo.jpg" alt="" />
+        <span class="f04-card-tag">▶ vídeo</span>
+      </div>
+
+      <div id="f04-chip" class="f04-chip">
+        <div class="f04-chip-label">preço na tela</div>
+        <div class="f04-chip-value">R$ 22,90</div>
+      </div>
+
+      <div id="f04-top" class="f04-top">
+        <img src="assets/05-mais-pedidos.png" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const q = (id) => document.getElementById(id);
+      const phone = q("f04-phone");
+      const word = q("f04-word");
+      const s1 = q("f04-s1"), s2 = q("f04-s2"), s3 = q("f04-s3");
+      const a = q("f04-card-a"), b = q("f04-card-b"), c = q("f04-card-c");
+      const chip = q("f04-chip");
+      const top = q("f04-top");
+      const topImg = top.querySelector("img");
+
+      const tl = gsap.timeline({ paused: true });
+
+      // estado inicial (handoff_in: celular centrado, escala 1, rotateY 0)
+      tl.fromTo(phone, { x: 0, y: 0, scale: 1, rotationY: 0, opacity: 1, transformOrigin: "50% 50%" }, { x: 0, y: 0, scale: 1, rotationY: 0, duration: 0.01 }, 0);
+      tl.fromTo([s2, s3], { yPercent: 100 }, { yPercent: 100, duration: 0.01 }, 0);
+      tl.fromTo(s1, { yPercent: 0 }, { yPercent: 0, duration: 0.01 }, 0);
+
+      // Scene 1 (0.0–1.6s): "cardápio vira" — palavra gigante atrás; push curto e giro do celular
+      tl.fromTo(word, { opacity: 0, scale: 1.25, filter: "blur(18px)" }, { opacity: 0.9, scale: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.out" }, 0.55);
+      tl.to(phone, { rotationY: -14, scale: 0.96, x: 40, duration: 1.0, ease: "power3.inOut" }, 0.6);
+
+      // Scene 2 (1.6–2.8s): "TikTok dos seus pratos" — swipe bacon → chopp; cartões entram em profundidade
+      tl.to(s1, { yPercent: -100, duration: 0.45, ease: "power3.inOut" }, 1.75);
+      tl.to(s2, { yPercent: 0, duration: 0.45, ease: "power3.inOut" }, 1.75);
+      tl.fromTo(a, { opacity: 0, x: -260, z: 420, rotationY: 30, rotation: -8 }, { opacity: 1, x: 0, z: 140, rotationY: 14, rotation: -5, duration: 0.8, ease: "power3.out" }, 1.85);
+      tl.fromTo(b, { opacity: 0, x: 260, z: -500, rotationY: -30, filter: "blur(10px)" }, { opacity: 0.8, x: 0, z: -260, rotationY: -18, filter: "blur(4px)", duration: 0.85, ease: "power3.out" }, 2.0);
+      tl.fromTo(c, { opacity: 0, y: -200, z: -620, rotationY: 25, filter: "blur(12px)" }, { opacity: 0.65, y: 0, z: -380, rotationY: 16, filter: "blur(6px)", duration: 0.85, ease: "power3.out" }, 2.15);
+
+      // Scene 3 (2.8–4.3s): "Em vídeo, com preço" — swipe chopp → milkshake; chip de preço
+      tl.to(s2, { yPercent: -100, duration: 0.45, ease: "power3.inOut" }, 2.85);
+      tl.to(s3, { yPercent: 0, duration: 0.45, ease: "power3.inOut" }, 2.85);
+      tl.fromTo(chip, { opacity: 0, x: 80, z: 200, rotationY: -20 }, { opacity: 1, x: 0, z: 160, rotationY: -12, duration: 0.6, ease: "power3.out" }, 3.75);
+
+      // Scene 4 (4.3–6.3s): "o mais pedido da casa" — cartão do ranking à frente; zoom leve no #1; segura
+      tl.to(word, { opacity: 0.35, duration: 0.6, ease: "power2.out" }, 4.25);
+      tl.to(a, { opacity: 0, z: 60, duration: 0.4, ease: "power2.out" }, 4.25);
+      tl.fromTo(top, { opacity: 0, x: -200, y: 120, z: 380, rotationY: 34, rotation: -6 }, { opacity: 1, x: 0, y: 0, z: 240, rotationY: 16, rotation: -3, duration: 0.8, ease: "power3.out" }, 4.3);
+      tl.fromTo(topImg, { scale: 1 }, { scale: 1.18, duration: 1.0, ease: "power3.inOut" }, 4.95);
+
+      // jitter sutil nos cartões de fundo durante o hold (finito)
+      tl.to(b, { y: -6, duration: 0.8, ease: "sine.inOut" }, 5.2);
+      tl.to(c, { y: 5, duration: 0.8, ease: "sine.inOut" }, 5.2);
+
+      tl.set({}, {}, 6.317);
+      window.__timelines["04-tiktok"] = tl;
+    })();
+  </script>
+</template>

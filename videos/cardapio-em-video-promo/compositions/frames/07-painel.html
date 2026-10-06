@@ -1,5 +1,5 @@
 <template>
-  <div id="root" data-composition-id="07-painel" data-start="0" data-duration="5.549" data-width="1080" data-height="1920">
+  <div id="root" data-composition-id="07-painel" data-start="0" data-duration="6.049" data-width="1080" data-height="1920">
     <style>
       @font-face { font-family: "Anton"; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; }
       @font-face { font-family: "Plus Jakarta Sans"; src: url("assets/fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; }
@@ -124,11 +124,11 @@
       }
     </style>
 
-    <div id="07-painel-bg" class="clip" data-start="0" data-duration="5.549" data-track-index="0">
+    <div id="07-painel-bg" class="clip" data-start="0" data-duration="6.049" data-track-index="0">
       <div id="07-painel-glow"></div>
     </div>
 
-    <div id="07-painel-scene" class="clip" data-start="0" data-duration="5.549" data-track-index="1">
+    <div id="07-painel-scene" class="clip" data-start="0" data-duration="6.049" data-track-index="1">
       <div id="07-painel-kicker"><i></i><span>Painel do dono</span><span class="07-painel-dim">/ 30 dias</span></div>
 
       <div id="07-painel-cam">
@@ -160,7 +160,7 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="assets/vendor/gsap.min.js"></script>
     <script>
       (function () {
         var root = document.querySelector('[data-composition-id="07-painel"]');
@@ -199,7 +199,7 @@
         tl.to($("cam"), { scale: 0.96, duration: 1.0, ease: "power2.inOut" }, 3.3);
         // zoom-to-target: the transform-origin sits on the Batata row; scale + lift brings it toward center
         tl.to($("phone"),
-          { scale: 1.3, y: -300, rotationY: -4, rotationZ: 0, duration: 1.1, ease: "power3.inOut" }, 3.55);
+          { scale: 1.12, y: -160, rotationY: -4, rotationZ: 0, duration: 1.1, ease: "power3.inOut" }, 3.55);
 
         // tap ripple on "toque" — lands and holds
         tl.fromTo($("tapglow"), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 4.6);

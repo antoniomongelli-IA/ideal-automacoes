@@ -25,7 +25,7 @@ music: upbeat warm modern food commercial, light funky percussion, positive and 
 - voiceover: "Cardápio de papel? Aquele PDF que ninguém abre?"
 - duration: 3.315s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-hook.html
 - type: hook
 - persuasion: Pain validation
@@ -50,7 +50,7 @@ keyMessage: o cardápio de hoje não vende.
 - voiceover: "O cliente não vê o prato. Pede o de sempre. E você vende menos."
 - duration: 4.133s
 - transition_in: crossfade
-- status: outline
+- status: animated
 - src: compositions/frames/02-dor.html
 - type: pain_point
 - persuasion: Pain agitation
@@ -74,7 +74,7 @@ keyMessage: cardápio sem imagem custa venda.
 - voiceover: "Agora, o cliente encosta o celular na mesa…"
 - duration: 2.637s
 - transition_in: zoom-through
-- status: outline
+- status: animated
 - src: compositions/frames/03-encosta.html
 - type: product_intro
 - persuasion: Friction reduction
@@ -100,7 +100,7 @@ keyMessage: abrir é instantâneo.
 - voiceover: "…e o seu cardápio vira um TikTok dos seus pratos. Em vídeo, com preço, e o mais pedido da casa."
 - duration: 6.317s
 - transition_in: crossfade
-- status: outline
+- status: animated
 - src: compositions/frames/04-tiktok.html
 - type: product_intro
 - persuasion: Show-don't-tell proof
@@ -127,7 +127,7 @@ keyMessage: o prato se vende sozinho em vídeo.
 - voiceover: "Happy hour? A promoção aparece sozinha, só no horário que você marcar."
 - duration: 4.062s
 - transition_in: push-slide LEFT
-- status: outline
+- status: animated
 - src: compositions/frames/05-promo.html
 - type: feature_showcase
 - persuasion: Feature-to-benefit translation
@@ -152,7 +152,7 @@ keyMessage: promoção automática.
 - voiceover: "Ele curte, salva os favoritos… e pede direto no seu WhatsApp."
 - duration: 4.133s
 - transition_in: push-slide LEFT
-- status: outline
+- status: animated
 - src: compositions/frames/06-pedido.html
 - type: feature_showcase
 - persuasion: Friction reduction
@@ -177,7 +177,7 @@ keyMessage: do vídeo ao pedido em um toque.
 - voiceover: "E você vê tudo no painel: quem abriu, o que mais vendeu. Acabou o prato? Pausa com um toque."
 - duration: 5.549s
 - transition_in: zoom-through
-- status: outline
+- status: animated
 - src: compositions/frames/07-painel.html
 - type: feature_showcase
 - persuasion: Statistical proof
@@ -202,7 +202,7 @@ keyMessage: dado e controle na mão do dono.
 - voiceover: "Sem app pra baixar. Sem reimprimir cardápio. Pronto em um dia, e cabe no seu orçamento."
 - duration: 5.463s
 - transition_in: crossfade
-- status: outline
+- status: animated
 - src: compositions/frames/08-bolso.html
 - type: benefit_highlight
 - persuasion: Risk reversal + value stacking
@@ -228,7 +228,7 @@ keyMessage: barato e simples de começar.
 - voiceover: "Cardápio em Vídeo, da Ideal Automações. Chama a gente no WhatsApp."
 - duration: 6.189s
 - transition_in: zoom-through
-- status: outline
+- status: animated
 - src: compositions/frames/09-cta.html
 - type: cta
 - persuasion: Urgency-to-act with low commitment
