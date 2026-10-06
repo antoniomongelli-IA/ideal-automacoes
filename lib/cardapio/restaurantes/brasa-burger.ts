@@ -23,6 +23,10 @@ export const brasaBurger: Restaurante = {
     logoMark: "🔥",
     tagline: "Smash na chapa, fogo de verdade.",
   },
+  // demonstração: happy hour de terça a sexta, das 18h às 20h
+  promocoes: [
+    { id: "happy-hour", titulo: "Happy hour", descricao: "Chopp gelado com preço especial", itemId: "chopp-pilsen", precoPromo: 12.9, dias: [2, 3, 4, 5], inicio: "18:00", fim: "20:00" },
+  ],
   categorias: [
     { id: "burgers", nome: "Burgers", emoji: "🍔" },
     { id: "porcoes", nome: "Porções", emoji: "🍟" },

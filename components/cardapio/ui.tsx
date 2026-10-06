@@ -2,9 +2,10 @@
 import { createContext, useContext, useEffect, useRef } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { Crown, Flame, X } from "lucide-react"
+import { Crown, Flame, MessageCircle, X } from "lucide-react"
 import type { Branding, Item, Restaurante } from "@/lib/cardapio/types"
-import { capaDe, rankingPorVendas, videosDe } from "@/lib/cardapio/utils"
+import { capaDe, linkPedidoWhatsapp, rankingPorVendas, videosDe } from "@/lib/cardapio/utils"
+import { registrarEvento } from "@/lib/cardapio/publico"
 
 export type { Aba } from "@/lib/cardapio/navegacao"
 
@@ -121,6 +122,44 @@ export function SeloMes({ size = "sm" }: { size?: "sm" | "lg" }) {
       <Crown className={size === "lg" ? "h-3.5 w-3.5" : "h-3 w-3"} fill="currentColor" />
       Item do mês
     </span>
+  )
+}
+
+/** Selo da promoção valendo agora: "🔥 Happy hour · até 20h" */
+export function SeloPromo({ promo, size = "sm" }: { promo?: Item["promo"]; size?: "sm" | "lg" }) {
+  if (!promo) return null
+  return (
+    <span
+      className={`inline-flex items-center gap-1 font-bold uppercase tracking-wide ${size === "lg" ? "px-3 py-1.5 text-xs" : "px-2 py-1 text-[10px]"}`}
+      style={{ background: "#e11d48", color: "#fff", borderRadius: "999px" }}
+    >
+      🔥 {promo.titulo} · {promo.ate}
+    </span>
+  )
+}
+
+/** Botão "Pedir pelo WhatsApp" (só aparece quando o estabelecimento liga a opção no painel). */
+export function BotaoPedir({ item, variante = "folha" }: { item: Item; variante?: "feed" | "folha" }) {
+  const { r } = useMenu()
+  const whatsapp = r.whatsapp
+  if (!r.pedidoWhatsapp || !whatsapp) return null
+  const feed = variante === "feed"
+  return (
+    <a
+      // o endereço do site só existe no navegador: o link do prato entra na mensagem na hora do toque
+      href={linkPedidoWhatsapp(whatsapp, item, "")}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => {
+        e.currentTarget.href = linkPedidoWhatsapp(whatsapp, item, `${location.origin}/cardapio/${r.slug}?item=${item.id}`)
+        registrarEvento(r.id, "pediu", item.id)
+      }}
+      onPointerUp={(e) => e.stopPropagation()}
+      className={`inline-flex items-center justify-center gap-1.5 font-bold transition active:scale-95 ${feed ? "px-3 py-1.5 text-sm" : "mt-2.5 w-full py-3.5"}`}
+      style={{ background: "#25D366", color: "#05300f", borderRadius: "var(--radius)" }}
+    >
+      <MessageCircle className={feed ? "h-4 w-4" : "h-5 w-5"} fill="currentColor" /> {feed ? "Pedir" : "Pedir pelo WhatsApp"}
+    </a>
   )
 }
 

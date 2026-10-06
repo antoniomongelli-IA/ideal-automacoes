@@ -363,7 +363,7 @@ export function EditorItem({
 
           <label className="flex cursor-pointer items-center gap-3">
             <input id="item-ativo" type="checkbox" checked={f.ativo} onChange={(e) => set("ativo", e.target.checked)} className="h-5 w-5" />
-            <span className="text-sm">Mostrar no cardápio (desmarque se acabou o estoque)</span>
+            <span className="text-sm">Mostrar no cardápio (desmarque para pausar quando acabar; o item não é apagado)</span>
           </label>
         </div>
 

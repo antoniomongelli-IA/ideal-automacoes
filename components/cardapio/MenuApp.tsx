@@ -1,9 +1,9 @@
 "use client"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, ChevronLeft, Clock, Flame, Heart, Users } from "lucide-react"
+import { Check, ChevronLeft, Clock, Flame, Heart, Star, Users } from "lucide-react"
 import type { Item, Restaurante } from "@/lib/cardapio/types"
-import { brandingVars, brl, ordemFeed, rankDe, rankingPorVendas, tagInfo } from "@/lib/cardapio/utils"
+import { aplicarPromocoes, brandingVars, brl, ordemFeed, promoAte, promoNoAr, rankDe, rankingPorVendas, tagInfo } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, usePersonalizacao } from "@/lib/cardapio/personalizacao"
 import { type Tela, useNavegacao } from "@/lib/cardapio/navegacao"
 import { type Cliente, clienteAtual, curtidasSalvas, curtirNoBanco, favoritosNoBanco, registrarEvento, sairCliente, salvarCurtidas } from "@/lib/cardapio/publico"
@@ -11,7 +11,7 @@ import { ArrastarVoltar } from "./ArrastarVoltar"
 import { FolhaConta, FolhaFavoritos } from "./Favoritos"
 import { Feed } from "./Feed"
 import { DoMes, Grade, MaisPedidos } from "./Abas"
-import { type Aba, Capa, Folha, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloRank, useMenu } from "./ui"
+import { type Aba, BotaoPedir, Capa, Folha, LogoMarca, MenuContext, type MenuCtx, SeloMes, SeloPromo, SeloRank, useMenu } from "./ui"
 
 const ABAS: { id: Aba; label: string }[] = [
   { id: "feed", label: "Para você" },
@@ -20,17 +20,55 @@ const ABAS: { id: Aba; label: string }[] = [
   { id: "cardapio", label: "Cardápio" },
 ]
 
-// O convite para criar conta aparece uma vez por celular para cada ação (curtir e compartilhar)
-const jaOfereceuConta = (acao: "curtiu" | "compartilhou") => {
+// O convite para criar conta aparece uma vez por celular para cada motivo
+// (curtir, compartilhar e depois de 2 minutos no cardápio)
+type MotivoConvite = "curtiu" | "compartilhou" | "tempo"
+const jaOfereceuConta = (acao: MotivoConvite) => {
   try {
     return localStorage.getItem(`cardapio:ofereceu-conta:${acao}`) === "1"
   } catch {
     return true
   }
 }
-const marcarOfereceuConta = (acao: "curtiu" | "compartilhou") => {
+const marcarOfereceuConta = (acao: MotivoConvite) => {
   try {
     localStorage.setItem(`cardapio:ofereceu-conta:${acao}`, "1")
+  } catch {
+    /* ignora */
+  }
+}
+
+// Tempo no cardápio (só conta com a tela ligada e o cardápio aberto)
+const CONVITE_CONTA_SEG = 120 // 2 minutos: convite para criar conta
+const PEDIR_AVALIACAO_SEG = 300 // 5 minutos: "Avalie no Google"
+const sessao = {
+  ler: (k: string) => {
+    try {
+      return sessionStorage.getItem(k)
+    } catch {
+      return null
+    }
+  },
+  gravar: (k: string, v: string) => {
+    try {
+      sessionStorage.setItem(k, v)
+    } catch {
+      /* ignora */
+    }
+  },
+}
+// "Avalie no Google" aparece no máximo uma vez a cada 30 dias por celular
+const chaveAvaliacao = (slug: string) => `cardapio:pediu-avaliacao:${slug}`
+const podePedirAvaliacao = (slug: string) => {
+  try {
+    return Date.now() - Number(localStorage.getItem(chaveAvaliacao(slug)) || 0) > 30 * 24 * 3600 * 1000
+  } catch {
+    return false
+  }
+}
+const marcarPediuAvaliacao = (slug: string) => {
+  try {
+    localStorage.setItem(chaveAvaliacao(slug), String(Date.now()))
   } catch {
     /* ignora */
   }
@@ -45,11 +83,31 @@ interface Props {
 
 export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const [personalizacao] = usePersonalizacao(restaurante.slug)
+  // relógio para as promoções com horário (só no navegador, para não divergir do servidor)
+  const [agora, setAgora] = useState<Date | null>(null)
+  useEffect(() => {
+    if (!restaurante.promocoes?.length) return
+    const tick = () => setAgora(new Date())
+    const primeira = setTimeout(tick, 0)
+    const t = setInterval(tick, 30_000)
+    return () => {
+      clearTimeout(primeira)
+      clearInterval(t)
+    }
+  }, [restaurante.promocoes])
+  // ids das promoções valendo agora (texto, para só recalcular o cardápio quando mudar)
+  const promosAgora = agora ? (restaurante.promocoes ?? []).filter((p) => promoNoAr(p, agora)).map((p) => p.id).join(",") : ""
   // a personalização salva no navegador só vale para as demos (no banco, o painel grava direto)
-  const r = useMemo(
-    () => (embutido || restaurante.fonte === "banco" ? restaurante : aplicarPersonalizacao(restaurante, personalizacao)),
-    [embutido, restaurante, personalizacao],
-  )
+  const r = useMemo(() => {
+    const base = embutido || restaurante.fonte === "banco" ? restaurante : aplicarPersonalizacao(restaurante, personalizacao)
+    const ids = promosAgora.split(",")
+    return aplicarPromocoes(base, (base.promocoes ?? []).filter((p) => ids.includes(p.id)))
+  }, [embutido, restaurante, personalizacao, promosAgora])
+  // promoções no ar para o aviso do topo (as de item pausado não aparecem)
+  const promosNoAr = useMemo(() => {
+    const ids = promosAgora.split(",")
+    return (r.promocoes ?? []).filter((p) => ids.includes(p.id) && (!p.itemId || r.itens.some((i) => i.id === p.itemId)))
+  }, [r, promosAgora])
   const ranks = useMemo(() => rankDe(r.itens), [r.itens])
   const feed = useMemo(() => ordemFeed(r.itens), [r.itens])
 
@@ -60,12 +118,15 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   const [curtidosNaCarga, setCurtidosNaCarga] = useState<Set<string>>(new Set())
   const [totais, setTotais] = useState<Map<string, number>>(new Map())
   const [cliente, setCliente] = useState<Cliente | null>(null)
-  const [folha, setFolha] = useState<"favoritos" | "conta" | null>(null)
+  const [folha, setFolha] = useState<"favoritos" | "conta" | "google" | null>(null)
   // o que levou ao convite de conta (vai para a mensagem de boas-vindas)
   const [motivoConta, setMotivoConta] = useState<{ acao: "curtiu" | "compartilhou"; itemId: string } | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [splash, setSplash] = useState(!embutido)
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  // o que está na tela agora, para os avisos por tempo não abrirem por cima de outra folha
+  const estadoRef = useRef<{ livre: boolean; cliente: Cliente | null }>({ livre: false, cliente: null })
+  const ofereceuNestaVisita = useRef(false)
 
   useEffect(() => {
     if (!splash) return
@@ -93,6 +154,36 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
       vivo = false
     }
   }, [embutido, r.id, r.slug, r.fonte])
+
+  useEffect(() => {
+    estadoRef.current = { livre: !splash && folha === null && !tela.info, cliente }
+  })
+
+  // avisos por tempo no cardápio: convite de conta aos 2 min e "Avalie no Google" aos 5 min
+  useEffect(() => {
+    if (embutido) return
+    const chave = `cardapio:tempo:${r.slug}`
+    let segundos = Number(sessao.ler(chave)) || 0
+    const t = setInterval(() => {
+      if (document.visibilityState !== "visible") return
+      segundos += 5
+      sessao.gravar(chave, String(segundos))
+      const { livre, cliente: logado } = estadoRef.current
+      if (!livre) return
+      if (segundos >= CONVITE_CONTA_SEG && !logado && r.fonte === "banco" && !ofereceuNestaVisita.current && !jaOfereceuConta("tempo")) {
+        marcarOfereceuConta("tempo")
+        ofereceuNestaVisita.current = true
+        setMotivoConta(null)
+        setFolha("conta")
+        return
+      }
+      if (segundos >= PEDIR_AVALIACAO_SEG && r.googleAvaliacao && podePedirAvaliacao(r.slug)) {
+        marcarPediuAvaliacao(r.slug)
+        setFolha("google")
+      }
+    }, 5000)
+    return () => clearInterval(t)
+  }, [embutido, r.slug, r.fonte, r.googleAvaliacao])
 
   const avisar = useCallback((msg: string) => {
     setToast(msg)
@@ -157,6 +248,7 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
   function oferecerConta(acao: "curtiu" | "compartilhou", itemId: string) {
     if (cliente || embutido || r.fonte !== "banco" || jaOfereceuConta(acao)) return
     marcarOfereceuConta(acao)
+    ofereceuNestaVisita.current = true
     setMotivoConta({ acao, itemId })
     setTimeout(() => setFolha("conta"), acao === "curtiu" ? 900 : 400)
   }
@@ -191,7 +283,10 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
             {aba === "feed" ? (
               <Feed key={tela.n} itens={feed} inicioId={tela.feedId} onAtivo={lembrarPrato} />
             ) : (
-              <div className="absolute inset-0 overflow-y-auto pt-[calc(env(safe-area-inset-top)+108px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div
+                className="absolute inset-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                style={{ paddingTop: `calc(env(safe-area-inset-top) + ${promosNoAr.length ? 146 : 108}px)` }}
+              >
                 <AnimatePresence mode="wait">
                   <motion.div key={aba} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
                     {aba === "top" && <MaisPedidos />}
@@ -289,6 +384,26 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
                     )
                   })}
                 </nav>
+                {/* promoções valendo agora */}
+                {promosNoAr.length > 0 && (
+                  <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {promosNoAr.map((p) => {
+                      const it = p.itemId ? item(p.itemId) : undefined
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => it && ctx.abrirNoFeed(it.id)}
+                          className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold shadow-lg"
+                          style={{ background: "#e11d48", color: "#fff" }}
+                        >
+                          🔥 {p.titulo}
+                          {it ? ` · ${it.nome} por ${brl(it.preco)}` : p.descricao ? ` · ${p.descricao}` : ""}
+                          <span className="font-semibold opacity-80">· {promoAte(p)}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </>
               )}
             </header>
@@ -313,6 +428,39 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
                 avisar("Você saiu da sua conta")
               }}
             />
+            {/* "Avalie no Google" (depois de 5 minutos no cardápio) */}
+            <Folha aberta={folha === "google"} fechar={() => setFolha(null)}>
+              <div className="pt-2 text-center">
+                <div className="flex justify-center gap-1">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star key={i} className="h-8 w-8" fill="#FBBC04" stroke="#FBBC04" />
+                  ))}
+                </div>
+                <h3 className="mt-3 text-2xl" style={{ fontFamily: "var(--f-display)" }}>
+                  Está gostando do {r.nome}?
+                </h3>
+                <p className="mt-1 text-sm" style={{ color: "var(--c-muted)" }}>
+                  Sua avaliação no Google ajuda muito a gente. Leva menos de 1 minuto!
+                </p>
+                <a
+                  href={r.googleAvaliacao}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    registrarEvento(r.id, "avaliou")
+                    setFolha(null)
+                  }}
+                  className="mt-4 flex w-full items-center justify-center gap-2 py-3.5 font-bold"
+                  style={{ background: "var(--c-primary)", color: "var(--c-on-primary)", borderRadius: "var(--radius)" }}
+                >
+                  ⭐ Avaliar no Google
+                </a>
+                <button onClick={() => setFolha(null)} className="mt-3 w-full text-center text-sm underline" style={{ color: "var(--c-muted)" }}>
+                  Agora não
+                </button>
+              </div>
+            </Folha>
+
             <FolhaConta
               motivo={motivoConta ? { ...motivoConta, itemNome: item(motivoConta.itemId)?.nome } : null}
               aberta={folha === "conta"}
@@ -386,6 +534,7 @@ function Detalhes({ id }: { id: string }) {
   return (
     <div>
       <div className="mb-2 flex flex-wrap gap-1.5 pr-10">
+        <SeloPromo promo={it.promo} />
         <span className="rounded-full px-2 py-1 text-[10px] font-semibold" style={{ background: "color-mix(in srgb, var(--c-text) 8%, transparent)" }}>
           {cat?.emoji} {cat?.nome}
         </span>
@@ -454,6 +603,7 @@ function Detalhes({ id }: { id: string }) {
       >
         Ver o vídeo
       </button>
+      <BotaoPedir item={it} />
     </div>
   )
 }

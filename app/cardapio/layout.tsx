@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { fontesCardapio } from "@/components/cardapio/fonts"
+import { MonitorErros } from "@/components/cardapio/MonitorErros"
 
 export const metadata: Metadata = {
   title: "Cardápio em Vídeo · Ideal Automações",
@@ -13,5 +14,10 @@ export const viewport: Viewport = {
 }
 
 export default function CardapioLayout({ children }: { children: React.ReactNode }) {
-  return <div className={fontesCardapio}>{children}</div>
+  return (
+    <div className={fontesCardapio}>
+      <MonitorErros />
+      {children}
+    </div>
+  )
 }

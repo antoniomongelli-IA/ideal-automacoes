@@ -6,6 +6,10 @@
 -- =====================================================================
 
 
+-- Criptografia (códigos de recuperação de senha). No Supabase já vem instalada.
+create extension if not exists pgcrypto with schema extensions;
+
+
 -- ---------------------------------------------------------------------
 -- 1. Tabelas
 -- ---------------------------------------------------------------------
@@ -103,6 +107,58 @@ create table if not exists public.eventos (
 create index if not exists eventos_est_data on public.eventos (estabelecimento_id, criado_em);
 
 
+-- Atualizações de tabelas que já existiam (rodar o script de novo aplica nos bancos antigos).
+alter table public.estabelecimentos add column if not exists pedido_whatsapp  boolean not null default false; -- botão "Pedir pelo WhatsApp"
+alter table public.estabelecimentos add column if not exists google_avaliacao text;                           -- link "Avalie no Google"
+alter table public.clientes         add column if not exists aceita_whatsapp  boolean not null default false; -- aceitou receber mensagens
+
+-- tipos de evento: + "pediu" (Pedir pelo WhatsApp) e "avaliou" (Avalie no Google)
+alter table public.eventos drop constraint if exists eventos_tipo_check;
+alter table public.eventos add constraint eventos_tipo_check
+  check (tipo in ('abriu', 'viu', 'curtiu', 'descurtiu', 'compartilhou', 'detalhes', 'pediu', 'avaliou'));
+
+-- Promoções com dia e horário (ex.: happy hour de seg a sex, das 18h às 20h).
+create table if not exists public.promocoes (
+  id                 uuid primary key default gen_random_uuid(),
+  estabelecimento_id uuid not null references public.estabelecimentos (id) on delete cascade,
+  titulo             text not null,                     -- ex.: "Happy hour"
+  descricao          text not null default '',
+  item_id            uuid references public.itens (id) on delete cascade,  -- opcional: item em promoção
+  preco_promo        numeric(10, 2) check (preco_promo is null or preco_promo >= 0),
+  dias               int[] not null default '{0,1,2,3,4,5,6}',  -- 0 = domingo ... 6 = sábado
+  hora_inicio        time not null default '00:00',
+  hora_fim           time not null default '00:00',   -- início = fim: o dia todo; fim menor que início: passa da meia-noite
+  ativo              boolean not null default true,
+  criado_em          timestamptz not null default now()
+);
+create index if not exists promocoes_est on public.promocoes (estabelecimento_id);
+
+-- Códigos de "esqueci minha senha" (enviados pelo WhatsApp). Guardamos só o código criptografado.
+create table if not exists public.codigos_senha (
+  user_id     uuid primary key references auth.users (id) on delete cascade,
+  codigo_hash text not null,
+  expira_em   timestamptz not null,
+  tentativas  int not null default 0,
+  enviado_em  timestamptz not null default now(),
+  envios_dia  int not null default 1,
+  dia         date not null default current_date
+);
+
+-- Erros que acontecem no celular de quem usa o cardápio ou o painel.
+create table if not exists public.erros (
+  id                 bigint generated always as identity primary key,
+  estabelecimento_id uuid references public.estabelecimentos (id) on delete cascade,
+  pagina             text,
+  mensagem           text not null,
+  detalhe            text,
+  navegador          text,
+  versao             text,
+  visitante          text,
+  criado_em          timestamptz not null default now()
+);
+create index if not exists erros_data on public.erros (criado_em);
+
+
 -- ---------------------------------------------------------------------
 -- 2. Funções de apoio
 -- ---------------------------------------------------------------------
@@ -178,8 +234,13 @@ create or replace function public.criar_cliente()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if new.raw_user_meta_data ->> 'tipo' = 'cliente' then
-    insert into public.clientes (id, nome, telefone)
-    values (new.id, coalesce(new.raw_user_meta_data ->> 'nome', ''), public.telefone_com_55(new.raw_user_meta_data ->> 'telefone'))
+    insert into public.clientes (id, nome, telefone, aceita_whatsapp)
+    values (
+      new.id,
+      coalesce(new.raw_user_meta_data ->> 'nome', ''),
+      public.telefone_com_55(new.raw_user_meta_data ->> 'telefone'),
+      coalesce(new.raw_user_meta_data ->> 'aceita_whatsapp', 'false') = 'true'
+    )
     on conflict (id) do nothing;
   end if;
   return new;
@@ -202,6 +263,9 @@ alter table public.itens            enable row level security;
 alter table public.clientes         enable row level security;
 alter table public.curtidas         enable row level security;
 alter table public.eventos          enable row level security;
+alter table public.promocoes        enable row level security;
+alter table public.codigos_senha    enable row level security;
+alter table public.erros            enable row level security;
 
 -- estabelecimentos: todo mundo vê os ativos; o dono vê e edita o dele.
 drop policy if exists est_ler on public.estabelecimentos;
@@ -232,12 +296,20 @@ drop policy if exists itens_escrever on public.itens;
 create policy itens_escrever on public.itens for all to authenticated
   using (public.eh_dono(estabelecimento_id)) with check (public.eh_dono(estabelecimento_id));
 
+-- promoções: leitura pública (do que está no ar); escrita só do dono.
+drop policy if exists promo_ler on public.promocoes;
+create policy promo_ler on public.promocoes for select
+  using (public.eh_dono(estabelecimento_id) or (ativo and exists (select 1 from public.estabelecimentos e where e.id = estabelecimento_id and e.ativo)));
+drop policy if exists promo_escrever on public.promocoes;
+create policy promo_escrever on public.promocoes for all to authenticated
+  using (public.eh_dono(estabelecimento_id)) with check (public.eh_dono(estabelecimento_id));
+
 -- clientes: cada um vê e edita só o próprio cadastro.
 drop policy if exists clientes_proprio on public.clientes;
 create policy clientes_proprio on public.clientes for all to authenticated
   using (id = auth.uid()) with check (id = auth.uid());
 
--- admins, curtidas e eventos: sem acesso direto. Tudo passa pelas funções abaixo.
+-- admins, curtidas, eventos, códigos de senha e erros: sem acesso direto. Tudo passa pelas funções abaixo.
 
 
 -- ---------------------------------------------------------------------
@@ -253,6 +325,14 @@ as $$
     'id', e.id, 'slug', e.slug, 'nome', e.nome, 'nicho', e.nicho, 'cidade', e.cidade,
     'endereco', e.endereco, 'horario', e.horario, 'instagram', e.instagram, 'whatsapp', e.whatsapp,
     'branding', e.branding, 'logo_url', e.logo_url,
+    'pedido_whatsapp', e.pedido_whatsapp, 'google_avaliacao', e.google_avaliacao,
+    'promocoes', coalesce((
+      select jsonb_agg(jsonb_build_object(
+               'id', p.id, 'titulo', p.titulo, 'descricao', p.descricao, 'item_id', p.item_id, 'preco_promo', p.preco_promo,
+               'dias', p.dias, 'hora_inicio', to_char(p.hora_inicio, 'HH24:MI'), 'hora_fim', to_char(p.hora_fim, 'HH24:MI'))
+             order by p.criado_em)
+      from promocoes p where p.estabelecimento_id = e.id and p.ativo
+    ), '[]'::jsonb),
     'categorias', coalesce((
       select jsonb_agg(jsonb_build_object('id', c.id, 'nome', c.nome, 'emoji', c.emoji) order by c.ordem, c.nome)
       from categorias c where c.estabelecimento_id = e.id
@@ -374,7 +454,7 @@ begin
   for ev in select * from jsonb_array_elements(coalesce(p_eventos, '[]'::jsonb)) loop
     v_n := v_n + 1;
     exit when v_n > 50;
-    continue when coalesce(ev ->> 'tipo', '') not in ('abriu', 'viu', 'compartilhou', 'detalhes');
+    continue when coalesce(ev ->> 'tipo', '') not in ('abriu', 'viu', 'compartilhou', 'detalhes', 'pediu', 'avaliou');
     v_item := null;
     if ev ? 'item' then
       begin
@@ -414,6 +494,9 @@ begin
       count(*) filter (where tipo = 'curtiu' and criado_em > v_ini)                  as curtidas,
       count(*) filter (where tipo = 'compartilhou' and criado_em > v_ini)            as compartilhamentos,
       count(*) filter (where tipo = 'detalhes' and criado_em > v_ini)                as detalhes,
+      count(*) filter (where tipo = 'pediu' and criado_em > v_ini)                   as pedidos_whatsapp,
+      count(*) filter (where tipo = 'pediu' and criado_em <= v_ini)                  as pedidos_whatsapp_ant,
+      count(*) filter (where tipo = 'avaliou' and criado_em > v_ini)                 as avaliacoes_google,
       count(distinct visitante) filter (where tipo = 'abriu' and criado_em <= v_ini) as pessoas_ant,
       count(*) filter (where tipo = 'viu' and criado_em <= v_ini)                    as visualizacoes_ant,
       count(*) filter (where tipo = 'curtiu' and criado_em <= v_ini)                 as curtidas_ant,
@@ -442,6 +525,7 @@ begin
            count(*) filter (where ev.tipo = 'viu')          as visualizacoes,
            count(*) filter (where ev.tipo = 'detalhes')     as detalhes,
            count(*) filter (where ev.tipo = 'compartilhou') as compartilhamentos,
+           count(*) filter (where ev.tipo = 'pediu')        as pedidos_whatsapp,
            (select count(*) from curtidas k where k.item_id = i.id) as curtidas
     from itens i
     left join ev on ev.item_id = i.id and ev.criado_em > v_ini
@@ -461,12 +545,162 @@ begin
 end;
 $$;
 
+-- ---- Esqueci minha senha (cliente final e dono), com código pelo WhatsApp ----
+-- Cliente: entra com o telefone; o código vai para o telefone dele.
+-- Dono:    entra com o e-mail; o código vai para o WhatsApp do estabelecimento (aba "Dados do local").
+-- O envio é feito pelo n8n (evento "recuperar_senha" no webhook.sql).
+
+-- Acha a conta pelo login (telefone ou e-mail). Uso interno.
+create or replace function public.conta_do_login(p_login text, out user_id uuid, out tipo text, out nome text, out telefone text, out estabelecimento text)
+language plpgsql stable security definer set search_path = public
+as $$
+begin
+  if position('@' in coalesce(p_login, '')) > 0 then
+    tipo := 'dono';
+    select u.id into user_id from auth.users u where lower(u.email) = lower(trim(p_login));
+    if user_id is null then return; end if;
+    select e.nome, e.whatsapp into estabelecimento, telefone
+      from estabelecimentos e where e.dono_id = user_id order by e.criado_em limit 1;
+    nome := estabelecimento;
+  else
+    tipo := 'cliente';
+    select c.id, c.nome, c.telefone into user_id, nome, telefone
+      from clientes c where c.telefone = public.telefone_com_55(p_login);
+  end if;
+  telefone := nullif(public.telefone_com_55(telefone), '');
+end;
+$$;
+
+-- Gera e envia o código. Respostas: ok | aguarde | limite | sem_whatsapp
+-- (com telefone/e-mail que não existe, responde "ok" do mesmo jeito, para não revelar quem tem conta)
+create or replace function public.pedir_codigo_senha(p_login text, p_origem text default null)
+returns text
+language plpgsql volatile security definer set search_path = public, extensions
+as $$
+declare
+  c        record;
+  v_reg    codigos_senha%rowtype;
+  v_codigo text;
+  v_est    text;
+begin
+  select * into c from public.conta_do_login(p_login);
+  if c.user_id is null then
+    return 'ok';
+  end if;
+  if c.telefone is null then
+    return 'sem_whatsapp';
+  end if;
+
+  select * into v_reg from codigos_senha where user_id = c.user_id;
+  if found and v_reg.enviado_em > now() - interval '60 seconds' then
+    return 'aguarde';
+  end if;
+  if found and v_reg.dia = current_date and v_reg.envios_dia >= 5 then
+    return 'limite';
+  end if;
+
+  -- 6 dígitos aleatórios
+  v_codigo := lpad(((('x' || encode(extensions.gen_random_bytes(3), 'hex'))::bit(24)::int) % 1000000)::text, 6, '0');
+
+  insert into codigos_senha (user_id, codigo_hash, expira_em, tentativas, enviado_em, envios_dia, dia)
+  values (c.user_id, extensions.crypt(v_codigo, extensions.gen_salt('bf')), now() + interval '10 minutes', 0, now(), 1, current_date)
+  on conflict (user_id) do update set
+    codigo_hash = excluded.codigo_hash,
+    expira_em   = excluded.expira_em,
+    tentativas  = 0,
+    enviado_em  = now(),
+    envios_dia  = case when codigos_senha.dia = current_date then codigos_senha.envios_dia + 1 else 1 end,
+    dia         = current_date;
+
+  v_est := coalesce(c.estabelecimento, (select nome from estabelecimentos where slug = p_origem));
+  perform public.avisar_webhook(jsonb_build_object(
+    'evento', 'recuperar_senha',
+    'tipo', c.tipo,                 -- "cliente" ou "dono"
+    'nome', c.nome,
+    'primeiro_nome', split_part(coalesce(c.nome, ''), ' ', 1),
+    'telefone', c.telefone,         -- 55 + DDD + número
+    'codigo', v_codigo,
+    'validade_minutos', 10,
+    'estabelecimento_nome', v_est
+  ));
+  return 'ok';
+end;
+$$;
+
+-- Confere o código e troca a senha. Respostas: ok | codigo_invalido | expirado | tentativas | senha_curta
+create or replace function public.redefinir_senha(p_login text, p_codigo text, p_senha text)
+returns text
+language plpgsql volatile security definer set search_path = public, extensions
+as $$
+declare
+  c     record;
+  v_reg codigos_senha%rowtype;
+begin
+  select * into c from public.conta_do_login(p_login);
+  if c.user_id is null then
+    return 'codigo_invalido';
+  end if;
+  select * into v_reg from codigos_senha where user_id = c.user_id;
+  if not found then
+    return 'codigo_invalido';
+  end if;
+  if v_reg.tentativas >= 5 then
+    return 'tentativas';
+  end if;
+  if v_reg.expira_em < now() then
+    return 'expirado';
+  end if;
+  if v_reg.codigo_hash <> extensions.crypt(trim(coalesce(p_codigo, '')), v_reg.codigo_hash) then
+    update codigos_senha set tentativas = tentativas + 1 where user_id = c.user_id;
+    return 'codigo_invalido';
+  end if;
+  if length(coalesce(p_senha, '')) < 6 then
+    return 'senha_curta';
+  end if;
+
+  update auth.users
+     set encrypted_password = extensions.crypt(p_senha, extensions.gen_salt('bf', 10)),
+         updated_at = now()
+   where id = c.user_id;
+  delete from codigos_senha where user_id = c.user_id;
+  return 'ok';
+end;
+$$;
+
+-- Erros do site (cardápio e painel). O webhook.sql avisa no n8n (no máximo 1 aviso por erro igual a cada hora).
+create or replace function public.registrar_erro(
+  p_slug text, p_pagina text, p_mensagem text, p_detalhe text, p_navegador text, p_versao text, p_visitante text
+)
+returns void
+language plpgsql volatile security definer set search_path = public
+as $$
+begin
+  if coalesce(trim(p_mensagem), '') = '' then
+    return;
+  end if;
+  -- trava contra excesso: 20 por aparelho e 300 no total por hora
+  if (select count(*) from erros where visitante = p_visitante and criado_em > now() - interval '1 hour') >= 20
+     or (select count(*) from erros where criado_em > now() - interval '1 hour') >= 300 then
+    return;
+  end if;
+  insert into erros (estabelecimento_id, pagina, mensagem, detalhe, navegador, versao, visitante)
+  values (
+    (select id from estabelecimentos where slug = p_slug),
+    left(p_pagina, 300), left(p_mensagem, 500), left(p_detalhe, 4000), left(p_navegador, 300), left(p_versao, 40), left(p_visitante, 80)
+  );
+  -- guarda só os últimos 30 dias
+  delete from erros where criado_em < now() - interval '30 days';
+end;
+$$;
+
 -- Permissões das funções: o site (anon) pode chamar as públicas; as internas, não.
 -- eh_dono precisa ficar liberada: as regras de leitura usam ela até para visitantes (devolve "não").
 grant execute on function public.eh_dono(uuid), public.eh_dono_pasta(text) to anon, authenticated;
 grant execute on function public.cardapio_publico(text), public.slug_disponivel(text),
   public.curtir(uuid, text, boolean), public.meus_favoritos(uuid, text),
-  public.registrar_eventos(uuid, text, jsonb) to anon, authenticated;
+  public.registrar_eventos(uuid, text, jsonb), public.pedir_codigo_senha(text, text),
+  public.redefinir_senha(text, text, text), public.registrar_erro(text, text, text, text, text, text, text) to anon, authenticated;
+revoke execute on function public.conta_do_login(text) from public, anon, authenticated;
 grant execute on function public.vincular_curtidas(text), public.resumo_painel(uuid, int) to authenticated;
 revoke execute on function public.vincular_curtidas(text), public.resumo_painel(uuid, int) from public, anon;
 

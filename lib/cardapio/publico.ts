@@ -118,7 +118,13 @@ export interface ContextoConta {
   itemNome?: string
 }
 
-export async function cadastrarCliente(nome: string, telefone: string, senha: string, ctx?: ContextoConta): Promise<{ cliente?: Cliente; erro?: string }> {
+export async function cadastrarCliente(
+  nome: string,
+  telefone: string,
+  senha: string,
+  aceitaMensagens: boolean,
+  ctx?: ContextoConta,
+): Promise<{ cliente?: Cliente; erro?: string }> {
   if (!supabaseConfigurado) return { erro: "Disponível quando o cardápio estiver ligado ao banco." }
   const tel = normalizarTelefone(telefone)
   if (nome.trim().length < 2) return { erro: "Digite seu nome." }
@@ -132,6 +138,8 @@ export async function cadastrarCliente(nome: string, telefone: string, senha: st
         tipo: "cliente",
         nome: nome.trim(),
         telefone: tel,
+        // aceitou receber mensagens no WhatsApp (a caixinha do cadastro)
+        aceita_whatsapp: aceitaMensagens,
         origem: ctx?.origem,
         acao: ctx?.acao,
         item_id: ctx?.itemId,
@@ -164,7 +172,7 @@ export async function sairCliente() {
 
 // ---------------------------------------------------------------- eventos para o painel
 
-type TipoEvento = "abriu" | "viu" | "compartilhou" | "detalhes"
+type TipoEvento = "abriu" | "viu" | "compartilhou" | "detalhes" | "pediu" | "avaliou"
 let fila: { tipo: TipoEvento; item?: string }[] = []
 let estFila = ""
 let timer: ReturnType<typeof setTimeout> | undefined

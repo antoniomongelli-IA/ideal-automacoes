@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import type { Item } from "@/lib/cardapio/types"
 import { ChefHat, Crown, Flame, Play, Search, TrendingDown, TrendingUp } from "lucide-react"
 import { brl, compacto, crescimento, maisPedidos, mesAtual, rankingPorVendas } from "@/lib/cardapio/utils"
-import { AutoVideo, Capa, SeloMes, SeloRank, useMenu } from "./ui"
+import { AutoVideo, Capa, SeloMes, SeloPromo, SeloRank, useMenu } from "./ui"
 
 const card = { borderRadius: "var(--radius)", background: "var(--c-surface)" }
 
@@ -287,6 +287,7 @@ export function Grade() {
                         <Capa item={it} sizes="220px" />
                         <span className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                         <span className="absolute left-2 top-2 flex flex-col items-start gap-1">
+                          <SeloPromo promo={it.promo} />
                           {it.destaqueDoMes && <SeloMes />}
                           <SeloRank rank={rank} />
                         </span>
@@ -296,7 +297,14 @@ export function Grade() {
                       </span>
                       <span className="block p-2.5">
                         <span className="line-clamp-2 block text-sm font-semibold leading-tight">{it.nome}</span>
-                        <span className="mt-2 block font-extrabold">{brl(it.preco)}</span>
+                        <span className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
+                          <span className="font-extrabold">{brl(it.preco)}</span>
+                          {it.promo && it.precoAntigo && (
+                            <span className="text-xs line-through" style={{ color: "var(--c-muted)" }}>
+                              {brl(it.precoAntigo)}
+                            </span>
+                          )}
+                        </span>
                       </span>
                     </div>
                   )

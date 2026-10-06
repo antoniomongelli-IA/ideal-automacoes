@@ -17,6 +17,8 @@ export interface EstabelecimentoBanco {
   branding: Partial<Branding>
   logo_url: string | null
   ativo: boolean
+  pedido_whatsapp: boolean
+  google_avaliacao: string | null
 }
 
 export const traduzirErro = (msg: string) => {
@@ -57,7 +59,7 @@ export async function meusEstabelecimentos(): Promise<EstabelecimentoBanco[]> {
   const sb = supabaseNavegador()
   // eh_dono de um id que não existe só dá verdadeiro para quem é admin
   const { data: admin } = await sb.rpc("eh_dono", { p_est: "00000000-0000-0000-0000-000000000000" })
-  const consulta = sb.from("estabelecimentos").select("id, slug, nome, nicho, cidade, endereco, horario, instagram, whatsapp, branding, logo_url, ativo").order("criado_em")
+  const consulta = sb.from("estabelecimentos").select("id, slug, nome, nicho, cidade, endereco, horario, instagram, whatsapp, branding, logo_url, ativo, pedido_whatsapp, google_avaliacao").order("criado_em")
   const { data } = admin ? await consulta : await consulta.eq("dono_id", u.id)
   return (data as EstabelecimentoBanco[]) ?? []
 }

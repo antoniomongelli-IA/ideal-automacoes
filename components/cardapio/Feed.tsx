@@ -6,7 +6,7 @@ import type { Item } from "@/lib/cardapio/types"
 import { brl, capaDe, compacto, tagInfo, videosDe } from "@/lib/cardapio/utils"
 import { registrarView } from "@/lib/cardapio/personalizacao"
 import { registrarEvento } from "@/lib/cardapio/publico"
-import { Capa, SeloMes, SeloRank, useMenu } from "./ui"
+import { BotaoPedir, Capa, SeloMes, SeloPromo, SeloRank, useMenu } from "./ui"
 
 export function Feed({ itens, inicioId, onAtivo }: { itens: Item[]; inicioId?: string; onAtivo?: (id: string) => void }) {
   const { r } = useMenu()
@@ -186,6 +186,7 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
       {/* legenda */}
       <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-[calc(env(safe-area-inset-bottom)+28px)] pr-20 text-white">
         <div className="mb-2 flex flex-wrap gap-1.5">
+          <SeloPromo promo={item.promo} />
           {item.destaqueDoMes && <SeloMes />}
           <SeloRank rank={rank} />
           {item.tags?.map((t) => (
@@ -218,6 +219,9 @@ function Slide({ item, ativo, perto, prioridade }: { item: Item; ativo: boolean;
             {brl(item.preco)}
           </span>
           {item.precoAntigo && <span className="text-sm text-white/60 line-through">{brl(item.precoAntigo)}</span>}
+          <span className="ml-auto">
+            <BotaoPedir item={item} variante="feed" />
+          </span>
         </div>
         {combina && (
           <button

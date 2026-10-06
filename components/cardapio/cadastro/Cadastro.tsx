@@ -185,7 +185,7 @@ export function Cadastro() {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <Campo id="cad-cidade" l="Cidade" v={cidade} on={setCidade} placeholder="Campo Grande · MS" />
-                  <Campo id="cad-whats" l="WhatsApp" v={whatsapp} on={setWhatsapp} placeholder="(67) 99999-9999" />
+                  <Campo id="cad-whats" l="WhatsApp" v={whatsapp} on={setWhatsapp} placeholder="(67) 99999-9999" dica="Recebe o código se você esquecer a senha" />
                   <Campo id="cad-insta" l="Instagram" v={instagram} on={setInstagram} placeholder="@seuperfil" />
                 </div>
               </div>

@@ -73,10 +73,24 @@ No **SQL Editor**, rode o arquivo [`supabase/webhook.sql`](../../supabase/webhoo
 A partir daí, o banco manda um POST em JSON para o webhook:
 
 - `"evento": "novo_estabelecimento"` → nome, slug, link, nicho, cidade, WhatsApp, Instagram e e-mail do dono.
-- `"evento": "novo_cliente"` → nome, telefone e de qual estabelecimento a pessoa veio.
+- `"evento": "novo_cliente"` → nome, telefone (sempre 55 + DDD + número), de qual estabelecimento veio, o item que curtiu/compartilhou, os links e `aceita_mensagens` (só mande mensagem se for `true`).
+- `"evento": "recuperar_senha"` → alguém tocou em “Esqueci minha senha”: telefone e o `codigo` de 6 números para mandar no WhatsApp. Cliente final recebe no próprio telefone; dono recebe no WhatsApp do estabelecimento.
+- `"evento": "erro_cardapio"` → o site deu erro no celular de alguém (página, erro, celular, versão). No máximo 1 aviso por erro igual a cada hora.
 
-No n8n, use um nó **Switch** no campo `evento` para tratar cada caso. Se o webhook estiver fora do ar, o cadastro continua funcionando normalmente (o aviso só é perdido).
+Se o webhook estiver fora do ar, o cadastro continua funcionando normalmente (o aviso só é perdido).
 Para ver se os avisos saíram: **Database → Extensions → pg_net**, ou rode `select * from net._http_response order by created desc limit 10;`.
+
+## 9. Fluxo pronto no n8n (código de senha, aceite e erros)
+
+1. Abra o arquivo [`docs/cardapio/n8n-avisos.json`](n8n-avisos.json) no GitHub e copie com o botão **“Copy raw file”**.
+2. No n8n, abra o fluxo que já tem o Webhook do cardápio, clique numa área vazia e aperte **Ctrl+V** (no Mac, Cmd+V). Os nós aparecem colados.
+3. Ligue a saída do seu **Webhook** na entrada do nó **Tipo de aviso**.
+4. Saída **Boas-vindas** → ligue no seu fluxo de boas-vindas que já existe (ela só deixa passar quem marcou “Aceito receber mensagens”).
+5. Nos nós **Enviar … no WhatsApp**, troque endereço, instância e apikey pelos da sua API de WhatsApp (ou apague e use o seu nó de envio com `{{ $json.telefone }}` e `{{ $json.mensagem }}`).
+6. No nó **Mensagem de erro**, troque `MEU_NUMERO` pelo seu WhatsApp (55 + DDD + número).
+7. Salve e deixe o fluxo **ativo**.
+
+Para ver os erros guardados no banco: **SQL Editor** → `select criado_em, pagina, mensagem, navegador from erros order by criado_em desc limit 50;`
 
 ---
 
@@ -109,10 +123,20 @@ Conta rápida: uma pessoa que vê 10 vídeos baixa uns 20 a 40 MB. No plano grá
 ## Como funcionam curtidas, favoritos e a conta do cliente
 
 - **Curtir** (❤️ ou dois toques no vídeo) soma na contagem do item **na hora**, sem pedir cadastro. Cada celular conta uma vez por item.
-- Na **primeira curtida**, aparece uma vez o convite “Salve seus favoritos”: nome, telefone e senha. É opcional.
+- Na **primeira curtida** (e no primeiro compartilhamento), aparece uma vez o convite “Salve seus favoritos”: nome, telefone e senha. É opcional.
+- Quem fica **2 minutos** no cardápio sem conta também recebe o convite (uma vez por celular).
+- A caixinha **“Aceito receber mensagens no WhatsApp”** já vem marcada; a pessoa pode desmarcar. Vai no aviso do webhook como `aceita_mensagens`.
+- **Esqueci minha senha**: a pessoa digita o telefone, recebe um código de 6 números no WhatsApp (vale 10 minutos, até 5 tentativas e 5 pedidos por dia) e cria a senha nova. O dono faz o mesmo em `/cardapio/entrar`, com o e-mail; o código vai para o WhatsApp do estabelecimento.
 - O botão ❤️ no topo mostra **Meus favoritos**. Com conta, os favoritos aparecem em qualquer celular, em qualquer visita.
 - Nada é enviado por SMS ou e-mail: o login do cliente é telefone + senha.
 - O telefone é sempre salvo como **55 + DDD + número**, só dígitos (ex.: `5567999998888`), pronto para o WhatsApp. O campo já mostra o +55 fixo; a pessoa digita só DDD e número.
+
+## Promoções, pedidos e avaliações
+
+- **Pausar item** (aba Itens): o item some do cardápio sem ser apagado. “Voltar ao cardápio” traz de volta.
+- **Promoções** (aba Promoções): nome, item (opcional), preço promocional, dias da semana e horário. Só aparecem no horário marcado: aviso no topo e o preço promocional no item (com o preço normal riscado).
+- **Pedir pelo WhatsApp** (aba Dados do local): botão “Pedir” em cada item, que abre o WhatsApp do estabelecimento com o nome do item, o preço e o link.
+- **Avalie no Google** (aba Dados do local): cole o link de avaliação; depois de 5 minutos no cardápio aparece o convite (no máximo 1 vez por mês por celular).
 
 ## Link de cada item
 
@@ -129,6 +153,8 @@ O cardápio registra eventos anônimos (sem nome nem telefone) e o banco soma:
 | Vídeos assistidos | quando alguém para pelo menos 1 segundo num item |
 | Curtidas | curtidas novas no período (curtir duas vezes não soma) |
 | Compartilhamentos | toques em “Enviar” num item |
+| Pedidos pelo WhatsApp | toques no botão “Pedir” |
+| Cliques em “Avaliar no Google” | toques no convite de avaliação |
 | Itens mais assistidos | ranking por vídeos assistidos |
 | Horários de mais movimento | horas do dia em que mais gente abre o cardápio |
 | Clientes com conta | quantas pessoas criaram conta para guardar favoritos |

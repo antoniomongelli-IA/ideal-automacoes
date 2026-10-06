@@ -2,10 +2,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowDown, ArrowUp, BarChart3, Check, Copy, Crown, ExternalLink, Eye, EyeOff, LayoutList, Loader2, LogOut, Palette, Pencil, Plus, Smartphone, Store, Tags, Trash2 } from "lucide-react"
+import { ArrowDown, ArrowUp, BarChart3, Check, Copy, Crown, ExternalLink, LayoutList, Loader2, LogOut, Palette, Pause, Pencil, Percent, Play, Plus, Smartphone, Store, Tags, Trash2 } from "lucide-react"
 import { supabaseConfigurado, supabaseNavegador } from "@/lib/supabase/cliente"
 import { type EstabelecimentoBanco, meusEstabelecimentos, sairDono, usuarioLogado } from "@/lib/cardapio/dono"
-import { type CategoriaBanco, type ItemBanco, paraRestaurante } from "@/lib/cardapio/mapear"
+import { type CategoriaBanco, type ItemBanco, paraRestaurante, type PromocaoBanco } from "@/lib/cardapio/mapear"
 import { brandingPadrao } from "@/lib/cardapio/nichos"
 import { apagarArquivo, enviarArquivo } from "@/lib/cardapio/uploads"
 import { brl, FONTES } from "@/lib/cardapio/utils"
@@ -15,11 +15,13 @@ import { LogoMarca } from "../../ui"
 import { Campo, EditorMarca } from "../../marca/EditorMarca"
 import { EditorItem } from "./EditorItem"
 import { Resultados } from "./Resultados"
+import { AbaPromocoes } from "./AbaPromocoes"
 
-type Aba = "resultados" | "itens" | "categorias" | "marca" | "dados"
+type Aba = "resultados" | "itens" | "promocoes" | "categorias" | "marca" | "dados"
 const ABAS: { id: Aba; l: string; i: typeof BarChart3 }[] = [
   { id: "resultados", l: "Resultados", i: BarChart3 },
   { id: "itens", l: "Itens", i: LayoutList },
+  { id: "promocoes", l: "Promoções", i: Percent },
   { id: "categorias", l: "Categorias", i: Tags },
   { id: "marca", l: "Marca", i: Palette },
   { id: "dados", l: "Dados do local", i: Store },
@@ -35,6 +37,7 @@ export function PainelDono() {
   const [est, setEst] = useState<EstabelecimentoBanco | null>(null)
   const [categorias, setCategorias] = useState<CategoriaBanco[]>([])
   const [itens, setItens] = useState<ItemBanco[]>([])
+  const [promocoes, setPromocoes] = useState<PromocaoBanco[]>([])
   const [aba, setAba] = useState<Aba>(novo ? "itens" : "resultados")
   const [editando, setEditando] = useState<{ item?: ItemBanco; categoria?: string | null } | null>(null)
   const [aviso, setAviso] = useState("")
@@ -47,12 +50,14 @@ export function PainelDono() {
   const abrir = useCallback(async (e: EstabelecimentoBanco) => {
     setEst(e)
     const sb = supabaseNavegador()
-    const [c, i] = await Promise.all([
+    const [c, i, p] = await Promise.all([
       sb.from("categorias").select("id, nome, emoji, ordem").eq("estabelecimento_id", e.id).order("ordem"),
       sb.from("itens").select("*").eq("estabelecimento_id", e.id).order("ordem"),
+      sb.from("promocoes").select("*").eq("estabelecimento_id", e.id).order("criado_em"),
     ])
     setCategorias((c.data as CategoriaBanco[]) ?? [])
     setItens((i.data as ItemBanco[]) ?? [])
+    setPromocoes((p.data as PromocaoBanco[]) ?? [])
   }, [])
 
   useEffect(() => {
@@ -73,7 +78,7 @@ export function PainelDono() {
     return b
   }, [est])
 
-  const previa = useMemo(() => (est ? paraRestaurante({ ...est, logo_url: est.logo_url, branding }, categorias, itens) : null), [est, branding, categorias, itens])
+  const previa = useMemo(() => (est ? paraRestaurante({ ...est, logo_url: est.logo_url, branding }, categorias, itens, promocoes) : null), [est, branding, categorias, itens, promocoes])
 
   if (!supabaseConfigurado)
     return (
@@ -219,7 +224,7 @@ export function PainelDono() {
         </nav>
       </header>
 
-      {aviso && <div className="fixed left-1/2 top-24 z-50 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-black shadow-xl">{aviso}</div>}
+      {aviso && <div className="fixed left-1/2 top-24 z-50 w-max max-w-[90vw] -translate-x-1/2 rounded-full bg-white px-4 py-2 text-center text-sm font-semibold text-black shadow-xl">{aviso}</div>}
 
       <div className={`mx-auto grid max-w-[1400px] gap-6 px-4 py-6 md:px-8 ${aba === "resultados" ? "" : "xl:grid-cols-[1fr_360px]"}`}>
         <main className="min-w-0">
@@ -234,9 +239,15 @@ export function PainelDono() {
 
           {aba === "itens" && (
             <div className="space-y-5">
+              {itens.some((i) => !i.ativo) && (
+                <div className="rounded-2xl border border-amber-300/30 bg-amber-300/10 p-3 text-sm text-amber-100">
+                  ⏸ {itens.filter((i) => !i.ativo).length} {itens.filter((i) => !i.ativo).length === 1 ? "item pausado" : "itens pausados"}: não aparecem no cardápio. Quando voltar a ter, toque em
+                  “Voltar ao cardápio”.
+                </div>
+              )}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm text-white/60">
-                  {itens.length} {itens.length === 1 ? "item" : "itens"} · toque em um item para editar
+                  {itens.length} {itens.length === 1 ? "item" : "itens"} · toque em um item para editar · “Pausar” tira do cardápio sem apagar (ex.: acabou hoje)
                 </p>
                 <button onClick={() => setEditando({ categoria: categorias[0]?.id ?? null })} className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-black">
                   <Plus className="h-4 w-4" /> Novo item
@@ -257,8 +268,8 @@ export function PainelDono() {
                     {lista
                       .sort((a, b) => a.ordem - b.ordem)
                       .map((it) => (
-                        <li key={it.id} className={`flex items-center gap-3 rounded-xl p-2 hover:bg-white/[0.04] ${it.ativo ? "" : "opacity-50"}`}>
-                          <button onClick={() => setEditando({ item: it })} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                        <li key={it.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl p-2 hover:bg-white/[0.04]">
+                          <button onClick={() => setEditando({ item: it })} className={`flex min-w-[220px] flex-1 items-center gap-3 text-left ${it.ativo ? "" : "opacity-50"}`}>
                             <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-white/[0.06]">
                               {(it.poster_url || it.foto_url) && (
                                 // eslint-disable-next-line @next/next/no-img-element
@@ -275,12 +286,20 @@ export function PainelDono() {
                                 {brl(Number(it.preco))}
                                 {!it.video_url && !it.foto_url && <span className="ml-2 text-amber-300">· sem foto/vídeo</span>}
                               </span>
+                              {!it.ativo && <span className="block text-xs font-semibold text-amber-300">⏸ Pausado · fora do cardápio</span>}
                             </span>
                           </button>
-                          <div className="flex items-center gap-0.5">
-                            <IconeBtn titulo={it.ativo ? "Esconder do cardápio" : "Mostrar no cardápio"} onClick={() => atualizarItem(it.id, { ativo: !it.ativo })}>
-                              {it.ativo ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                            </IconeBtn>
+                          <div className="ml-auto flex items-center gap-0.5">
+                            <button
+                              onClick={() => {
+                                atualizarItem(it.id, { ativo: !it.ativo })
+                                avisar(it.ativo ? `“${it.nome}” pausado: saiu do cardápio` : `“${it.nome}” voltou ao cardápio`)
+                              }}
+                              className={`mr-1 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold ${it.ativo ? "border border-white/15 text-white/75 hover:bg-white/5" : "bg-emerald-400 text-black"}`}
+                            >
+                              {it.ativo ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                              {it.ativo ? "Pausar" : "Voltar ao cardápio"}
+                            </button>
                             <IconeBtn titulo="Item do mês" onClick={() => atualizarItem(it.id, { destaque_mes: !it.destaque_mes })}>
                               <Crown className={`h-4 w-4 ${it.destaque_mes ? "text-amber-300" : ""}`} fill={it.destaque_mes ? "currentColor" : "none"} />
                             </IconeBtn>
@@ -304,6 +323,8 @@ export function PainelDono() {
               ))}
             </div>
           )}
+
+          {aba === "promocoes" && <AbaPromocoes estId={est.id} promocoes={promocoes} mudarPromocoes={setPromocoes} itens={itens} avisar={avisar} />}
 
           {aba === "categorias" && (
             <div className={`${card} space-y-2 p-4`}>
@@ -476,6 +497,8 @@ function AbaDados({ est, salvarEst }: { est: EstabelecimentoBanco; salvarEst: (m
         </div>
       </div>
 
+      <AbaExtras est={est} salvarEst={salvarEst} />
+
       <div className={`${card} flex flex-wrap items-center justify-between gap-3 p-5`}>
         <div>
           <div className="font-semibold">{est.ativo ? "Cardápio no ar" : "Cardápio fora do ar"}</div>
@@ -484,6 +507,50 @@ function AbaDados({ est, salvarEst }: { est: EstabelecimentoBanco; salvarEst: (m
         <button onClick={() => salvarEst({ ativo: !est.ativo }, est.ativo ? "Cardápio tirado do ar" : "Cardápio no ar")} className="rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold">
           {est.ativo ? "Tirar do ar" : "Colocar no ar"}
         </button>
+      </div>
+    </div>
+  )
+}
+
+/** Botão "Pedir pelo WhatsApp" e link "Avalie no Google". */
+function AbaExtras({ est, salvarEst }: { est: EstabelecimentoBanco; salvarEst: (m: Partial<EstabelecimentoBanco>, msg?: string) => Promise<void> }) {
+  const [google, setGoogle] = useState(est.google_avaliacao ?? "")
+  const linkValido = !google || /^https?:\/\/\S+$/.test(google.trim())
+  return (
+    <div className={`${card} space-y-5 p-5`}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="max-w-md">
+          <div className="font-semibold">Pedir pelo WhatsApp</div>
+          <p className="text-sm text-white/55">
+            Mostra o botão “Pedir” em cada item. O cliente cai no WhatsApp do estabelecimento com a mensagem pronta (nome do item, preço e link).
+          </p>
+          {!est.whatsapp && <p className="mt-1 text-sm text-amber-300">Preencha o WhatsApp acima e salve para poder ligar.</p>}
+        </div>
+        <button
+          disabled={!est.whatsapp}
+          onClick={() => salvarEst({ pedido_whatsapp: !est.pedido_whatsapp }, est.pedido_whatsapp ? "Botão de pedido desligado" : "Botão “Pedir pelo WhatsApp” ligado")}
+          className={`rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-40 ${est.pedido_whatsapp ? "bg-emerald-400 text-black" : "border border-white/15"}`}
+        >
+          {est.pedido_whatsapp ? "Ligado" : "Desligado"}
+        </button>
+      </div>
+
+      <div className="border-t border-white/[0.07] pt-5">
+        <div className="font-semibold">Avalie no Google</div>
+        <p className="mb-3 text-sm text-white/55">
+          Depois de 5 minutos no cardápio, aparece um convite para o cliente avaliar o estabelecimento no Google (no máximo 1 vez por mês para cada pessoa). Deixe vazio para não mostrar.
+        </p>
+        <Campo id="dados-google" l="Link de avaliação do Google" v={google} on={setGoogle} placeholder="https://g.page/r/.../review" dica="Como pegar: no Google, abra o Perfil da Empresa → “Pedir avaliações” → copie o link." />
+        {!linkValido && <p className="mt-1 text-sm text-rose-400">Cole o link completo, começando com https://</p>}
+        <div className="mt-3 flex justify-end">
+          <button
+            disabled={!linkValido}
+            onClick={() => salvarEst({ google_avaliacao: google.trim() || null }, google.trim() ? "Link do Google salvo" : "Convite do Google desligado")}
+            className="rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black disabled:opacity-40"
+          >
+            Salvar link
+          </button>
+        </div>
       </div>
     </div>
   )

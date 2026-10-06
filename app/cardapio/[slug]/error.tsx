@@ -1,11 +1,14 @@
 "use client"
 import { useEffect } from "react"
+import { relatarErro } from "@/lib/cardapio/erros"
 
 // Se algo der errado no cardápio, mostra uma tela própria em vez da tela genérica
 // do Next, com a mensagem do erro e a versão do site para sabermos o que houve.
 export default function ErroCardapio({ error, unstable_retry }: { error: Error & { digest?: string }; unstable_retry: () => void }) {
   useEffect(() => {
     console.error(error)
+    // avisa no banco/n8n que o cardápio travou no celular de alguém
+    relatarErro(error, `tela de erro do cardápio${error.digest ? ` · digest ${error.digest}` : ""}`)
   }, [error])
 
   return (

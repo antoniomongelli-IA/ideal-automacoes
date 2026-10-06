@@ -63,6 +63,24 @@ export interface Item {
   combinaCom?: string
   destaqueDoMes?: boolean
   notaDoChef?: string
+  /** Promoção valendo agora (preenchido no cardápio a partir de `Restaurante.promocoes`) */
+  promo?: { titulo: string; ate: string }
+}
+
+/** Promoção com dia e horário, configurada pelo dono no painel. */
+export interface Promocao {
+  id: string
+  titulo: string
+  descricao: string
+  /** item em promoção (opcional: sem item, vira só um aviso no topo) */
+  itemId?: string
+  /** preço durante a promoção (opcional) */
+  precoPromo?: number
+  /** dias da semana: 0 = domingo ... 6 = sábado */
+  dias: number[]
+  /** "HH:MM". Início = fim: o dia todo. Fim menor que o início: passa da meia-noite. */
+  inicio: string
+  fim: string
 }
 
 export interface Restaurante {
@@ -77,6 +95,11 @@ export interface Restaurante {
   instagram: string
   whatsapp?: string
   nicho?: string
+  /** mostra o botão "Pedir pelo WhatsApp" nos itens (precisa do `whatsapp`) */
+  pedidoWhatsapp?: boolean
+  /** link para avaliar no Google (aparece depois de 5 min no cardápio) */
+  googleAvaliacao?: string
+  promocoes?: Promocao[]
   /** "banco" = Supabase; "demo" = arquivos do projeto */
   fonte?: "banco" | "demo"
   branding: Branding

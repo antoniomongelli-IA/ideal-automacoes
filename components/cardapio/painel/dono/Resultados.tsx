@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Eye, Heart, Info, Loader2, Share2, UserCheck, Users } from "lucide-react"
+import { Eye, Heart, Info, Loader2, MessageCircle, Share2, Star, UserCheck, Users } from "lucide-react"
 import { supabaseNavegador } from "@/lib/supabase/cliente"
 import { GraficoBarras, GraficoLinha } from "../Graficos"
 
@@ -16,6 +16,10 @@ interface Resumo {
     visualizacoes_ant: number
     curtidas_ant: number
     compartilhamentos_ant: number
+    /* podem faltar se o schema.sql novo ainda não foi rodado */
+    pedidos_whatsapp?: number
+    pedidos_whatsapp_ant?: number
+    avaliacoes_google?: number
   }
   por_dia: { dia: string; pessoas: number; visualizacoes: number }[]
   por_hora: { hora: number; pessoas: number }[]
@@ -129,6 +133,21 @@ export function Resultados({ estId }: { estId: string }) {
               <div className="text-xs text-white/55">clientes criaram conta para guardar favoritos</div>
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-xl bg-white/[0.04] p-3">
+              <div className="flex items-center gap-1.5 text-xs text-white/55">
+                <MessageCircle className="h-3.5 w-3.5" /> Pedidos pelo WhatsApp
+              </div>
+              <div className="mt-1 text-xl font-extrabold tabular-nums">{(t.pedidos_whatsapp ?? 0).toLocaleString("pt-BR")}</div>
+              <Variacao atual={t.pedidos_whatsapp ?? 0} anterior={t.pedidos_whatsapp_ant ?? 0} />
+            </div>
+            <div className="rounded-xl bg-white/[0.04] p-3">
+              <div className="flex items-center gap-1.5 text-xs text-white/55">
+                <Star className="h-3.5 w-3.5" /> Cliques em “Avaliar no Google”
+              </div>
+              <div className="mt-1 text-xl font-extrabold tabular-nums">{(t.avaliacoes_google ?? 0).toLocaleString("pt-BR")}</div>
+            </div>
+          </div>
           <div className="text-sm text-white/55">{t.detalhes.toLocaleString("pt-BR")} vezes alguém abriu os detalhes de um item.</div>
           <details className="rounded-xl bg-white/[0.04] p-3 text-sm text-white/70">
             <summary className="flex cursor-pointer items-center gap-1.5 font-semibold text-white">
@@ -139,6 +158,7 @@ export function Resultados({ estId }: { estId: string }) {
               <li><b>Vídeos assistidos</b>: quando a pessoa para pelo menos 1 segundo num item.</li>
               <li><b>Curtidas</b>: toques no coração (curtir duas vezes não soma).</li>
               <li><b>Compartilhamentos</b>: toques em “Enviar” num item.</li>
+              <li><b>Pedidos pelo WhatsApp</b>: toques no botão “Pedir” (abre o WhatsApp com a mensagem pronta; o pedido em si é fechado na conversa).</li>
               <li>Nenhum dado pessoal é coletado de quem só olha o cardápio.</li>
             </ul>
           </details>
