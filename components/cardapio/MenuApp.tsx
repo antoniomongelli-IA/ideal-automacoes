@@ -96,7 +96,9 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
     (id: string) => atualizar((atual) => (atual.video && atual.video.n === video?.n ? { video: { ...atual.video, id } } : null)),
     [atualizar, video?.n],
   )
-  const itensVideo = useMemo(() => (video ? video.lista.map(item).filter((i): i is Item => !!i) : []), [video, item])
+  // depende só da lista (mesma referência enquanto o vídeo está aberto), não da posição atual
+  const listaVideo = video?.lista
+  const itensVideo = useMemo(() => (listaVideo ? listaVideo.map(item).filter((i): i is Item => !!i) : []), [listaVideo, item])
   const nomeAba = ABAS.find((a) => a.id === aba)?.label ?? "Cardápio"
 
   const b = r.branding

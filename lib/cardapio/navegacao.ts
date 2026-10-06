@@ -28,6 +28,19 @@ interface EstadoHistorico {
 const lerEstado = (s: unknown): EstadoHistorico | null =>
   s && typeof s === "object" && "cardapio" in s ? (s as EstadoHistorico) : null
 
+// O Safari bloqueia a página (e mostra erro) se ela chamar pushState/replaceState
+// demais em poucos segundos. Por isso nunca deixamos uma falha aqui derrubar o app.
+function gravarHistorico(tipo: "push" | "replace", estado: EstadoHistorico) {
+  try {
+    if (tipo === "push") history.pushState(estado, "")
+    else history.replaceState({ ...history.state, ...estado }, "")
+  } catch {
+    /* histórico indisponível ou limitado: a navegação segue só na memória */
+  }
+}
+
+const mesmaTela = (a: Tela, b: Tela) => JSON.stringify(a) === JSON.stringify(b)
+
 /**
  * Navegação com "voltar".
  *
@@ -42,6 +55,8 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
   const [pilha, setPilha] = useState<Tela[]>([inicial])
   // a pilha também fica num ref para os callbacks lerem o valor mais novo
   const pilhaRef = useRef(pilha)
+  // atualizações de posição (rolar o feed) vão para o histórico agrupadas, no máximo 1 a cada 400ms
+  const replacePendente = useRef<ReturnType<typeof setTimeout>>(undefined)
   const definir = useCallback((nova: Tela[]) => {
     pilhaRef.current = nova
     setPilha(nova)
@@ -50,7 +65,7 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
   useEffect(() => {
     if (embutido) return
     // a tela inicial entra no histórico sem criar entrada nova
-    history.replaceState({ ...history.state, cardapio: pilhaRef.current[0], profundidade: 0 } satisfies EstadoHistorico, "")
+    gravarHistorico("replace", { cardapio: pilhaRef.current[0], profundidade: 0 })
 
     const onPop = (e: PopStateEvent) => {
       const est = lerEstado(e.state)
@@ -62,7 +77,10 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
       definir([...base, est.cardapio])
     }
     window.addEventListener("popstate", onPop)
-    return () => window.removeEventListener("popstate", onPop)
+    return () => {
+      window.removeEventListener("popstate", onPop)
+      clearTimeout(replacePendente.current)
+    }
   }, [embutido, definir])
 
   const tela = pilha[pilha.length - 1]
@@ -71,8 +89,14 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
   const ir = useCallback(
     (proxima: Tela) => {
       const p = pilhaRef.current
+      // grava a posição pendente da tela atual antes de empilhar a próxima
+      if (!embutido && replacePendente.current) {
+        clearTimeout(replacePendente.current)
+        replacePendente.current = undefined
+        gravarHistorico("replace", { cardapio: p[p.length - 1], profundidade: p.length - 1 })
+      }
       definir([...p, proxima])
-      if (!embutido) history.pushState({ cardapio: proxima, profundidade: p.length } satisfies EstadoHistorico, "")
+      if (!embutido) gravarHistorico("push", { cardapio: proxima, profundidade: p.length })
     },
     [embutido, definir],
   )
@@ -87,8 +111,16 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
       const parcial = typeof mudanca === "function" ? mudanca(p[p.length - 1]) : mudanca
       if (!parcial) return
       const atual = { ...p[p.length - 1], ...parcial }
+      if (mesmaTela(atual, p[p.length - 1])) return
       definir([...p.slice(0, -1), atual])
-      if (!embutido) history.replaceState({ ...history.state, cardapio: atual, profundidade: p.length - 1 } satisfies EstadoHistorico, "")
+      if (embutido) return
+      clearTimeout(replacePendente.current)
+      replacePendente.current = setTimeout(() => {
+        replacePendente.current = undefined
+        // só grava se essa ainda é a tela do topo
+        const agora = pilhaRef.current
+        if (agora[agora.length - 1] === atual) gravarHistorico("replace", { cardapio: atual, profundidade: agora.length - 1 })
+      }, 400)
     },
     [embutido, definir],
   )
