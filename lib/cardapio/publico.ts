@@ -1,5 +1,5 @@
 "use client"
-import { supabaseConfigurado, supabaseNavegador } from "@/lib/supabase/cliente"
+import { SUPABASE_CHAVE, SUPABASE_URL, supabaseConfigurado, supabaseNavegador } from "@/lib/supabase/cliente"
 
 // Tudo o que o cardápio público faz com o banco: curtidas, favoritos, conta do
 // cliente final e os eventos que alimentam o painel do estabelecimento.
@@ -138,8 +138,8 @@ function enviar() {
   if (!fila.length || !estFila || !supabaseConfigurado) return
   const lote = fila.slice(0, 50)
   fila = fila.slice(50)
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/registrar_eventos`
-  const chave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const url = `${SUPABASE_URL}/rest/v1/rpc/registrar_eventos`
+  const chave = SUPABASE_CHAVE
   // keepalive: o envio termina mesmo se a pessoa fechar a página
   fetch(url, {
     method: "POST",
