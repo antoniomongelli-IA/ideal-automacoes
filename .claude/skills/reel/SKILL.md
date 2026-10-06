@@ -157,8 +157,7 @@ Todas têm `fala` (obrigatória) e `duracao` em segundos (opcional; só vale sem
 
 ## Problemas comuns
 
-- **"palavras.json é de outra versão do cenas.json"**: a fala mudou depois da narração. Rode
-  `narrar.mjs` de novo.
+- **Mudou a fala depois de narrar?** Gere a narração e a legenda de novo.
 - **Texto saindo da tela**: encurte o título ou os itens; o `npm run check` avisa.
 - **Render lento ou travando**: `--concurrency=2`, feche o navegador, e confira o espaço em disco.
 
