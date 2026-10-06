@@ -65,6 +65,7 @@ export function MaisPedidos() {
   const [cat, setCat] = useState("todos")
   const lista = useMemo(() => maisPedidos(r.itens.filter((i) => cat === "todos" || i.categoria === cat)), [r.itens, cat])
   const topo = lista[0]?.pedidos30d ?? 1
+  const ids = lista.map((i) => i.id)
   const [p1, p2, p3, ...resto] = lista
 
   return (
@@ -76,7 +77,7 @@ export function MaisPedidos() {
         <motion.button
           layout
           key={p1.id}
-          onClick={() => abrirNoFeed(p1.id)}
+          onClick={() => abrirNoFeed(p1.id, ids)}
           className="relative mt-4 block aspect-[4/5] w-full overflow-hidden text-left text-white"
           style={{ borderRadius: "var(--radius)" }}
         >
@@ -110,7 +111,7 @@ export function MaisPedidos() {
       {(p2 || p3) && (
         <div className="mt-3 grid grid-cols-2 gap-3">
           {[p2, p3].filter(Boolean).map((it, i) => (
-            <button key={it.id} onClick={() => abrirNoFeed(it.id)} className="relative aspect-[3/4] overflow-hidden text-left text-white" style={{ borderRadius: "var(--radius)" }}>
+            <button key={it.id} onClick={() => abrirNoFeed(it.id, ids)} className="relative aspect-[3/4] overflow-hidden text-left text-white" style={{ borderRadius: "var(--radius)" }}>
               <AutoVideo midia={it.midia} className="absolute inset-0" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
               <span
@@ -135,7 +136,7 @@ export function MaisPedidos() {
 
       <div className="mt-4 space-y-2.5">
         {resto.map((it, i) => (
-          <div key={it.id} role="button" tabIndex={0} onClick={() => abrirNoFeed(it.id)} className="flex w-full cursor-pointer items-center gap-3 p-2.5 text-left" style={card}>
+          <div key={it.id} role="button" tabIndex={0} onClick={() => abrirNoFeed(it.id, ids)} className="flex w-full cursor-pointer items-center gap-3 p-2.5 text-left" style={card}>
             <span className="w-7 text-center text-2xl" style={{ fontFamily: "var(--f-display)", color: "var(--c-muted)" }}>
               {i + 4}
             </span>
@@ -170,6 +171,7 @@ export function MaisPedidos() {
 export function DoMes() {
   const { r, abrirNoFeed, ranks } = useMenu()
   const destaques = r.itens.filter((i) => i.destaqueDoMes)
+  const idsMes = destaques.map((i) => i.id)
   const mes = mesAtual()
 
   return (
@@ -190,7 +192,7 @@ export function DoMes() {
             className="overflow-hidden"
             style={card}
           >
-            <button onClick={() => abrirNoFeed(it.id)} className="relative block aspect-[4/3] w-full text-left">
+            <button onClick={() => abrirNoFeed(it.id, idsMes)} className="relative block aspect-[4/3] w-full text-left">
               <AutoVideo midia={it.midia} className="absolute inset-0" priority={i === 0} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
               <div className="absolute left-3 top-3 flex gap-1.5">
@@ -218,7 +220,7 @@ export function DoMes() {
                   </div>
                 </div>
                 <button
-                  onClick={() => abrirNoFeed(it.id)}
+                  onClick={() => abrirNoFeed(it.id, idsMes)}
                   className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold"
                   style={{ borderRadius: "var(--radius)", border: "1px solid color-mix(in srgb, var(--c-text) 18%, transparent)" }}
                 >
@@ -243,6 +245,11 @@ export function Grade() {
   const filtrados = r.itens.filter(
     (i) => (cat === "todos" || i.categoria === cat) && (!termo || `${i.nome} ${i.descricao}`.toLowerCase().includes(termo)),
   )
+  // ordem em que os pratos aparecem na tela: é a que o vídeo segue ao rolar
+  const idsGrade = r.categorias
+    .filter((c) => cat === "todos" || c.id === cat)
+    .flatMap((c) => filtrados.filter((i) => i.categoria === c.id))
+    .map((i) => i.id)
 
   return (
     <div className="px-4 pb-32">
@@ -270,7 +277,7 @@ export function Grade() {
                 {itens.map((it) => {
                   const rank = ranks.get(it.id) ?? 99
                   return (
-                    <div key={it.id} role="button" tabIndex={0} onClick={() => abrirNoFeed(it.id)} className="cursor-pointer overflow-hidden text-left" style={card}>
+                    <div key={it.id} role="button" tabIndex={0} onClick={() => abrirNoFeed(it.id, idsGrade)} className="cursor-pointer overflow-hidden text-left" style={card}>
                       <span className="relative block aspect-[4/5]">
                         <Image src={posterSrc(it.midia)} alt="" fill sizes="220px" className="object-cover" />
                         <span className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

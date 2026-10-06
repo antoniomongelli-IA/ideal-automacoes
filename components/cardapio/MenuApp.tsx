@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, ChevronLeft, Clock, Flame, Users, X } from "lucide-react"
-import type { Restaurante } from "@/lib/cardapio/types"
+import type { Item, Restaurante } from "@/lib/cardapio/types"
 import { brandingVars, brl, ordemFeed, posterSrc, rankDe, TAGS } from "@/lib/cardapio/utils"
 import { aplicarPersonalizacao, usePersonalizacao } from "@/lib/cardapio/personalizacao"
-import { useNavegacao } from "@/lib/cardapio/navegacao"
+import { type Tela, useNavegacao } from "@/lib/cardapio/navegacao"
 import { ArrastarVoltar } from "./ArrastarVoltar"
 import { Feed } from "./Feed"
 import { DoMes, Grade, MaisPedidos } from "./Abas"
@@ -66,10 +66,20 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
         else next.delete(id)
         return next
       }),
-    abrirNoFeed: (id) => {
-      const proxima = { aba: "feed" as Aba, feedId: id, n: tela.n + 1 }
+    abrirNoFeed: (id, lista) => {
+      const base: Tela = { ...tela, info: undefined }
+      let proxima: Tela
+      if (tela.aba === "feed" && !tela.video) {
+        // já está no "Para você": pula para o prato dentro do próprio feed
+        proxima = { ...base, feedId: id, n: tela.n + 1 }
+      } else {
+        // numa lista: abre o vídeo por cima, sem trocar de aba
+        const atual = tela.video
+        const l = lista ?? (atual?.lista.includes(id) ? atual.lista : [id])
+        proxima = { ...base, video: { id, lista: l, n: (atual?.n ?? 0) + 1 } }
+      }
       // vindo da folha de detalhes, troca a tela em vez de empilhar: o voltar pula a folha
-      if (tela.info) atualizar({ ...proxima, info: undefined })
+      if (tela.info) atualizar(proxima)
       else ir(proxima)
     },
     abrirInfo: (id) => ir({ ...tela, info: id }),
@@ -80,9 +90,18 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
     ir(nova === "feed" ? { aba: "feed", n: tela.n + 1 } : { aba: nova, n: tela.n })
   }
   const lembrarPrato = useCallback((id: string) => atualizar({ feedId: id }), [atualizar])
+  const video = tela.video
+  // só vale para o vídeo que ainda está aberto (durante a animação de fechar, o feed ainda avisa)
+  const lembrarPratoVideo = useCallback(
+    (id: string) => atualizar((atual) => (atual.video && atual.video.n === video?.n ? { video: { ...atual.video, id } } : null)),
+    [atualizar, video?.n],
+  )
+  const itensVideo = useMemo(() => (video ? video.lista.map(item).filter((i): i is Item => !!i) : []), [video, item])
+  const nomeAba = ABAS.find((a) => a.id === aba)?.label ?? "Cardápio"
 
   const b = r.branding
-  const noFeed = aba === "feed"
+  // topo transparente sobre vídeo (feed ou vídeo aberto por cima de uma lista)
+  const noFeed = aba === "feed" || !!video
 
   return (
     <MenuContext.Provider value={ctx}>
@@ -90,7 +109,7 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
         <ArrastarVoltar podeVoltar={podeVoltar} voltar={voltar} embutido={embutido}>
           <div className="absolute inset-0" style={{ background: b.bg }}>
             {/* conteúdo */}
-            {noFeed ? (
+            {aba === "feed" ? (
               <Feed key={tela.n} itens={feed} inicioId={tela.feedId} onAtivo={lembrarPrato} />
             ) : (
               <div className="absolute inset-0 overflow-y-auto pt-[calc(env(safe-area-inset-top)+108px)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -104,6 +123,22 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
               </div>
             )}
 
+            {/* vídeo aberto por cima da lista: a lista continua montada embaixo, no mesmo ponto */}
+            <AnimatePresence>
+              {video && (
+                <motion.div
+                  key="video"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.22 }}
+                  className="absolute inset-0 z-10 bg-black"
+                >
+                  <Feed key={video.n} itens={itensVideo} inicioId={video.id} onAtivo={lembrarPratoVideo} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* topo */}
             <header
               className="absolute inset-x-0 top-0 z-20 px-4 pt-[calc(env(safe-area-inset-top)+10px)]"
@@ -113,38 +148,55 @@ export function MenuApp({ restaurante, itemInicial, embutido = false }: Props) {
                   : { background: `color-mix(in srgb, ${b.bg} 88%, transparent)`, backdropFilter: "blur(14px)", color: b.text, borderBottom: `1px solid color-mix(in srgb, ${b.text} 8%, transparent)` }
               }
             >
-              <div className="flex min-w-0 items-center gap-2">
-                {podeVoltar && (
+              {video ? (
+                <div className="flex min-w-0 items-center gap-2 pb-3">
                   <button
                     onClick={voltar}
-                    aria-label="Voltar"
-                    className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-full transition active:scale-90"
-                    style={noFeed ? { background: "rgba(0,0,0,.35)" } : { background: `color-mix(in srgb, ${b.text} 8%, transparent)` }}
+                    className="-ml-1.5 inline-flex shrink-0 items-center gap-0.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-sm font-bold transition active:scale-95"
+                    style={{ background: "rgba(0,0,0,.45)", backdropFilter: "blur(8px)" }}
                   >
-                    <ChevronLeft className="h-6 w-6" />
+                    <ChevronLeft className="h-5 w-5" /> Voltar {aba === "cardapio" ? "ao cardápio" : `para ${nomeAba}`}
                   </button>
-                )}
-                <LogoMarca b={b} />
-                <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
-                  {b.logoText}
-                </span>
-              </div>
-              <nav className="relative mt-2 flex justify-between">
-                {ABAS.map((a) => {
-                  const on = a.id === aba
-                  return (
+                  <span className="ml-auto">
+                    <LogoMarca b={b} size={32} />
+                  </span>
+                </div>
+              ) : (
+              <>
+                <div className="flex min-w-0 items-center gap-2">
+                  {podeVoltar && (
                     <button
-                      key={a.id}
-                      onClick={() => trocarAba(a.id)}
-                      className={`relative whitespace-nowrap px-1 pb-2.5 pt-1.5 text-[13.5px] font-bold transition ${on ? "" : "opacity-60"}`}
-                      style={noFeed ? { textShadow: "0 1px 6px rgba(0,0,0,.5)" } : undefined}
+                      onClick={voltar}
+                      aria-label="Voltar"
+                      className="-ml-1.5 grid h-9 w-9 shrink-0 place-items-center rounded-full transition active:scale-90"
+                      style={noFeed ? { background: "rgba(0,0,0,.35)" } : { background: `color-mix(in srgb, ${b.text} 8%, transparent)` }}
                     >
-                      {a.label}
-                      {on && <motion.span layoutId="aba-ativa" className="absolute inset-x-2 bottom-1 h-[3px] rounded-full" style={{ background: b.primary }} />}
+                      <ChevronLeft className="h-6 w-6" />
                     </button>
-                  )
-                })}
-              </nav>
+                  )}
+                  <LogoMarca b={b} />
+                  <span className="truncate text-xl leading-none" style={{ fontFamily: "var(--f-display)" }}>
+                    {b.logoText}
+                  </span>
+                </div>
+                <nav className="relative mt-2 flex justify-between">
+                  {ABAS.map((a) => {
+                    const on = a.id === aba
+                    return (
+                      <button
+                        key={a.id}
+                        onClick={() => trocarAba(a.id)}
+                        className={`relative whitespace-nowrap px-1 pb-2.5 pt-1.5 text-[13.5px] font-bold transition ${on ? "" : "opacity-60"}`}
+                        style={noFeed ? { textShadow: "0 1px 6px rgba(0,0,0,.5)" } : undefined}
+                      >
+                        {a.label}
+                        {on && <motion.span layoutId="aba-ativa" className="absolute inset-x-2 bottom-1 h-[3px] rounded-full" style={{ background: b.primary }} />}
+                      </button>
+                    )
+                  })}
+                </nav>
+              </>
+              )}
             </header>
 
             {/* folha de detalhes */}

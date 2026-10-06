@@ -12,8 +12,11 @@ export interface MenuCtx {
   ranks: Map<string, number>
   curtidos: Set<string>
   curtir: (id: string, forcar?: boolean) => void
-  /** abre o feed de vídeos já posicionado no item */
-  abrirNoFeed: (id: string) => void
+  /**
+   * Abre o vídeo do prato. Numa lista (Cardápio, Mais pedidos, Do mês), abre por
+   * cima dela, rolando só por `lista`; no feed "Para você", pula para o prato.
+   */
+  abrirNoFeed: (id: string, lista?: string[]) => void
   abrirInfo: (id: string) => void
   /** aviso rápido no topo (ex.: "Link copiado") */
   avisar: (msg: string) => void

@@ -10,6 +10,12 @@ export interface Tela {
   feedId?: string
   /** prato com a folha de detalhes aberta */
   info?: string
+  /**
+   * Vídeo aberto por cima de uma lista (Cardápio, Mais pedidos, Do mês).
+   * A aba não muda: ao voltar, a pessoa continua na lista onde estava.
+   * `lista` são os pratos que dá para rolar dentro desse vídeo.
+   */
+  video?: { id: string; lista: string[]; n: number }
   /** muda quando o feed precisa reabrir num prato específico */
   n: number
 }
@@ -71,10 +77,15 @@ export function useNavegacao(inicial: Tela, embutido: boolean) {
     [embutido, definir],
   )
 
-  /** Atualiza a tela atual sem criar passo de "voltar" (ex.: posição do feed). */
+  /**
+   * Atualiza a tela atual sem criar passo de "voltar" (ex.: posição do feed).
+   * Aceita uma função que recebe a tela atual; se ela devolver null, nada muda.
+   */
   const atualizar = useCallback(
-    (parcial: Partial<Tela>) => {
+    (mudanca: Partial<Tela> | ((atual: Tela) => Partial<Tela> | null)) => {
       const p = pilhaRef.current
+      const parcial = typeof mudanca === "function" ? mudanca(p[p.length - 1]) : mudanca
+      if (!parcial) return
       const atual = { ...p[p.length - 1], ...parcial }
       definir([...p.slice(0, -1), atual])
       if (!embutido) history.replaceState({ ...history.state, cardapio: atual, profundidade: p.length - 1 } satisfies EstadoHistorico, "")
