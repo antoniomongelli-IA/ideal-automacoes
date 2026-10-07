@@ -12,22 +12,25 @@
 
 ## 2. Identidade visual (usar sempre)
 
+Base: o **preto + azul elétrico** que você já usa nos carrosséis. O roxo da logo entra só como detalhe, no botão final e junto da logo.
+
 | Papel | Cor | Hex |
 |---|---|---|
-| Fundo | Azul-noite | `#070B1A` |
-| Cartões e caixas | Azul-marinho | `#0E1630` |
-| Destaque principal (palavras-chave) | Ciano elétrico | `#3FC8FF` |
-| Azul da marca (botões, balões do agente) | Azul elétrico | `#1F6BFF` |
-| Destaque secundário (dor, alerta suave) | Roxo-magenta | `#D35BFF` |
-| Gradiente da marca (CTA) | Azul → roxo → magenta | `#1F6BFF → #8A3FFC → #C13BFF` |
-| Alerta (venda perdida, erro) | Rosa-vermelho | `#FF4D7E` |
-| Texto | Branco gelo | `#F5F7FF` |
-| Texto de apoio | Cinza azulado | `#9AA3B8` |
+| Fundo | Quase preto | `#02040C` |
+| Cartões e caixas | Azul-marinho escuro | `#0A1226` |
+| **Azul principal** (palavras de destaque, números, botões) | Azul elétrico | `#0A63F5` |
+| Azul claro (brilhos, linhas, texto azul pequeno) | Azul claro | `#3D8BFF` |
+| Texto | Branco | `#FFFFFF` |
+| Texto de apoio | Cinza claro | `#A8B0C2` |
+| Alerta (venda perdida, erro, prejuízo) | Rosa-vermelho | `#FF4D7E` |
+| Só no botão "Comenta AGENTE" | Gradiente azul → roxo | `#0A63F5 → #8A3FFC` |
 
-- **Fonte:** Plus Jakarta Sans, peso 800 para títulos e 500 para texto (é gratuita, do Google Fonts).
-- **Fundo:** azul-noite com grade fina ciano e brilhos azul e roxo nos cantos, como nos reels.
-- **Rosto:** em toda capa de carrossel que for "autoridade", use a sua foto recortada, como você já faz. Reels de texto ficam sem rosto. Reels gravados mostram você.
-- **Posts em formato "tweet" (fundo branco):** pode manter, mas só com frases de negócio e automação, e sempre com o @ novo. Frase genérica de disciplina fica de fora.
+- **Fonte:** sans-serif bem pesada nos títulos, igual à que você já usa. Nos arquivos que eu gero uso Plus Jakarta Sans 800, que é grátis.
+- **Capa:** sempre com a **sua foto grande**, com fundo escuro e brilho azul atrás. Etiqueta de série no topo: `0X · SÉRIE: NOME DA SÉRIE`.
+- **Séries ativas:** "WhatsApp que trabalha por você" e "Erros que custam caro". Continue a numeração.
+- **Legibilidade:** texto azul pequeno sempre em `#3D8BFF`, nunca o azul escuro. Nada importante nos últimos ~150 px de baixo do slide, onde ficam os ícones do Instagram.
+- **Posts em formato "tweet" (fundo branco):** pode manter, mas só com frases de negócio e automação, e sempre com o @ novo.
+- **Arquivos prontos:** o estilo dos carrosséis está em `conteudo/instagram/estilo-carrossel.css`, e as suas fotos tratadas estão em `conteudo/instagram/fotos/`.
 
 ## 3. Pilares de conteúdo (a mistura da semana)
 

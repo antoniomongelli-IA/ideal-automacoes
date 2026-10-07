@@ -3,11 +3,11 @@
 | Dia | Formato | Post | Arquivo | Horário |
 |---|---|---|---|---|
 | **Qua 07** | Reel | Agente de IA em ação (narrado) + **fixar** | `videos/agente-ia/ideal-automacoes-agente-ia-narrado.mp4` | 19h |
-| **Qui 08** | Carrossel | Como um agente de IA atende no seu WhatsApp | gerar com o Prompt 1 (`PROMPTS-CARROSSEL.md`) | 12h |
+| **Qui 08** | Carrossel | Como um agente de IA atende no seu WhatsApp | `conteudo/instagram/carrossel-agente-passo-a-passo/out/` (8 PNGs) | 12h |
 | **Sex 09** | Reel | "23h: o cliente que você perdeu" + **fixar** | `videos/reels/reel-23h/reel-23h-narrado.mp4` | 19h |
 | **Sáb 10** | Lifestyle | Foto sua (lago, viagem ou casal) com mensagem | sua foto | 11h |
 | **Dom 11** | Reel | 3 sinais de que seu WhatsApp perde venda | `videos/reels/reel-3-sinais/reel-3-sinais-narrado.mp4` | 19h |
-| **Seg 12** | Carrossel | Quanto custa uma mensagem sem resposta | gerar com o Prompt 2 | 12h |
+| **Seg 12** | Carrossel | Quanto custa uma mensagem sem resposta | `conteudo/instagram/carrossel-quanto-custa/out/` (8 PNGs) | 12h |
 | **Ter 13** | Reel gravado por você | "O que é um agente de IA, em 30 segundos" | roteiro abaixo | 19h |
 
 **Reels:** todos vêm narrados (voz feminina, português do Brasil) com trilha que abaixa sozinha quando a voz fala. Ao postar, não adicione outra música no Instagram.

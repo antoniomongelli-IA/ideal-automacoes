@@ -1,5 +1,7 @@
 # Prompts para gerar os carrosséis
 
+> Os carrosséis de quinta (`carrossel-agente-passo-a-passo/out/`) e de segunda (`carrossel-quanto-custa/out/`) já estão prontos em PNG. Use os prompts abaixo como modelo para os próximos.
+
 **Onde usar:** no Claude Code, dentro deste projeto, onde a skill `carrossel` já está instalada. Também funciona no Claude do navegador, se a skill estiver ativa.
 
 **Como usar:**
@@ -21,13 +23,14 @@ Objetivo: ser salvo e gerar comentário.
 CTA (único): Comenta AGENTE e eu te mando um diagnóstico grátis.
 Formato: Passo a passo, 8 slides.
 
-Identidade visual (obrigatória):
-- Fundo #070B1A com grade fina ciano (rgba(63,200,255,0.06)) e brilhos radiais azul #1F6BFF e roxo #8A3FFC nos cantos
-- Cartões #0E1630 com borda rgba(63,200,255,0.35) e cantos de 36px
-- Destaque principal #3FC8FF; destaque secundário #D35BFF; texto #F5F7FF; apoio #9AA3B8
-- Botão/CTA com gradiente #1F6BFF → #8A3FFC → #C13BFF
-- Fonte: Plus Jakarta Sans (800 nos títulos, 500 no texto)
-- Se eu anexar foto, use na capa, recortada à direita, ocupando ~45% da largura
+Identidade visual (obrigatória), seguindo o modelo dos meus carrosséis atuais:
+- Fundo quase preto #02040C com grade azul bem sutil e brilho radial azul #0A63F5 atrás da foto
+- Destaques em azul #0A63F5; texto azul pequeno em #3D8BFF; texto branco; apoio #A8B0C2; alerta #FF4D7E
+- Cartões #0A1226 com borda azul translúcida
+- Capa com a minha foto grande à direita (anexada), etiqueta de série no topo ("0X · SÉRIE: NOME") e título grande branco com a última parte em azul
+- Botão final "Comenta AGENTE" em gradiente #0A63F5 → #8A3FFC (único lugar com roxo)
+- Fonte sans-serif pesada (Plus Jakarta Sans 800/500)
+- Nada importante nos últimos 150 px de baixo do slide
 
 Copy:
 1. CAPA: "O que acontece quando seu cliente chama no WhatsApp... e quem responde é uma IA?" | apoio: "6 passos, do 'oi' até a venda." | "Arrasta pro lado →"
@@ -54,13 +57,14 @@ Objetivo: ser salvo e gerar comentário.
 CTA (único): Comenta AGENTE que eu faço essa conta com você.
 Formato: Erro comum com conta, 8 slides.
 
-Identidade visual (obrigatória):
-- Fundo #070B1A com grade fina ciano (rgba(63,200,255,0.06)) e brilhos radiais azul #1F6BFF e roxo #8A3FFC nos cantos
-- Cartões #0E1630 com borda rgba(63,200,255,0.35) e cantos de 36px
-- Destaque principal #3FC8FF; dor/alerta #FF4D7E; destaque secundário #D35BFF; texto #F5F7FF; apoio #9AA3B8
-- Botão/CTA com gradiente #1F6BFF → #8A3FFC → #C13BFF
-- Fonte: Plus Jakarta Sans (800 nos títulos, 500 no texto)
-- Números grandes em ciano; o resultado "perdido" em #FF4D7E
+Identidade visual (obrigatória), seguindo o modelo dos meus carrosséis atuais:
+- Fundo quase preto #02040C com grade azul bem sutil e brilho radial azul #0A63F5 atrás da foto
+- Destaques em azul #0A63F5; texto azul pequeno em #3D8BFF; texto branco; apoio #A8B0C2; alerta #FF4D7E
+- Cartões #0A1226 com borda azul translúcida
+- Capa com a minha foto grande à direita (anexada), etiqueta de série no topo ("0X · SÉRIE: NOME") e título grande branco com a última parte em azul
+- Botão final "Comenta AGENTE" em gradiente #0A63F5 → #8A3FFC (único lugar com roxo)
+- Fonte sans-serif pesada (Plus Jakarta Sans 800/500)
+- Nada importante nos últimos 150 px de baixo do slide
 
 Copy:
 1. CAPA: "Quanto custa uma mensagem sem resposta no seu WhatsApp?" | apoio: "Faz essa conta comigo. Vai doer." | "Arrasta pro lado →"
@@ -83,6 +87,6 @@ Tema: [TEMA]
 Formato: [Lista | Passo a passo | Erro comum | Antes e depois | História]
 Objetivo: [ser salvo | gerar comentário | levar ao link]
 CTA único: Comenta AGENTE e eu te mando um diagnóstico grátis.
-Identidade visual: fundo #070B1A com grade ciano sutil e brilhos azul #1F6BFF / roxo #8A3FFC; cartões #0E1630; destaque #3FC8FF; secundário #D35BFF; alerta #FF4D7E; texto #F5F7FF; CTA em gradiente #1F6BFF→#8A3FFC→#C13BFF; fonte Plus Jakarta Sans 800/500.
+Identidade visual: fundo #02040C com brilho azul #0A63F5; destaques #0A63F5; azul pequeno #3D8BFF; cartões #0A1226; alerta #FF4D7E; texto branco; capa com minha foto grande e etiqueta de série; CTA em gradiente #0A63F5→#8A3FFC; fonte Plus Jakarta Sans 800/500.
 Não invente números: se precisar de prova, deixe [PREENCHER].
 ```

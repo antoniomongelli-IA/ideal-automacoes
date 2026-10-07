@@ -10,32 +10,32 @@
       @font-face { font-family: "Jakarta"; src: url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
       @font-face { font-family: "Jakarta"; src: url("assets/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { background: #070B1A; }
-      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #070B1A; font-family: "Jakarta", sans-serif; color: #F5F7FF; }
+      html, body { background: #02040C; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #02040C; font-family: "Jakarta", sans-serif; color: #F5F7FF; }
       .clip { position: absolute; inset: 0; }
 
-      .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(63, 200, 255, 0.06) 2px, transparent 2px), linear-gradient(90deg, rgba(63, 200, 255, 0.06) 2px, transparent 2px); background-size: 90px 90px; }
+      .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(61, 139, 255, 0.06) 2px, transparent 2px), linear-gradient(90deg, rgba(61, 139, 255, 0.06) 2px, transparent 2px); background-size: 90px 90px; }
       .orb { position: absolute; border-radius: 50%; }
-      .orb-a { left: -260px; top: 120px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(31, 107, 255, 0.45), rgba(31, 107, 255, 0) 65%); }
-      .orb-b { left: 420px; top: 1100px; width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(138, 63, 252, 0.42), rgba(138, 63, 252, 0) 65%); }
+      .orb-a { left: -260px; top: 120px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(10, 99, 245, 0.40), rgba(10, 99, 245, 0) 65%); }
+      .orb-b { left: 420px; top: 1100px; width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(10, 99, 245, 0.30), rgba(10, 99, 245, 0) 65%); }
       .handle { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-weight: 700; font-size: 34px; letter-spacing: 0.02em; color: rgba(245, 247, 255, 0.7); }
 
       /* gancho */
       .stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 540px 900px; }
-      .hk-num { position: absolute; left: 0; right: 0; top: 300px; text-align: center; font-weight: 800; font-size: 520px; line-height: 1; color: #3FC8FF; text-shadow: 0 0 120px rgba(63, 200, 255, 0.55); }
+      .hk-num { position: absolute; left: 0; right: 0; top: 300px; text-align: center; font-weight: 800; font-size: 520px; line-height: 1; color: #3D8BFF; text-shadow: 0 0 120px rgba(61, 139, 255, 0.55); }
       .hk-t { position: absolute; left: 80px; right: 80px; top: 880px; text-align: center; font-weight: 800; font-size: 96px; line-height: 1.05; letter-spacing: -0.03em; }
-      .hk-t b { color: #D35BFF; }
+      .hk-t b { color: #3D8BFF; }
 
       /* sinal */
-      .s-num { position: absolute; left: 90px; top: 280px; font-weight: 800; font-size: 150px; line-height: 1; color: #3FC8FF; text-shadow: 0 0 50px rgba(63, 200, 255, 0.45); }
-      .s-tag { position: absolute; left: 300px; top: 318px; padding: 14px 28px; border-radius: 999px; background: rgba(63, 200, 255, 0.14); border: 2px solid rgba(63, 200, 255, 0.5); font-weight: 700; font-size: 32px; color: #3FC8FF; letter-spacing: 0.06em; }
+      .s-num { position: absolute; left: 90px; top: 280px; font-weight: 800; font-size: 150px; line-height: 1; color: #3D8BFF; text-shadow: 0 0 50px rgba(61, 139, 255, 0.45); }
+      .s-tag { position: absolute; left: 300px; top: 318px; padding: 14px 28px; border-radius: 999px; background: rgba(61, 139, 255, 0.14); border: 2px solid rgba(61, 139, 255, 0.5); font-weight: 700; font-size: 32px; color: #3D8BFF; letter-spacing: 0.06em; }
       .s-t { position: absolute; left: 90px; right: 90px; top: 480px; font-weight: 800; font-size: 82px; line-height: 1.06; letter-spacing: -0.025em; }
-      .s-t b { color: #3FC8FF; }
+      .s-t b { color: #3D8BFF; }
       .s-sub { position: absolute; left: 90px; right: 120px; top: 1440px; font-weight: 500; font-size: 42px; line-height: 1.3; color: #C9D0E4; }
 
       .bolha { position: absolute; padding: 26px 32px; border-radius: 34px; font-weight: 500; font-size: 42px; line-height: 1.25; background: #F5F7FF; color: #0B1020; box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55); border-bottom-left-radius: 8px; }
       .bolha small { display: block; margin-top: 8px; font-size: 26px; color: rgba(15, 20, 40, 0.55); text-align: right; }
-      .timer { position: absolute; left: 140px; right: 140px; top: 1100px; height: 220px; border-radius: 40px; background: #0E1630; border: 3px solid rgba(255, 77, 126, 0.6); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6); }
+      .timer { position: absolute; left: 140px; right: 140px; top: 1100px; height: 220px; border-radius: 40px; background: #0A1226; border: 3px solid rgba(255, 77, 126, 0.6); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6); }
       .timer .k { position: absolute; left: 0; right: 0; top: 26px; text-align: center; font-weight: 700; font-size: 32px; color: #9AA3B8; letter-spacing: 0.08em; }
       .timer span { position: absolute; left: 0; right: 0; top: 74px; text-align: center; font-weight: 800; font-size: 110px; line-height: 1; color: #FF4D7E; }
 
@@ -43,17 +43,17 @@
       .lua { position: absolute; left: 790px; top: 660px; width: 150px; height: 150px; border-radius: 50%; box-shadow: -34px 20px 0 0 #FFD27A; }
       .badge { position: absolute; right: -18px; top: -18px; width: 58px; height: 58px; border-radius: 50%; background: #25D366; color: #06210F; font-weight: 800; font-size: 32px; display: flex; align-items: center; justify-content: center; }
 
-      .fim-1 { position: absolute; left: 80px; right: 80px; top: 640px; text-align: center; font-weight: 800; font-size: 130px; line-height: 1; letter-spacing: -0.03em; color: #3FC8FF; }
+      .fim-1 { position: absolute; left: 80px; right: 80px; top: 640px; text-align: center; font-weight: 800; font-size: 130px; line-height: 1; letter-spacing: -0.03em; color: #3D8BFF; }
       .fim-2 { position: absolute; left: 90px; right: 90px; top: 860px; text-align: center; font-weight: 800; font-size: 80px; line-height: 1.08; letter-spacing: -0.02em; }
-      .fim-2 b { color: #D35BFF; }
+      .fim-2 b { color: #3D8BFF; }
 
       .cta-top { position: absolute; left: 80px; right: 80px; top: 470px; text-align: center; font-weight: 800; font-size: 84px; line-height: 1.08; letter-spacing: -0.02em; }
-      .cta-top b { color: #3FC8FF; }
-      .cta-box { position: absolute; left: 110px; right: 110px; top: 820px; height: 330px; border-radius: 48px; background: linear-gradient(135deg, #1F6BFF, #8A3FFC 60%, #C13BFF); box-shadow: 0 50px 120px rgba(138, 63, 252, 0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .cta-top b { color: #3D8BFF; }
+      .cta-box { position: absolute; left: 110px; right: 110px; top: 820px; height: 330px; border-radius: 48px; background: linear-gradient(135deg, #0A63F5, #8A3FFC 60%, #C13BFF); box-shadow: 0 50px 120px rgba(138, 63, 252, 0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; }
       .cta-box .k { font-weight: 700; font-size: 46px; color: rgba(255, 255, 255, 0.85); }
       .cta-box .w { font-weight: 800; font-size: 150px; line-height: 1; letter-spacing: 0.01em; }
       .cta-sub { position: absolute; left: 100px; right: 100px; top: 1210px; text-align: center; font-weight: 700; font-size: 50px; line-height: 1.25; }
-      .cta-sub b { color: #3FC8FF; }
+      .cta-sub b { color: #3D8BFF; }
       .cta-handle { position: absolute; left: 0; right: 0; top: 1420px; text-align: center; font-weight: 700; font-size: 40px; color: #9AA3B8; }
     </style>
   </head>

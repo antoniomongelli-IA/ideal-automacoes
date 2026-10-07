@@ -1,0 +1,100 @@
+/* Identidade visual dos carrosséis @ia.antoniomongelli
+   Paleta: preto + azul elétrico. Roxo só no botão final (CTA). */
+@font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+@font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+
+:root {
+  --bg: #02040C;          /* fundo quase preto */
+  --card: #0A1226;        /* cartões */
+  --azul: #0A63F5;        /* azul principal da marca */
+  --azul-claro: #3D8BFF;  /* brilhos e texto azul pequeno */
+  --fg: #FFFFFF;          /* texto */
+  --muted: #A8B0C2;       /* texto de apoio */
+  --alerta: #FF4D7E;      /* perda, erro */
+  --cta: linear-gradient(135deg, #0A63F5 0%, #3D5BFF 45%, #8A3FFC 100%);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1b1d24; font-family: "Jakarta", system-ui, sans-serif; }
+.deck { display: flex; flex-direction: column; align-items: center; gap: 48px; padding: 48px 0; }
+
+.slide { width: 1080px; height: 1350px; flex: none; position: relative; overflow: hidden; color: var(--fg);
+  background:
+    radial-gradient(ellipse 620px 520px at 85% 8%, rgba(10,99,245,.30), rgba(10,99,245,0) 70%),
+    radial-gradient(ellipse 700px 600px at 0% 100%, rgba(10,99,245,.22), rgba(10,99,245,0) 70%),
+    var(--bg);
+  padding: 84px 80px 150px; display: flex; flex-direction: column; justify-content: space-between; }
+.slide::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(61,139,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(61,139,255,.05) 2px, transparent 2px);
+  background-size: 90px 90px; }
+.slide > * { position: relative; z-index: 2; }
+
+/* cabeçalho de série */
+.serie { display: flex; align-items: center; gap: 26px; }
+.serie .num { width: 96px; height: 84px; border: 3px solid var(--azul); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 40px; color: var(--azul-claro); box-shadow: 0 0 30px rgba(10,99,245,.35); }
+.serie .t { font-weight: 700; font-size: 28px; line-height: 1.35; letter-spacing: .14em; text-transform: uppercase; color: #DDE3F2; }
+
+.topo { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 28px; color: var(--muted); }
+.rodape { position: absolute; left: 80px; right: 80px; bottom: 150px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 30px; color: var(--muted); }
+.seta { color: var(--azul-claro); font-weight: 800; font-size: 54px; line-height: 1; }
+.corpo { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 36px; padding-bottom: 60px; }
+
+h1 { font-weight: 800; font-size: 84px; line-height: 1.0; letter-spacing: -.035em; }
+h2 { font-weight: 800; font-size: 78px; line-height: 1.04; letter-spacing: -.03em; }
+p  { font-weight: 500; font-size: 42px; line-height: 1.32; color: #D9DEEA; }
+.az { color: var(--azul); text-shadow: 0 0 40px rgba(10,99,245,.45); }
+.azc { color: var(--azul-claro); }
+.al { color: var(--alerta); }
+.apoio { font-size: 40px; color: #D9DEEA; }
+.linha { height: 4px; width: 420px; border-radius: 2px; background: linear-gradient(90deg, rgba(61,139,255,0), var(--azul-claro), rgba(61,139,255,0)); box-shadow: 0 0 20px rgba(61,139,255,.8); }
+
+/* foto da capa */
+.foto-capa { position: absolute; z-index: 1; right: -170px; bottom: -230px; height: 1560px; }
+.foto-capa img { height: 100%; display: block; }
+.brilho { position: absolute; z-index: 0; right: -60px; top: 120px; width: 760px; height: 760px; border-radius: 50%; background: radial-gradient(circle, rgba(10,99,245,.55), rgba(10,99,245,0) 68%); }
+.capa-fade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(90deg, rgba(2,4,12,.94) 0%, rgba(2,4,12,.6) 36%, rgba(2,4,12,0) 56%), linear-gradient(0deg, rgba(2,4,12,.9) 0%, rgba(2,4,12,0) 30%); }
+.foto-fundo { position: absolute; z-index: 0; inset: 0; background-size: cover; background-position: center; }
+.fundo-fade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(0deg, rgba(2,4,12,1) 0%, rgba(2,4,12,.92) 38%, rgba(2,4,12,.35) 70%, rgba(2,4,12,.55) 100%); }
+
+.arrasta { display: flex; align-items: center; gap: 22px; font-weight: 500; font-size: 32px; line-height: 1.3; color: #DDE3F2; }
+.arrasta svg { width: 64px; height: 64px; }
+
+/* passos */
+.passo { display: flex; align-items: center; gap: 24px; }
+.passo .n { font-weight: 800; font-size: 150px; line-height: .9; color: var(--azul); text-shadow: 0 0 50px rgba(10,99,245,.55); letter-spacing: -.04em; }
+.passo .tag { padding: 12px 26px; border-radius: 999px; background: rgba(10,99,245,.16); border: 2px solid rgba(61,139,255,.55); font-weight: 700; font-size: 28px; color: var(--azul-claro); letter-spacing: .1em; }
+
+/* conversa */
+.chat { background: var(--card); border: 2px solid rgba(61,139,255,.3); border-radius: 40px; padding: 34px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 60px rgba(10,99,245,.12); }
+.b { max-width: 80%; padding: 22px 28px; border-radius: 30px; font-weight: 500; font-size: 37px; line-height: 1.28; }
+.b small { display: block; margin-top: 6px; font-size: 24px; opacity: .6; text-align: right; }
+.cli { align-self: flex-start; background: #F4F6FB; color: #0A0F1E; border-bottom-left-radius: 8px; }
+.ia { align-self: flex-end; background: var(--azul); color: #fff; border-bottom-right-radius: 8px; }
+.video { align-self: flex-end; width: 62%; height: 190px; border-radius: 26px; border-bottom-right-radius: 8px; background: linear-gradient(135deg, #0A63F5, #0A2E7A); display: flex; align-items: center; justify-content: center; gap: 18px; font-weight: 800; font-size: 32px; color: #fff; }
+.video i { width: 0; height: 0; border-left: 34px solid #fff; border-top: 22px solid transparent; border-bottom: 22px solid transparent; display: block; }
+.resumo { background: #F4F6FB; color: #0A0F1E; border-radius: 30px; padding: 30px 34px; font-size: 34px; line-height: 1.45; font-weight: 500; }
+.resumo b { font-weight: 800; }
+.resumo .k { font-weight: 800; font-size: 25px; letter-spacing: .1em; color: var(--azul); margin-bottom: 8px; }
+
+.cartao { background: var(--card); border: 2px solid rgba(61,139,255,.3); border-radius: 40px; padding: 50px 54px; }
+.lista { list-style: none; display: flex; flex-direction: column; gap: 26px; }
+.lista li { font-weight: 700; font-size: 44px; line-height: 1.25; padding-left: 78px; position: relative; }
+.lista li::before { content: ""; position: absolute; left: 0; top: 2px; width: 52px; height: 52px; border-radius: 16px; background: var(--azul); box-shadow: 0 0 24px rgba(10,99,245,.6); }
+.lista li::after { content: ""; position: absolute; left: 18px; top: 12px; width: 14px; height: 24px; border: solid #fff; border-width: 0 6px 6px 0; transform: rotate(45deg); }
+
+.formula { display: flex; flex-direction: column; gap: 18px; }
+.formula .item { display: flex; align-items: center; gap: 24px; background: var(--card); border: 2px solid rgba(61,139,255,.3); border-radius: 28px; padding: 26px 32px; font-weight: 700; font-size: 40px; }
+.formula .op { align-self: center; font-weight: 800; font-size: 54px; color: var(--azul-claro); line-height: 1; }
+.formula .res { background: rgba(255,77,126,.12); border-color: var(--alerta); color: #fff; }
+.grande { font-weight: 800; font-size: 170px; line-height: .95; letter-spacing: -.04em; }
+.nota { font-size: 30px; color: var(--muted); }
+
+.cta { background: var(--cta); border-radius: 44px; padding: 40px; text-align: center; box-shadow: 0 40px 110px rgba(10,99,245,.45); }
+.cta .k { font-weight: 700; font-size: 44px; color: rgba(255,255,255,.9); }
+.cta .w { font-weight: 800; font-size: 150px; line-height: 1; }
+.pill { align-self: center; padding: 20px 42px; border-radius: 999px; border: 3px solid var(--azul-claro); color: var(--azul-claro); font-weight: 800; font-size: 34px; }
+
+/* foto no topo do slide, com fade para o fundo */
+.foto-topo { position: absolute; z-index: 0; left: 0; right: 0; top: -130px; height: 790px; background-size: cover; }
+.foto-topo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(2,4,12,1) 0%, rgba(2,4,12,.2) 45%, rgba(2,4,12,.35) 100%); }
