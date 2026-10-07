@@ -1,0 +1,37 @@
+{
+  "titulo": "Por dentro de um agente de IA",
+  "trilha": 1,
+  "trilhaInicio": 34,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "POR DENTRO",
+      "titulo": "Como funciona um *agente de IA*?",
+      "fala": "Você sabe o que tem por dentro de um agente de i á? Eu te mostro."
+    },
+    {
+      "tipo": "diagrama",
+      "titulo": "As *4 peças*:",
+      "centro": "Agente de IA",
+      "nos": [
+        "Instruções",
+        "Catálogo",
+        "Ferramentas",
+        "WhatsApp"
+      ],
+      "fala": "São quatro peças: as instruções, que dizem como ele fala e vende; o catálogo, com seus produtos e preços; as ferramentas, como agenda e CRM; e o uótsápi, onde o seu cliente já está."
+    },
+    {
+      "tipo": "frase",
+      "titulo": "Quanto melhor a *configuração*, melhor a venda.",
+      "sub": "A ferramenta é a mesma. O resultado, *não*.",
+      "fala": "E aqui está o segredo: quanto melhor a configuração, melhor a venda. A ferramenta é a mesma, o resultado não."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Quer o seu *bem configurado*?",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Quer um agente bem configurado na sua empresa? Comenta agente, e eu te mando um diagnóstico grátis!"
+    }
+  ]
+}

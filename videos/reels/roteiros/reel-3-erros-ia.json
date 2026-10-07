@@ -1,0 +1,43 @@
+{
+  "titulo": "3 erros ao colocar IA no WhatsApp",
+  "trilha": 1,
+  "trilhaInicio": 20,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "ERROS QUE CUSTAM CARO",
+      "titulo": "3 erros ao colocar *IA* no seu WhatsApp",
+      "fala": "Três erros que fazem a i á no uótsápi mais atrapalhar do que ajudar."
+    },
+    {
+      "tipo": "lista",
+      "numero": "01",
+      "tag": "ERRO",
+      "titulo": "IA que *não conhece* a sua empresa.",
+      "sub": "Sem preço, catálogo e regras, ela inventa resposta.",
+      "fala": "Primeiro: uma i á que não conhece a sua empresa. Sem preço, catálogo e regras, ela inventa resposta, e isso queima a sua marca."
+    },
+    {
+      "tipo": "lista",
+      "numero": "02",
+      "tag": "ERRO",
+      "titulo": "Não passar pra um *humano* na hora certa.",
+      "sub": "Cliente pronto pra comprar quer falar com gente.",
+      "fala": "Segundo: não passar pra um humano na hora certa. Cliente pronto pra comprar quer falar com gente, e rápido."
+    },
+    {
+      "tipo": "lista",
+      "numero": "03",
+      "tag": "ERRO",
+      "titulo": "Ligar e *nunca mais olhar*.",
+      "sub": "Agente bom é acompanhado e ajustado toda semana.",
+      "fala": "Terceiro: ligar e nunca mais olhar. Agente bom é acompanhado, medido e ajustado toda semana."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Quer fazer do *jeito certo*?",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Quer colocar i á no seu uótsápi do jeito certo? Comenta agente, e eu te mando um diagnóstico grátis!"
+    }
+  ]
+}

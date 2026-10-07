@@ -1,0 +1,68 @@
+{
+  "titulo": "IA não substitui vendedor",
+  "trilha": 0,
+  "trilhaInicio": 8,
+  "cenas": [
+    {
+      "tipo": "frase",
+      "titulo": "IA não vai substituir o seu *vendedor*.",
+      "fala": "Inteligência artificial não vai substituir o seu vendedor."
+    },
+    {
+      "tipo": "frase",
+      "titulo": "Vai substituir o vendedor que *demora*.",
+      "sub": "E o cliente percebe *na hora*.",
+      "fala": "Ela vai substituir o vendedor que demora pra responder. E o cliente percebe isso na hora."
+    },
+    {
+      "tipo": "chat",
+      "titulo": "O cliente *não espera*:",
+      "contato": "Cliente",
+      "bolhas": [
+        {
+          "lado": "cli",
+          "texto": "Oi, ainda tem horário hoje?",
+          "hora": "14:02"
+        },
+        {
+          "lado": "cli",
+          "texto": "??",
+          "hora": "14:20"
+        },
+        {
+          "lado": "cli",
+          "texto": "Deixa, achei em outro lugar.",
+          "hora": "14:41"
+        }
+      ],
+      "fala": "Porque o cliente de hoje não espera. Se ninguém responde em minutos, ele chama o concorrente."
+    },
+    {
+      "tipo": "comparar",
+      "titulo": "O time *ideal*:",
+      "esq": {
+        "nome": "Sem IA",
+        "itens": [
+          "Vendedor responde tudo",
+          "Cliente na fila",
+          "Venda esfria"
+        ]
+      },
+      "dir": {
+        "nome": "Com IA",
+        "itens": [
+          "IA responde na hora",
+          "Qualifica o cliente",
+          "Vendedor só fecha"
+        ]
+      },
+      "fala": "O time ideal é a i á respondendo na hora e qualificando, e o seu vendedor focado no que ele faz de melhor: fechar a venda."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Coloque a IA *do seu lado*.",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Coloque a i á do seu lado. Comenta agente, e eu te mando um diagnóstico grátis!"
+    }
+  ]
+}

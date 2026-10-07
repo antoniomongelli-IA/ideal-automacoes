@@ -1,0 +1,76 @@
+{
+  "titulo": "Road House: cardápio em vídeo",
+  "trilha": 1,
+  "trilhaInicio": 0,
+  "velocidade": 1.06,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "logo": "public/midia/road-house/logo.png",
+      "selo": "FEITO PRA VOCÊS",
+      "titulo": "O cardápio da *Road House*, em vídeo.",
+      "fala": "Road House, a gente preparou uma coisa pra vocês: o cardápio da casa, em vídeo."
+    },
+    {
+      "tipo": "frase",
+      "titulo": "Quem chega pelo Instagram quer ver o *cardápio na hora*.",
+      "sub": "E hoje, o link da bio *não abre*.",
+      "fala": "Quem chega pelo Instagram quer ver o cardápio na hora. Mas hoje, o link da bio de vocês não está abrindo."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "conteudo/road-house/telas/01-feed.png",
+      "titulo": "Agora imagina *assim*:",
+      "fala": "Agora imagina assim: o cliente clica no link, ou aponta o celular pro QR Code da mesa, e o cardápio abre estilo TikTok, prato por prato, em vídeo."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "conteudo/road-house/telas/02-feed2.png",
+      "titulo": "Cada prato, *um vídeo*.",
+      "fala": "Cada prato com o seu vídeo, o preço na tela, e um toque pra ver os detalhes. Dá vontade de pedir só de olhar."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "conteudo/road-house/telas/03-mais-pedidos.png",
+      "titulo": "Os *mais pedidos* primeiro.",
+      "fala": "Os mais pedidos da casa aparecem primeiro, com o ranking do mês. O cliente vai direto no que todo mundo pede."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "conteudo/road-house/telas/06-detalhes.png",
+      "titulo": "Dica do chef e *o que combina*.",
+      "fala": "Nos detalhes, a dica do chef e a sugestão do que combina junto. Assim, cada mesa pede um pouco mais."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "conteudo/road-house/telas/05-cardapio.png",
+      "titulo": "O cardápio *completo*, com busca.",
+      "fala": "E o cardápio completo, com busca, separado do jeito que vocês já trabalham: hambúrguer, baldinhos e porções, e bebidas."
+    },
+    {
+      "tipo": "tela-pc",
+      "imagem": "conteudo/road-house/telas/08-painel-pc.png",
+      "titulo": "E vocês *no controle*.",
+      "sub": "Pausar item, criar promoção, ver o que o cliente *mais assiste*.",
+      "fala": "E vocês ficam no controle, num painel simples: pausam um item quando acaba, criam promoção com dia e horário, e veem quais pratos o cliente mais assiste."
+    },
+    {
+      "tipo": "lista",
+      "numero": "QR",
+      "tag": "SEM BAIXAR APP",
+      "titulo": "Na mesa, no balcão e no *link da bio*.",
+      "sub": "QR Code, NFC e Instagram. Abre na hora, em qualquer celular.",
+      "fala": "Funciona no QR Code da mesa, no NFC do balcão e no link da bio. Abre na hora, em qualquer celular, sem baixar aplicativo."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Bora colocar *no ar*?",
+      "k": "Cardápio em Vídeo",
+      "palavra": "ROAD HOUSE",
+      "wSize": 118,
+      "sub": "Fala com o *Antônio*, da Ideal Automações.",
+      "handle": "WhatsApp (67) 99610-2537",
+      "fala": "O cardápio de vocês já está pronto pra testar. Bora colocar no ar? Fala com o Antônio, da Ideal Automações."
+    }
+  ]
+}

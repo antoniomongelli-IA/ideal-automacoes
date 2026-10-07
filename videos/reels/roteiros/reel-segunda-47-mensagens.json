@@ -1,0 +1,60 @@
+{
+  "titulo": "Segunda, 47 mensagens",
+  "trilha": 1,
+  "trilhaInicio": 3,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "SEGUNDA-FEIRA, 9H",
+      "titulo": "*47* mensagens não lidas.",
+      "fala": "Segunda-feira, nove da manhã. Quarenta e sete mensagens não lidas no uótsápi."
+    },
+    {
+      "tipo": "contador",
+      "titulo": "Enquanto a equipe *abre a loja*...",
+      "valores": [
+        12,
+        23,
+        35,
+        47
+      ],
+      "rotulo": "clientes esperando resposta",
+      "sub": "Cada minuto, uma venda *esfriando*.",
+      "fala": "E enquanto a equipe abre a loja, as mensagens só aumentam. Cada cliente esperando é uma venda esfriando."
+    },
+    {
+      "tipo": "frase",
+      "titulo": "Responder *uma por uma* não dá conta.",
+      "fala": "E responder uma por uma, no braço, simplesmente não dá conta."
+    },
+    {
+      "tipo": "linha-do-tempo",
+      "titulo": "Com um *agente de IA*:",
+      "eventos": [
+        {
+          "hora": "09:00",
+          "texto": "Todas respondidas *ao mesmo tempo*"
+        },
+        {
+          "hora": "09:02",
+          "texto": "Dúvidas tiradas na hora"
+        },
+        {
+          "hora": "09:05",
+          "texto": "Clientes *qualificados*"
+        },
+        {
+          "hora": "09:06",
+          "texto": "Vendedor recebe o resumo"
+        }
+      ],
+      "fala": "Com um agente de i á, todas são respondidas ao mesmo tempo, as dúvidas saem na hora, e o seu vendedor recebe só quem já está pronto pra comprar."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Sua segunda pode ser *diferente*.",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Sua segunda-feira pode ser bem diferente. Comenta agente, e eu te mando um diagnóstico grátis!"
+    }
+  ]
+}

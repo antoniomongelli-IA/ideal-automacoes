@@ -1,0 +1,109 @@
+{
+  "titulo": "Ideal Automações",
+  "trilha": 0,
+  "trilhaInicio": 4,
+  "velocidade": 1.06,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "IDEAL AUTOMAÇÕES",
+      "titulo": "A gente acelera empresas com *inteligência artificial*.",
+      "fala": "Ideal Automações. A gente acelera empresas com inteligência artificial."
+    },
+    {
+      "tipo": "foto",
+      "imagem": "conteudo/instagram/fotos/bastidor-camisa.jpg",
+      "pos": "50% 50%",
+      "titulo": "Antes da ferramenta, *o processo*.",
+      "sub": "A gente entende como a sua empresa vende, e só depois automatiza.",
+      "fala": "Mas antes de qualquer ferramenta, vem o processo. A gente entende como a sua empresa vende, e só depois automatiza."
+    },
+    {
+      "tipo": "chat",
+      "titulo": "*Agente de IA* no WhatsApp",
+      "contato": "Cliente",
+      "bolhas": [
+        {
+          "lado": "cli",
+          "texto": "Oi! Vocês têm horário amanhã?",
+          "hora": "22:41"
+        },
+        {
+          "lado": "ia",
+          "texto": "Oi! Tenho às 9h e às 14h30. Qual fica melhor pra você?",
+          "hora": "22:41"
+        },
+        {
+          "lado": "cli",
+          "texto": "9h!",
+          "hora": "22:42"
+        },
+        {
+          "lado": "ia",
+          "texto": "Prontinho, reservado. Te mando o lembrete amanhã cedo.",
+          "hora": "22:42"
+        }
+      ],
+      "fala": "Nosso carro-chefe é o agente de i á no uótsápi. Ele atende, qualifica e vende vinte e quatro horas por dia, e entrega o cliente pronto pro seu vendedor."
+    },
+    {
+      "tipo": "tela",
+      "imagem": "videos/cardapio-apresentacao/assets/01-feed.png",
+      "titulo": "*Cardápio em Vídeo*",
+      "fala": "Pra restaurantes, criamos o cardápio em vídeo: o cliente abre pelo QR Code ou NFC da mesa, e escolhe o prato vendo o prato."
+    },
+    {
+      "tipo": "diagrama",
+      "titulo": "Tudo *conversando*:",
+      "centro": "Sua empresa",
+      "nos": [
+        "WhatsApp",
+        "Agenda",
+        "CRM",
+        "Planilhas"
+      ],
+      "fala": "E a gente integra tudo: uótsápi, agenda, CRM e planilhas, conversando entre si. Sem retrabalho e sem informação perdida."
+    },
+    {
+      "tipo": "linha-do-tempo",
+      "titulo": "Como a gente *trabalha*:",
+      "eventos": [
+        {
+          "hora": "01",
+          "texto": "Diagnóstico *grátis*"
+        },
+        {
+          "hora": "02",
+          "texto": "Proposta sob medida"
+        },
+        {
+          "hora": "03",
+          "texto": "Implantação"
+        },
+        {
+          "hora": "04",
+          "texto": "Acompanhamento *toda semana*"
+        }
+      ],
+      "fala": "O caminho é simples: um diagnóstico grátis, uma proposta sob medida, a implantação, e depois o acompanhamento, toda semana, pra ir melhorando os resultados."
+    },
+    {
+      "tipo": "foto",
+      "imagem": "conteudo/instagram/fotos/perfil-original.jpg",
+      "pos": "50% 30%",
+      "titulo": "Antônio Mongelli",
+      "sub": "Fundador da *Ideal Automações*.",
+      "fala": "Prazer, eu sou o Antônio Mongelli, fundador da Ideal Automações."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Onde a IA pode *acelerar* a sua empresa?",
+      "k": "Agende seu",
+      "palavra": "DIAGNÓSTICO",
+      "wSize": 108,
+      "sub": "grátis, pelo WhatsApp *(67) 99610-2537*",
+      "handle": "@ia.antoniomongelli",
+      "fala": "Quer descobrir onde a i á pode acelerar a sua empresa? Agende o seu diagnóstico grátis com a gente."
+    }
+  ]
+}

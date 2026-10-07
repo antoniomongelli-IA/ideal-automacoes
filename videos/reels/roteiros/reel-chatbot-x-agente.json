@@ -1,0 +1,91 @@
+{
+  "titulo": "Chatbot x agente de IA",
+  "trilha": 0,
+  "trilhaInicio": 0,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "VOCÊ SABE A DIFERENÇA?",
+      "titulo": "Isso *não* é um agente de IA.",
+      "fala": "Isso aqui não é um agente de i á. E muita empresa ainda confunde."
+    },
+    {
+      "tipo": "chat",
+      "titulo": "O *chatbot* de menu:",
+      "contato": "Cliente",
+      "bolhas": [
+        {
+          "lado": "cli",
+          "texto": "Oi, quanto custa a entrega pro centro?",
+          "hora": "19:02"
+        },
+        {
+          "lado": "bot",
+          "texto": "Digite 1 para cardápio. Digite 2 para horários. Digite 3 para atendente.",
+          "hora": "19:02"
+        },
+        {
+          "lado": "cli",
+          "texto": "3",
+          "hora": "19:03"
+        },
+        {
+          "lado": "bot",
+          "texto": "Aguarde. Você está na fila.",
+          "hora": "19:03"
+        }
+      ],
+      "fala": "O chatbot de menu manda o cliente digitar um, dois ou três. E quando ele pergunta qualquer coisa fora do roteiro, trava. O cliente cansa e vai embora."
+    },
+    {
+      "tipo": "chat",
+      "titulo": "O *agente de IA*:",
+      "contato": "Cliente",
+      "bolhas": [
+        {
+          "lado": "cli",
+          "texto": "Oi, quanto custa a entrega pro centro?",
+          "hora": "19:02"
+        },
+        {
+          "lado": "ia",
+          "texto": "Oi! Pro centro fica R$ 7 e chega em uns 35 minutos. Quer que eu te mande o cardápio?",
+          "hora": "19:02"
+        },
+        {
+          "lado": "cli",
+          "texto": "Quero!",
+          "hora": "19:02"
+        }
+      ],
+      "fala": "Já o agente de i á entende a pergunta do jeito que o cliente escreveu, responde na hora e ainda puxa a conversa pra venda."
+    },
+    {
+      "tipo": "comparar",
+      "titulo": "A diferença que o cliente *sente*:",
+      "esq": {
+        "nome": "Chatbot",
+        "itens": [
+          "Menu de 1, 2, 3",
+          "Trava fora do roteiro",
+          "Cliente desiste"
+        ]
+      },
+      "dir": {
+        "nome": "Agente de IA",
+        "itens": [
+          "Conversa de verdade",
+          "Entende qualquer pergunta",
+          "Leva até a venda"
+        ]
+      },
+      "fala": "Um faz o cliente se adaptar ao robô. O outro se adapta ao cliente. E é exatamente isso que ele sente do outro lado."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Quer um *agente de verdade*?",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Quer um agente de verdade no seu uótsápi? Comenta agente, que eu te mando um diagnóstico grátis!"
+    }
+  ]
+}

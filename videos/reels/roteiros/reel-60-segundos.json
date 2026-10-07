@@ -1,0 +1,51 @@
+{
+  "titulo": "Agente de IA em 60 segundos",
+  "trilha": 0,
+  "trilhaInicio": 16,
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "selo": "CRONÔMETRO LIGADO",
+      "titulo": "O que um *agente de IA* faz em 60 segundos?",
+      "fala": "O que um agente de i á consegue fazer em sessenta segundos? Olha só."
+    },
+    {
+      "tipo": "linha-do-tempo",
+      "titulo": "Um cliente chama às *21h*:",
+      "eventos": [
+        {
+          "hora": "0:03",
+          "texto": "Responde e cumprimenta"
+        },
+        {
+          "hora": "0:15",
+          "texto": "Entende o que ele *procura*"
+        },
+        {
+          "hora": "0:30",
+          "texto": "Manda foto e vídeo"
+        },
+        {
+          "hora": "0:45",
+          "texto": "Tira a dúvida do frete"
+        },
+        {
+          "hora": "0:58",
+          "texto": "Agenda e *avisa o vendedor*"
+        }
+      ],
+      "fala": "Um cliente chama às nove da noite. Em três segundos, ele já foi respondido. Em quinze, o agente entendeu o que ele procura. Em trinta, mandou foto e vídeo do produto. Em quarenta e cinco, tirou a dúvida do frete. E antes de um minuto, já agendou e avisou o seu vendedor."
+    },
+    {
+      "tipo": "frase",
+      "titulo": "Tudo isso *sem ninguém* da equipe.",
+      "fala": "Tudo isso sem ninguém da sua equipe precisar pegar no celular."
+    },
+    {
+      "tipo": "cta",
+      "titulo": "Quer isso no *seu WhatsApp*?",
+      "sub": "e eu te mando um *diagnóstico grátis*.",
+      "fala": "Quer isso no seu uótsápi? Comenta agente, e eu te mando um diagnóstico grátis!"
+    }
+  ]
+}
