@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrossel: agente de IA passo a passo</title>
+<style>
+  @font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+  @font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+  @font-face { font-family: "Jakarta"; src: url("fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+  :root {
+    --bg: #070B1A; --card: #0E1630; --fg: #F5F7FF; --muted: #9AA3B8;
+    --ciano: #3FC8FF; --azul: #1F6BFF; --roxo: #8A3FFC; --magenta: #D35BFF; --alerta: #FF4D7E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #20232b; font-family: "Jakarta", system-ui, sans-serif; }
+  .deck { display: flex; flex-direction: column; align-items: center; gap: 48px; padding: 48px 0; }
+
+  .slide { width: 1080px; height: 1350px; flex: none; position: relative; overflow: hidden; color: var(--fg);
+    background:
+      radial-gradient(circle at 8% 12%, rgba(31,107,255,.40), rgba(31,107,255,0) 42%),
+      radial-gradient(circle at 95% 92%, rgba(138,63,252,.42), rgba(138,63,252,0) 45%),
+      var(--bg);
+    padding: 88px 84px; display: flex; flex-direction: column; justify-content: space-between; }
+  .slide::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(63,200,255,.06) 2px, transparent 2px), linear-gradient(90deg, rgba(63,200,255,.06) 2px, transparent 2px);
+    background-size: 90px 90px; }
+  .slide > * { position: relative; }
+
+  .topo, .rodape { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 30px; color: var(--muted); }
+  .seta { color: var(--ciano); font-weight: 800; font-size: 40px; }
+  .corpo { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 38px; }
+
+  h1 { font-weight: 800; font-size: 96px; line-height: 1.04; letter-spacing: -.03em; }
+  h2 { font-weight: 800; font-size: 80px; line-height: 1.05; letter-spacing: -.025em; }
+  p  { font-weight: 500; font-size: 44px; line-height: 1.32; color: #D5DBEC; }
+  .c { color: var(--ciano); } .m { color: var(--magenta); }
+  .apoio { font-size: 40px; color: var(--muted); }
+
+  .passo { display: flex; align-items: center; gap: 24px; }
+  .passo .n { font-weight: 800; font-size: 150px; line-height: .9; color: var(--ciano); text-shadow: 0 0 50px rgba(63,200,255,.45); letter-spacing: -.04em; }
+  .passo .tag { padding: 12px 26px; border-radius: 999px; background: rgba(63,200,255,.14); border: 2px solid rgba(63,200,255,.5); font-weight: 700; font-size: 30px; color: var(--ciano); letter-spacing: .06em; }
+
+  /* mini conversa */
+  .chat { background: var(--card); border: 3px solid rgba(63,200,255,.3); border-radius: 40px; padding: 36px; display: flex; flex-direction: column; gap: 22px; box-shadow: 0 40px 100px rgba(0,0,0,.5); }
+  .b { max-width: 78%; padding: 22px 28px; border-radius: 30px; font-weight: 500; font-size: 38px; line-height: 1.28; }
+  .b small { display: block; margin-top: 6px; font-size: 24px; opacity: .6; text-align: right; }
+  .cli { align-self: flex-start; background: #F5F7FF; color: #0B1020; border-bottom-left-radius: 8px; }
+  .ia { align-self: flex-end; background: linear-gradient(135deg, var(--azul), #6A4BFF); color: #fff; border-bottom-right-radius: 8px; }
+  .foto { align-self: flex-end; width: 62%; height: 200px; border-radius: 26px; background: linear-gradient(135deg, #1F6BFF 0%, #8A3FFC 100%); display: flex; align-items: center; justify-content: center; gap: 18px; font-weight: 800; font-size: 34px; color: #fff; border-bottom-right-radius: 8px; }
+  .foto i { width: 0; height: 0; border-left: 34px solid #fff; border-top: 22px solid transparent; border-bottom: 22px solid transparent; display: block; }
+  .resumo { background: #F5F7FF; color: #0B1020; border-radius: 30px; padding: 30px 34px; font-size: 34px; line-height: 1.45; font-weight: 500; }
+  .resumo b { font-weight: 800; }
+  .resumo .k { font-weight: 800; font-size: 26px; letter-spacing: .08em; color: var(--azul); margin-bottom: 8px; }
+
+  .lista { list-style: none; display: flex; flex-direction: column; gap: 26px; }
+  .lista li { font-weight: 700; font-size: 46px; line-height: 1.25; padding-left: 78px; position: relative; }
+  .lista li::before { content: ""; position: absolute; left: 0; top: 4px; width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--azul), var(--roxo)); }
+  .lista li::after { content: ""; position: absolute; left: 17px; top: 14px; width: 14px; height: 24px; border: solid #fff; border-width: 0 6px 6px 0; transform: rotate(45deg); }
+  .cartao { background: var(--card); border: 3px solid rgba(63,200,255,.3); border-radius: 40px; padding: 52px 56px; }
+
+  .cta { background: linear-gradient(135deg, var(--azul), var(--roxo) 60%, #C13BFF); border-radius: 48px; padding: 44px; text-align: center; box-shadow: 0 40px 110px rgba(138,63,252,.45); }
+  .cta .k { font-weight: 700; font-size: 46px; color: rgba(255,255,255,.88); }
+  .cta .w { font-weight: 800; font-size: 150px; line-height: 1; }
+  .pill { align-self: center; padding: 22px 44px; border-radius: 999px; border: 3px solid var(--ciano); color: var(--ciano); font-weight: 800; font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1 CAPA -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>1/8</span></div>
+    <div class="corpo">
+      <h1>Seu cliente chamou no WhatsApp.<br><span class="c">Quem respondeu foi uma IA.</span></h1>
+      <p class="apoio">O que acontece em 6 passos, do "oi" até a venda.</p>
+      <div class="chat" style="margin-top: 10px">
+        <div class="b cli">Oi! Vocês têm horário hoje?<small>23:07</small></div>
+        <div class="b ia">Oi! Temos sim. Prefere 18h ou 19h30?<small>23:07</small></div>
+      </div>
+    </div>
+    <div class="rodape"><span>Arrasta pro lado</span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>2/8</span></div>
+    <div class="corpo">
+      <div class="passo"><div class="n">01</div><div class="tag">PASSO</div></div>
+      <h2>Responde <span class="c">na hora.</span></h2>
+      <p>Seja 14h ou 23h, o cliente recebe resposta em segundos. Ninguém fica no vácuo esperando alguém da equipe.</p>
+      <div class="chat">
+        <div class="b cli">Alguém aí?<small>23:07</small></div>
+        <div class="b ia">Oi! Tô aqui. Como posso te ajudar?<small>23:07</small></div>
+      </div>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>3/8</span></div>
+    <div class="corpo">
+      <div class="passo"><div class="n">02</div><div class="tag">PASSO</div></div>
+      <h2>Entende o que <span class="c">ele quer.</span></h2>
+      <p>Não é menu de "digite 1, 2 ou 3". Ela lê o que o cliente escreveu, do jeito que ele escreveu, com erro e tudo.</p>
+      <div class="chat">
+        <div class="b cli">vcs tem aquele tenis branco q vi no insta?</div>
+        <div class="b ia">Temos! É o modelo branco da vitrine. Qual o seu número?</div>
+      </div>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>4/8</span></div>
+    <div class="corpo">
+      <div class="passo"><div class="n">03</div><div class="tag">PASSO</div></div>
+      <h2>Faz as <span class="c">perguntas certas.</span></h2>
+      <p>Uma por uma, como um bom vendedor: o que procura, pra quando, quanto quer investir. E entende quem está pronto pra comprar.</p>
+      <div class="chat">
+        <div class="b ia">É pra você ou pra presente?</div>
+        <div class="b cli">Presente, pro sábado</div>
+        <div class="b ia">Perfeito! Até quanto quer investir?</div>
+      </div>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>5/8</span></div>
+    <div class="corpo">
+      <div class="passo"><div class="n">04</div><div class="tag">PASSO</div></div>
+      <h2>Mostra <span class="c">o produto.</span></h2>
+      <p>Consulta o seu catálogo e manda foto e vídeo do produto certo, na hora. O cliente vê de pertinho antes de decidir.</p>
+      <div class="chat">
+        <div class="b ia">Olha ele de pertinho:</div>
+        <div class="foto"><i></i>vídeo do produto</div>
+      </div>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>6/8</span></div>
+    <div class="corpo">
+      <div class="passo"><div class="n">05</div><div class="tag">PASSO</div></div>
+      <h2>Entrega <span class="c">pronto pro vendedor.</span></h2>
+      <p>Cliente decidido? O vendedor recebe o resumo da conversa e só entra pra fechar. Sem repetir pergunta.</p>
+      <div class="resumo">
+        <div class="k">RESUMO PRO VENDEDOR</div>
+        <b>Cliente:</b> quer o tênis branco, nº 40<br>
+        <b>Para:</b> presente, sábado<br>
+        <b>Status:</b> pronto pra fechar
+      </div>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 7 SALVAR -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>7/8</span></div>
+    <div class="corpo">
+      <h2>Resumo pra <span class="m">salvar</span></h2>
+      <div class="cartao">
+        <ul class="lista">
+          <li>Responde na hora, 24h</li>
+          <li>Entende o cliente de verdade</li>
+          <li>Qualifica sozinha</li>
+          <li>Mostra foto e vídeo</li>
+          <li>Passa o cliente pronto</li>
+        </ul>
+      </div>
+      <p class="apoio">Salva pra lembrar do que o seu WhatsApp pode fazer por você.</p>
+    </div>
+    <div class="rodape"><span></span><span class="seta">→</span></div>
+  </section>
+
+  <!-- 8 CTA -->
+  <section class="slide">
+    <div class="topo"><span>@ia.antoniomongelli</span><span>8/8</span></div>
+    <div class="corpo" style="text-align: center">
+      <h2>Quer isso no <span class="c">seu WhatsApp?</span></h2>
+      <div class="cta"><div class="k">Comenta</div><div class="w">AGENTE</div></div>
+      <p>e eu te mando um <b class="c">diagnóstico grátis</b> do seu atendimento.</p>
+      <div class="pill">@ia.antoniomongelli</div>
+    </div>
+    <div class="rodape"><span></span><span></span></div>
+  </section>
+
+</div>
+</body>
+</html>
