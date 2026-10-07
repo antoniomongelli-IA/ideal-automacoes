@@ -1,0 +1,532 @@
+<template id="f09-cta-template">
+  <style>
+    @font-face {
+      font-family: "Anton";
+      src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Plus Jakarta Sans";
+      src: url("assets/fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Plus Jakarta Sans";
+      src: url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Plus Jakarta Sans";
+      src: url("assets/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2");
+      font-weight: 800;
+      font-style: normal;
+      font-display: block;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      color: #fff4ea;
+    }
+
+    .f09-cta-bg {
+      position: absolute;
+      inset: 0;
+      background: #0f0805;
+    }
+
+    /* ---- orbit crown of dish covers (background, blurred ~40%) ---- */
+    .f09-cta-orbit-wrap {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1594px;
+      perspective: 1800px;
+      z-index: 1;
+    }
+    .f09-cta-orbit-stage {
+      position: absolute;
+      left: 540px;
+      top: 840px;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+    }
+    .f09-cta-orbit-item {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 270px;
+      height: 480px;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .f09-cta-card {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 0;
+      outline: 1px solid #3a2a20;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+    .f09-cta-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(6px) saturate(0.9) brightness(0.62);
+      transform: scale(1.08);
+    }
+
+    /* ---- lockup ---- */
+    .f09-cta-lockup {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1594px;
+      z-index: 3;
+      transform-origin: 540px 820px;
+    }
+    .f09-cta-flame {
+      position: absolute;
+      left: 452px;
+      top: 352px;
+      width: 176px;
+      height: 228px;
+      overflow: visible;
+    }
+    .f09-cta-flame path {
+      stroke: #ff6a1a;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .f09-cta-flame .f09-cta-flame-outer {
+      fill: #ff6a1a;
+      fill-opacity: 0;
+    }
+    .f09-cta-flame .f09-cta-flame-inner {
+      fill: #0f0805;
+      fill-opacity: 0;
+    }
+
+    .f09-cta-word-line {
+      position: absolute;
+      left: 0;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      gap: 0.2em;
+      font-family: "Anton", sans-serif;
+      font-weight: 400;
+      font-size: 200px;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      text-transform: lowercase;
+      white-space: nowrap;
+    }
+    .f09-cta-line-1 {
+      top: 596px;
+      color: #fff4ea;
+    }
+    .f09-cta-line-2 {
+      top: 790px;
+      color: #ff6a1a;
+    }
+    .f09-cta-mask {
+      display: inline-block;
+      overflow: hidden;
+      padding-top: 0.16em;
+      margin-top: -0.16em;
+      padding-bottom: 0.04em;
+    }
+    .f09-cta-word {
+      display: inline-block;
+      will-change: transform;
+    }
+
+    .f09-cta-by {
+      position: absolute;
+      left: 0;
+      top: 1022px;
+      width: 1080px;
+      display: flex;
+      justify-content: center;
+      gap: 0.32em;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 500;
+      font-size: 46px;
+      line-height: 1.2;
+      color: #d9c4b3;
+      white-space: nowrap;
+    }
+    .f09-cta-by .f09-cta-by-strong {
+      font-weight: 700;
+      color: #fff4ea;
+    }
+    .f09-cta-by-word {
+      display: inline-block;
+    }
+
+    /* ---- CTA pill ---- */
+    .f09-cta-glow {
+      position: absolute;
+      left: 190px;
+      top: 1100px;
+      width: 700px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(255, 106, 26, 0.55), rgba(255, 106, 26, 0));
+      filter: blur(30px);
+      opacity: 0;
+    }
+    .f09-cta-pill {
+      position: absolute;
+      left: 160px;
+      top: 1176px;
+      width: 760px;
+      height: 136px;
+    }
+    .f09-cta-pill-body {
+      position: absolute;
+      inset: 0;
+      border-radius: 68px;
+      overflow: hidden;
+      background: #1e120b;
+    }
+    .f09-cta-pill-fill {
+      position: absolute;
+      inset: 0;
+      background: #ff6a1a;
+      transform-origin: 0% 50%;
+    }
+    .f09-cta-pill-stroke {
+      position: absolute;
+      left: -6px;
+      top: -6px;
+      width: 772px;
+      height: 148px;
+      overflow: visible;
+    }
+    .f09-cta-pill-stroke rect {
+      fill: none;
+      stroke: #ff6a1a;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .f09-cta-pill-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.36em;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 800;
+      font-size: 50px;
+      letter-spacing: -0.01em;
+      color: #fff4ea;
+      white-space: nowrap;
+    }
+    .f09-cta-arrow {
+      display: inline-block;
+    }
+
+    .f09-cta-fadeout {
+      position: absolute;
+      inset: 0;
+      background: #0f0805;
+      opacity: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+  </style>
+
+  <div id="root" data-composition-id="09-cta" data-width="1080" data-height="1920">
+    <div class="f09-cta-bg clip" data-start="0" data-duration="6.189" data-track-index="0"></div>
+
+    <div class="f09-cta-orbit-wrap">
+      <div class="f09-cta-orbit-stage">
+        <div class="f09-cta-orbit-item" data-angle="220" data-tilt="-6">
+          <div class="f09-cta-card"><img src="assets/bacon-duplo.jpg" alt="" /></div>
+        </div>
+        <div class="f09-cta-orbit-item" data-angle="320" data-tilt="5">
+          <div class="f09-cta-card"><img src="assets/chopp-pilsen.jpg" alt="" /></div>
+        </div>
+        <div class="f09-cta-orbit-item" data-angle="40" data-tilt="-4">
+          <div class="f09-cta-card"><img src="assets/milkshake-morango.jpg" alt="" /></div>
+        </div>
+        <div class="f09-cta-orbit-item" data-angle="140" data-tilt="6">
+          <div class="f09-cta-card"><img src="assets/brownie-sorvete.jpg" alt="" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="f09-cta-lockup">
+      <svg class="f09-cta-flame" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+        <path
+          class="f09-cta-flame-outer"
+          d="M100 8 C118 60 172 96 172 162 C172 214 140 248 100 248 C60 248 28 214 28 166 C28 126 50 100 66 76 C70 104 82 120 96 126 C92 86 96 44 100 8 Z"
+        />
+        <path
+          class="f09-cta-flame-inner"
+          d="M104 136 C118 162 138 178 138 204 C138 228 122 242 102 242 C82 242 66 228 66 208 C66 188 78 174 90 162 C94 178 100 184 108 186 C108 168 106 152 104 136 Z"
+        />
+      </svg>
+
+      <div class="f09-cta-word-line f09-cta-line-1">
+        <span class="f09-cta-mask"><span class="f09-cta-word f09-cta-w1">cardápio</span></span>
+      </div>
+      <div class="f09-cta-word-line f09-cta-line-2">
+        <span class="f09-cta-mask"><span class="f09-cta-word f09-cta-w2">em</span></span>
+        <span class="f09-cta-mask"><span class="f09-cta-word f09-cta-w3">vídeo</span></span>
+      </div>
+
+      <div class="f09-cta-by">
+        <span class="f09-cta-by-word f09-cta-by-1">por</span>
+        <span class="f09-cta-by-word f09-cta-by-strong f09-cta-by-2">ideal</span>
+        <span class="f09-cta-by-word f09-cta-by-strong f09-cta-by-3">automações</span>
+      </div>
+
+      <div class="f09-cta-glow"></div>
+      <div class="f09-cta-pill">
+        <div class="f09-cta-pill-body">
+          <div class="f09-cta-pill-fill"></div>
+        </div>
+        <svg class="f09-cta-pill-stroke" viewBox="0 0 772 148" xmlns="http://www.w3.org/2000/svg">
+          <rect class="f09-cta-pill-rect" x="6" y="6" width="760" height="136" rx="68" ry="68" />
+        </svg>
+        <div class="f09-cta-pill-label">
+          <span class="f09-cta-pill-text">chame no whatsapp</span>
+          <span class="f09-cta-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="f09-cta-fadeout"></div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (function () {
+      var FRAME_ID = "09-cta";
+      var DUR = 6.189;
+      var host = document.querySelector('[data-composition-id="09-cta"] .f09-cta-orbit-stage');
+      var root = host ? host.closest('[data-composition-id="09-cta"]') : document;
+      var q = function (sel) {
+        return root.querySelector(sel);
+      };
+      var qa = function (sel) {
+        return Array.prototype.slice.call(root.querySelectorAll(sel));
+      };
+
+      var tl = gsap.timeline({ paused: true });
+
+      // ---------- Scene 1 (0.0–1.5s): crown of dish covers flips in (orbit-3d-entry) ----------
+      var RADIUS_X = 380;
+      var RADIUS_Y = 230; // Y_TO_X ~0.6 — tilted ring
+      var DRIFT_DEG = 10; // slow drift over the whole frame (no full revolution)
+      var ENTRY_DUR = 0.7;
+      var STAGGER = 0.1;
+
+      qa(".f09-cta-orbit-item").forEach(function (item, i) {
+        var a0 = (Number(item.dataset.angle) / 360) * Math.PI * 2;
+        var tilt = Number(item.dataset.tilt) || 0;
+        var card = item.querySelector(".f09-cta-card");
+
+        var place = function (p) {
+          var a = a0 + p * (DRIFT_DEG / 360) * Math.PI * 2;
+          var x = Math.cos(a) * RADIUS_X;
+          var y = Math.sin(a) * RADIUS_Y;
+          item.style.zIndex = String(1 + Math.round(((y + RADIUS_Y) / (2 * RADIUS_Y)) * 49));
+          item.style.transform =
+            "translate(-50%, -50%) translate(" + x.toFixed(2) + "px, " + y.toFixed(2) + "px) rotate(" + tilt + "deg)";
+        };
+        place(0); // park at orbital position before any tween
+
+        // flip IN PLACE: rotation / z / scale / opacity only
+        tl.fromTo(
+          card,
+          { rotationX: -80, rotationY: 60, z: -320, scale: 0.4, opacity: 0 },
+          {
+            rotationX: 0,
+            rotationY: 0,
+            z: 0,
+            scale: 1,
+            opacity: 0.55,
+            duration: ENTRY_DUR,
+            ease: "back.out(1.4)",
+          },
+          0.05 + i * STAGGER
+        );
+
+        // slow orbital drift across the whole frame (own progress driver per item)
+        var orbit = { p: 0 };
+        tl.fromTo(
+          orbit,
+          { p: 0 },
+          {
+            p: 1,
+            duration: DUR,
+            ease: "none",
+            onUpdate: function () {
+              place(orbit.p);
+            },
+          },
+          0
+        );
+      });
+
+      // ---------- Scene 1: flame draws itself (svg-path-draw), then fills ----------
+      var outer = q(".f09-cta-flame-outer");
+      var inner = q(".f09-cta-flame-inner");
+      [outer, inner].forEach(function (p) {
+        var len = 900;
+        try {
+          len = p.getTotalLength() * 1.05;
+        } catch (e) {}
+        p.style.strokeDasharray = String(len);
+        p.style.strokeDashoffset = String(len);
+        p.dataset.len = String(len);
+      });
+      tl.fromTo(
+        outer,
+        { strokeDashoffset: Number(outer.dataset.len) },
+        { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" },
+        0.1
+      );
+      tl.fromTo(
+        inner,
+        { strokeDashoffset: Number(inner.dataset.len) },
+        { strokeDashoffset: 0, duration: 0.42, ease: "power2.out" },
+        0.1 + 0.6 * 0.75
+      );
+      tl.fromTo(outer, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.35, ease: "power1.out" }, 0.72);
+      tl.fromTo(inner, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.35, ease: "power1.out" }, 0.86);
+      tl.fromTo(
+        ".f09-cta-flame",
+        { scale: 0.92, transformOrigin: "50% 100%" },
+        { scale: 1, duration: 0.9, ease: "power2.out" },
+        0.1
+      );
+
+      // ---------- Scene 1: "cardápio em vídeo" per-word reveal on the voice ----------
+      // VO: "Cardápio" 0.00 · "em" 0.78 · "Vídeo" 1.04
+      tl.fromTo(
+        q(".f09-cta-w1"),
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.55, ease: "power3.out" },
+        0.08
+      );
+      tl.fromTo(
+        q(".f09-cta-w2"),
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.45, ease: "power3.out" },
+        0.78
+      );
+      tl.fromTo(
+        q(".f09-cta-w3"),
+        { yPercent: 105 },
+        { yPercent: 0, duration: 0.5, ease: "power3.out" },
+        1.0
+      );
+
+      // ---------- Scene 2 (1.5–2.4s): "por ideal automações" ----------
+      // VO: "da" 1.57 · "Ideal" 1.68 · "Automações" 1.92
+      var byTimes = [1.55, 1.68, 1.9];
+      qa(".f09-cta-by-word").forEach(function (w, i) {
+        tl.fromTo(
+          w,
+          { y: 26, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" },
+          byTimes[i]
+        );
+      });
+
+      // ---------- Scene 3 (2.4–4.0s): CTA button-build ----------
+      // VO: "Chama" 2.38 · "gente" 2.90 · "WhatsApp" 3.42
+      tl.fromTo(
+        ".f09-cta-pill",
+        { y: 90, scale: 0.86, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.6)" },
+        2.36
+      );
+      var rect = q(".f09-cta-pill-rect");
+      var rlen = 2 * (760 - 136) + Math.PI * 136;
+      try {
+        rlen = rect.getTotalLength() * 1.02;
+      } catch (e) {}
+      rect.style.strokeDasharray = String(rlen);
+      rect.style.strokeDashoffset = String(rlen);
+      tl.fromTo(
+        rect,
+        { strokeDashoffset: rlen },
+        { strokeDashoffset: 0, duration: 0.75, ease: "power2.out" },
+        2.5
+      );
+      tl.fromTo(
+        ".f09-cta-pill-text",
+        { opacity: 0, x: -16 },
+        { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" },
+        2.58
+      );
+      // orange floods the pill once the border closes; label flips to ink-on-fire
+      tl.fromTo(
+        ".f09-cta-pill-fill",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.45, ease: "power3.inOut" },
+        3.05
+      );
+      tl.fromTo(
+        ".f09-cta-pill-label",
+        { color: "#fff4ea" },
+        { color: "#0f0805", duration: 0.3, ease: "power1.out" },
+        3.2
+      );
+      tl.fromTo(
+        ".f09-cta-glow",
+        { opacity: 0, scale: 0.7 },
+        { opacity: 1, scale: 1, duration: 0.7, ease: "power2.out" },
+        3.1
+      );
+      // arrow lands on "WhatsApp"
+      tl.fromTo(
+        ".f09-cta-arrow",
+        { x: -30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.45, ease: "power3.out" },
+        3.4
+      );
+
+      // ---------- Scene 4 (4.0–6.2s): hold, near-imperceptible push, final fade ----------
+      tl.fromTo(
+        ".f09-cta-lockup",
+        { scale: 1 },
+        { scale: 1.025, duration: 2.4, ease: "none" },
+        3.4
+      );
+      tl.to(".f09-cta-glow", { opacity: 0.8, duration: 1.6, ease: "sine.inOut" }, 4.1);
+      // final frame of the video: fade to the dark ground over the last 0.4s
+      tl.fromTo(
+        ".f09-cta-fadeout",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: "power1.in" },
+        DUR - 0.4
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FRAME_ID] = tl;
+    })();
+  </script>
+</template>

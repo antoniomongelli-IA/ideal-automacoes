@@ -1,0 +1,27 @@
+[
+  {
+    "inicio": 0.0,
+    "duracao": 3.331875,
+    "fala": "Inteligência artificial não vai substituir o seu vendedor."
+  },
+  {
+    "inicio": 3.331875,
+    "duracao": 4.957167,
+    "fala": "Ela vai substituir o vendedor que demora pra responder. E o cliente percebe isso na hora."
+  },
+  {
+    "inicio": 8.289042,
+    "duracao": 4.9892080000000005,
+    "fala": "Porque o cliente de hoje não espera. Se ninguém responde em minutos, ele chama o concorrente."
+  },
+  {
+    "inicio": 13.27825,
+    "duracao": 6.477208,
+    "fala": "O time ideal é a i á respondendo na hora e qualificando, e o seu vendedor focado no que ele faz de melhor: fechar a venda."
+  },
+  {
+    "inicio": 19.755458,
+    "duracao": 5.792000000000001,
+    "fala": "Coloque a i á do seu lado. Comenta agente, e eu te mando um diagnóstico grátis!"
+  }
+]

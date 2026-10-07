@@ -1,0 +1,61 @@
+{
+  "provider": "kokoro",
+  "speed": "1.08",
+  "lines": [
+    {
+      "id": "01",
+      "text": "Cardápio de papel? Aquele pê dê éfe que ninguém abre?"
+    },
+    {
+      "id": "02",
+      "text": "O cliente não vê o prato. Pede o de sempre. E você vende menos!"
+    },
+    {
+      "id": "03",
+      "text": "Agora, o cliente encosta o celular na mesa,"
+    },
+    {
+      "id": "04",
+      "text": "e o seu cardápio vira um tíque tóque dos seus pratos! Em vídeo, com preço, e o mais pedido da casa!"
+    },
+    {
+      "id": "05",
+      "text": "Tem também as abas: os mais pedidos, os destaques do mês, e o cardápio completo, com busca e categorias!"
+    },
+    {
+      "id": "06",
+      "text": "Répi áuer? A promoção aparece sozinha, só no horário que você marcar!"
+    },
+    {
+      "id": "07",
+      "text": "Ele curte, salva os favoritos, e pede direto no seu uótsápi!"
+    },
+    {
+      "id": "08",
+      "text": "Cada prato tem o seu próprio línque pra compartilhar. E, depois de alguns minutos, o cliente é convidado a avaliar seu restaurante no Google!"
+    },
+    {
+      "id": "09",
+      "text": "E você vê tudo no painel: quem abriu, o que mais vendeu. Acabou o prato? Pausa com um toque!"
+    },
+    {
+      "id": "10",
+      "text": "Pra começar, é só enviar a sua logo: as cores do cardápio saem dela, automaticamente!"
+    },
+    {
+      "id": "11",
+      "text": "Sem aplicativo pra baixar. Sem reimprimir cardápio. Pronto em um dia, e cabe no seu orçamento!"
+    },
+    {
+      "id": "12",
+      "text": "Cardápio em Vídeo, da Ideal Automações! Chama a gente no uótsápi!"
+    }
+  ],
+  "bgm": {
+    "mode": "retrieve",
+    "query": "upbeat warm modern food commercial, light funky percussion, positive and confident",
+    "blob": "Seu cardápio vira um TikTok dos seus pratos: o cliente encosta o celular na mesa, vê os pratos em vídeo e pede mais — sem app, pronto em 1 dia e cabendo no bolso do restaurante.",
+    "arc": "PAS with feature-benefit progression — hook → pain → product intro → demo (feed, promo, pedido, painel) → value stack (budget) → CTA"
+  },
+  "voice": "pf_dora"
+}

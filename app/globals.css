@@ -243,3 +243,12 @@ section[id].section-revealed::after {
 .section-divider-dim::before {
   background: radial-gradient(ellipse, rgba(160,32,240,0.06) 0%, transparent 80%);
 }
+
+/* zoom lento nas fotos de itens sem vídeo (cardápio) */
+@keyframes kenburns {
+  0%   { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.12) translate(-2%, -2%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[kenburns"] { animation: none !important; }
+}

@@ -1,0 +1,158 @@
+{
+  "name": "Instagram · resposta automática ao AGENTE",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Instagram · resposta automática\n\nQuando alguém comenta **AGENTE** (ou outra palavra da tabela *instagram_palavras*):\n1. responde o comentário em público (\"Te chamei no direct!\")\n2. manda NA HORA a mensagem no **direct** perguntando o melhor dia e horário pro diagnóstico\n3. guarda no Supabase para nunca responder 2 vezes\n\n**Configurar:**\n- Preencha o nó **Configuração** (igual ao outro workflow).\n- No nó **Conferir token**, o token `ideal-agente-2026` tem que ser o mesmo que você colocar no painel da Meta.\n- Ative o workflow e copie a **Production URL** do nó *Instagram avisa (POST)*: é ela que vai no painel da Meta (Webhooks → Instagram → comments).",
+        "height": 460,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        -320
+      ],
+      "id": "1199e28f-dc05-47fc-865e-5435f4bbb4ba",
+      "name": "Leia-me"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "instagram-comentarios",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -160
+      ],
+      "id": "d2c67988-37c6-43a8-bff4-02c3d01b4a21",
+      "name": "Meta confirma (GET)",
+      "webhookId": "487949bf-5a86-4f0e-b8ea-1541020439ea"
+    },
+    {
+      "parameters": {
+        "jsCode": "// A Meta chama este endereço uma vez para confirmar que ele é seu.\n// O token abaixo tem que ser IGUAL ao que você digitar em \"Verify token\" no painel da Meta.\nconst MEU_TOKEN_DE_VERIFICACAO = 'ideal-agente-2026';\n\nconst q = $json.query || {};\nconst ok = q['hub.mode'] === 'subscribe' && q['hub.verify_token'] === MEU_TOKEN_DE_VERIFICACAO;\nreturn [{ json: { resposta: ok ? String(q['hub.challenge']) : 'token incorreto' } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        -160
+      ],
+      "id": "d4f70799-c775-445c-b4a9-501a0d416a27",
+      "name": "Conferir token"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.resposta }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -160
+      ],
+      "id": "fc94c5e6-008c-4825-8230-a045c7818b92",
+      "name": "Responder à Meta"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "instagram-comentarios",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        120
+      ],
+      "id": "f5c0ac55-a837-4bc2-a949-e03a72adce33",
+      "name": "Instagram avisa (POST)",
+      "webhookId": "9e974aad-ab46-4f2a-9241-84fc2f0298db"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ======= PREENCHA AQUI (só uma vez) =======\nreturn [{\n  json: {\n    SUPABASE_URL: 'https://SEU-PROJETO.supabase.co',\n    SUPABASE_SERVICE_KEY: 'COLE_A_CHAVE_SERVICE_ROLE',   // Supabase > Project Settings > API > service_role\n    TOKEN_META: 'COLE_O_TOKEN_DA_PAGINA',                 // token de longa duração da Página (veja o guia)\n    IG_USER_ID: 'COLE_O_ID_DO_INSTAGRAM',                 // id da conta profissional (instagram_business_account)\n    PAGE_ID: 'COLE_O_ID_DA_PAGINA',                       // id da Página do Facebook ligada ao Instagram\n    MEU_USUARIO: 'ia.antoniomongelli',\n    GRAPH: 'https://graph.facebook.com/v23.0',\n  },\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        120
+      ],
+      "id": "72c54b10-ec65-47b0-929f-5a7322227870",
+      "name": "Configuração"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recebe os comentários do Instagram e responde quem comentou uma palavra-chave (ex.: AGENTE).\nconst cfg = $('Configuração').first().json;\nconst helpers = this.helpers;\nconst corpo = $('Instagram avisa (POST)').first().json.body || {};\nconst esperar = (ms) => new Promise((r) => setTimeout(r, ms));\nconst sb = { apikey: cfg.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${cfg.SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json' };\n\nasync function supa(fn, body = {}) {\n  return helpers.httpRequest({ method: 'POST', url: `${cfg.SUPABASE_URL}/rest/v1/rpc/${fn}`, headers: sb, body, json: true });\n}\nasync function graph(caminho, dados) {\n  const r = await helpers.httpRequest({\n    method: 'POST', url: `${cfg.GRAPH}/${caminho}`, qs: { access_token: cfg.TOKEN_META },\n    body: dados, json: true, ignoreHttpStatusErrors: true,\n  });\n  if (!r || r.error) throw new Error(r?.error?.error_user_msg || r?.error?.message || 'Erro na API da Meta');\n  return r;\n}\nconst normalizar = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();\n\n// 1. separa os comentários que chegaram\nconst comentarios = [];\nfor (const entry of corpo.entry || []) {\n  for (const ch of entry.changes || []) {\n    if (ch.field === 'comments' && ch.value && ch.value.id) comentarios.push(ch.value);\n  }\n}\nif (!comentarios.length) return [{ json: { ignorado: 'nenhum comentário no aviso' } }];\n\n// 2. palavras-chave ativas (tabela instagram_palavras)\nconst palavras = await helpers.httpRequest({\n  method: 'GET', url: `${cfg.SUPABASE_URL}/rest/v1/instagram_palavras?ativa=eq.true&select=*`, headers: sb, json: true,\n});\n\nconst saida = [];\nfor (const c of comentarios) {\n  const autor = c.from || {};\n  if (autor.id === cfg.IG_USER_ID || autor.username === cfg.MEU_USUARIO) continue; // não responde a si mesmo\n\n  const texto = normalizar(c.text);\n  const p = (palavras || []).find((x) => new RegExp(`(^|[^A-Z0-9])${normalizar(x.palavra)}([^A-Z0-9]|$)`).test(texto));\n  if (!p) continue;\n\n  // registra; se já existia, é repetido: não responde de novo\n  const novo = await supa('instagram_registrar_comentario', {\n    p_comment_id: c.id, p_media_id: c.media?.id || null, p_username: autor.username || null, p_texto: c.text || '', p_palavra: p.palavra,\n  });\n  if (!novo) continue;\n\n  // 1º o direct, na hora: é o que gera o agendamento do diagnóstico\n  let publico = false, direct = false, erro = null;\n  try {\n    const msg = p.mensagem_direct.replaceAll('{nome}', autor.username ? `@${autor.username}` : '');\n    await graph(`${cfg.PAGE_ID}/messages`, { recipient: { comment_id: c.id }, message: { text: msg } });\n    direct = true;\n  } catch (e) { erro = `direct: ${e.message}`; }\n\n  // 2º a resposta pública (com um respiro curto, pra não parecer robô)\n  await esperar(1500 + Math.floor(Math.random() * 2000));\n  try {\n    const resposta = p.respostas[Math.floor(Math.random() * p.respostas.length)];\n    await graph(`${c.id}/replies`, { message: autor.username ? `@${autor.username} ${resposta}` : resposta });\n    publico = true;\n  } catch (e) { erro = [erro, `público: ${e.message}`].filter(Boolean).join(' | '); }\n\n  await supa('instagram_atualizar_comentario', { p_comment_id: c.id, p_publico: publico, p_direct: direct, p_erro: erro });\n  saida.push({ json: { comentario: c.id, usuario: autor.username, palavra: p.palavra, publico, direct, erro } });\n}\n\nreturn saida.length ? saida : [{ json: { ignorado: 'nenhuma palavra-chave' } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        120
+      ],
+      "id": "002b11c0-049b-4aec-bd67-d7637b9c67d2",
+      "name": "Responder comentários"
+    }
+  ],
+  "connections": {
+    "Meta confirma (GET)": {
+      "main": [
+        [
+          {
+            "node": "Conferir token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conferir token": {
+      "main": [
+        [
+          {
+            "node": "Responder à Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram avisa (POST)": {
+      "main": [
+        [
+          {
+            "node": "Configuração",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuração": {
+      "main": [
+        [
+          {
+            "node": "Responder comentários",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

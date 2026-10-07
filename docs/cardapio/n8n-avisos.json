@@ -1,0 +1,270 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Cardápio em Vídeo · avisos do banco\n\nLigue a saída do seu nó **Webhook** (o que já existe) na entrada do **Tipo de aviso**.\n\n**Saídas:**\n1. **Boas-vindas** → só clientes que deixaram marcado \"Aceito receber mensagens\". Ligue aqui o seu fluxo de boas-vindas que já existe.\n2. **Código de senha** → manda o código de 6 números (já está pronto).\n3. **Erro no site** → avisa VOCÊ quando o cardápio dá erro no celular de alguém. Troque MEU_NUMERO no nó \"Mensagem de erro\".\n4. **Novo estabelecimento** → um dono criou cardápio (ligue onde quiser).\n\nNos 2 nós \"Enviar ... no WhatsApp\", troque o endereço, a instância e a apikey pelos da sua API de WhatsApp. Se você usa outro nó para enviar, apague esses e use {{ $json.telefone }} e {{ $json.mensagem }} no seu.",
+        "height": 420,
+        "width": 520,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -160
+      ],
+      "id": "43fd0544-d3c5-4a05-b35b-1bec46634f4a",
+      "name": "Leia-me"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fc28e8be-9643-45ca-90c4-fed1ea3698d1",
+                    "leftValue": "={{ ($json.body ?? $json).evento }}",
+                    "rightValue": "novo_cliente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "id": "1977af4f-6d9d-439f-8542-4255dcb41828",
+                    "leftValue": "={{ ($json.body ?? $json).aceita_mensagens }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Boas-vindas"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a5461d30-920c-4943-b797-86ef1a47f0cc",
+                    "leftValue": "={{ ($json.body ?? $json).evento }}",
+                    "rightValue": "recuperar_senha",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Código de senha"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "db290519-017a-4cb5-ab31-101b25f84777",
+                    "leftValue": "={{ ($json.body ?? $json).evento }}",
+                    "rightValue": "erro_cardapio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Erro no site"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1d620777-19bf-4835-8f9f-442511169742",
+                    "leftValue": "={{ ($json.body ?? $json).evento }}",
+                    "rightValue": "novo_estabelecimento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Novo estabelecimento"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "450ba9bc-9562-4cc7-b789-2b9377ba0b90",
+      "name": "Tipo de aviso"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Monta a mensagem com o código de \"esqueci minha senha\"\nconst d = $json.body ?? $json;\nconst telefone = String(d.telefone || '').replace(/\\D/g, ''); // já vem 55 + DDD + número\nconst onde = d.tipo === 'dono'\n  ? `no painel do *${d.estabelecimento_nome || 'seu cardápio'}*`\n  : `na sua conta do cardápio${d.estabelecimento_nome ? ` do *${d.estabelecimento_nome}*` : ''}`;\nconst ola = d.tipo === 'dono' || !d.primeiro_nome ? 'Olá!' : `Olá, ${d.primeiro_nome}!`;\nconst mensagem =\n  `${ola} 🔐\\n\\n` +\n  `Seu código para criar uma nova senha ${onde} é:\\n\\n` +\n  `*${d.codigo}*\\n\\n` +\n  `Ele vale por ${d.validade_minutos || 10} minutos. Se não foi você que pediu, é só ignorar esta mensagem.`;\nreturn { json: { telefone, mensagem } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "id": "2d39d7a5-c7c5-485c-8c71-119e4adc3454",
+      "name": "Mensagem do código"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://SUA-EVOLUTION-API/message/sendText/SUA-INSTANCIA",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA-CHAVE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.telefone, text: $json.mensagem }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "90af4351-7e3d-4f53-b50c-8cfe34ed3270",
+      "name": "Enviar código no WhatsApp"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Monta o aviso de erro para VOCÊ (troque pelo seu número, com 55 + DDD)\nconst MEU_NUMERO = '55DDDSEUNUMERO';\nconst d = $json.body ?? $json;\nconst mensagem =\n  `⚠️ *Erro no cardápio*\\n\\n` +\n  (d.estabelecimento_nome ? `Estabelecimento: ${d.estabelecimento_nome}\\n` : '') +\n  `Página: ${d.pagina || '-'}\\n` +\n  `Erro: ${d.mensagem}\\n` +\n  `Celular: ${d.navegador || '-'}\\n` +\n  `Versão do site: ${d.versao || '-'}`;\nreturn { json: { telefone: MEU_NUMERO, mensagem } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        200
+      ],
+      "id": "fcb43019-507b-44a5-9a63-ec0cc6d8691c",
+      "name": "Mensagem de erro"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://SUA-EVOLUTION-API/message/sendText/SUA-INSTANCIA",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUA-CHAVE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.telefone, text: $json.mensagem }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        200
+      ],
+      "id": "edf3258a-0a6b-4dc2-bc4d-375a619ca587",
+      "name": "Avisar erro no WhatsApp"
+    }
+  ],
+  "connections": {
+    "Tipo de aviso": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Mensagem do código",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mensagem de erro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Mensagem do código": {
+      "main": [
+        [
+          {
+            "node": "Enviar código no WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem de erro": {
+      "main": [
+        [
+          {
+            "node": "Avisar erro no WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

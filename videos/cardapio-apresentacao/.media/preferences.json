@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "reels",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:32:24.759Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:32:24.814Z"
+    },
+    "language": {
+      "value": "pt-BR",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:32:24.867Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:32:24.932Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:32:25.006Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "broadside",
+      "confirmed_in": [
+        "cardapio-em-video-promo"
+      ],
+      "updated_at": "2026-10-06T19:41:13.014Z"
+    }
+  },
+  "sightings": {}
+}

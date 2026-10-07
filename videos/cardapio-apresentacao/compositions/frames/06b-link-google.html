@@ -1,0 +1,91 @@
+<template>
+  <style>
+    @font-face { font-family: "Anton"; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Plus Jakarta Sans"; src: url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; }
+
+    #root { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: hidden; font-family: "Plus Jakarta Sans", sans-serif; color: #FFF4EA; }
+    .f08-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 620px 760px at 540px 900px, rgba(255, 106, 26, 0.18), rgba(255, 106, 26, 0) 70%), #0F0805; }
+    .f08-kicker { position: absolute; left: 60px; top: 120px; display: flex; align-items: center; gap: 18px; font-family: "IBM Plex Mono", monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: #FF6A1A; }
+    .f08-kicker i { width: 36px; height: 2px; background: #FF6A1A; display: block; }
+    .f08-title { position: absolute; left: 0; right: 0; top: 190px; text-align: center; font-family: "Anton", sans-serif; font-size: 120px; line-height: 0.9; letter-spacing: -0.03em; text-transform: lowercase; }
+    .f08-title b { color: #FF6A1A; font-weight: 400; }
+
+    .f08-stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 540px 900px; }
+    .f08-phone { position: absolute; left: 256px; top: 380px; width: 540px; height: 1169px; border: 14px solid #1E120B; border-radius: 64px; box-shadow: 0 0 0 2px #3A2A20, 0 60px 120px rgba(0, 0, 0, 0.75), 0 24px 48px rgba(0, 0, 0, 0.55); background: #050302; overflow: hidden; box-sizing: content-box; }
+    .f08-screen { position: absolute; inset: 0; overflow: hidden; border-radius: 50px; }
+    .f08-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .f08-island { position: absolute; left: 50%; top: 18px; width: 150px; height: 42px; margin-left: -75px; border-radius: 21px; background: #050302; }
+
+    .f08-link { position: absolute; left: 70px; top: 1080px; width: 640px; padding: 26px 30px; border-radius: 24px; background: #FFF4EA; color: #0F0805; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7); }
+    .f08-link .k { font-family: "IBM Plex Mono", monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #FF6A1A; }
+    .f08-link .u { margin-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 26px; line-height: 1.3; color: #0F0805; word-break: break-all; }
+    .f08-link .u b { color: #FF6A1A; font-weight: 500; }
+
+    .f08-stars { position: absolute; left: 0; right: 0; top: 300px; display: flex; justify-content: center; gap: 22px; }
+    .f08-stars svg { width: 96px; height: 96px; }
+  </style>
+
+  <div id="root" data-composition-id="06b-link-google" data-width="1080" data-height="1920" data-duration="8.381">
+    <div id="f08-bg" class="f08-bg clip" data-start="0" data-duration="8.381" data-track-index="0"></div>
+    <div id="f08-kicker" class="f08-kicker clip" data-start="0" data-duration="8.381" data-track-index="1"><i></i><span>cada prato, um link</span></div>
+    <div id="f08-title" class="f08-title clip" data-start="0" data-duration="8.381" data-track-index="2">o prato <b>viraliza</b></div>
+
+    <div id="f08-stage" class="f08-stage clip" data-start="0" data-duration="8.381" data-track-index="3">
+      <div id="f08-phone" class="f08-phone">
+        <div class="f08-screen">
+          <img id="f08-s1" class="f08-shot" src="assets/01-feed.png" alt="" />
+          <img id="f08-s2" class="f08-shot" src="assets/08-google.png" alt="" />
+          <div class="f08-island"></div>
+        </div>
+      </div>
+      <div id="f08-link" class="f08-link">
+        <div class="k">link do prato · pronto pra enviar</div>
+        <div class="u">…/cardapio/brasa-burger<b>?item=bacon-duplo</b></div>
+      </div>
+      <div id="f08-stars" class="f08-stars">
+        <svg viewBox="0 0 24 24"><path fill="#FBBC04" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="#FBBC04" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="#FBBC04" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="#FBBC04" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="#FBBC04" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7.1L12 17.3 5.8 21l1.6-7.1L2 9.2l7.1-.6z" /></svg>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const q = (id) => document.getElementById(id);
+      const phone = q("f08-phone"), s2 = q("f08-s2"), link = q("f08-link"), title = q("f08-title");
+      const stars = Array.from(q("f08-stars").querySelectorAll("svg"));
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0–1.7s): celular entra com o feed; título
+      tl.fromTo(q("f08-kicker"), { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.05);
+      tl.fromTo(phone, { opacity: 0, x: 300, rotationY: -28 }, { opacity: 1, x: 0, rotationY: 10, duration: 0.8, ease: "power3.out" }, 0);
+      tl.fromTo(title, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+      tl.fromTo(s2, { yPercent: 100 }, { yPercent: 100, duration: 0.01 }, 0);
+      tl.fromTo(stars, { opacity: 0, scale: 0.3, z: 200 }, { opacity: 0, scale: 0.3, z: 200, duration: 0.01 }, 0);
+
+      // Scene 2 (1.7–3.3s): "link" — o cartão do link sai do botão Enviar e vem para a frente
+      tl.fromTo(link, { opacity: 0, x: 360, y: -40, z: -200, scale: 0.4, rotationY: -30 }, { opacity: 1, x: 0, y: 0, z: 180, scale: 1, rotationY: 12, duration: 0.75, ease: "power3.out" }, 1.7);
+      tl.to(link, { y: -12, duration: 0.9, ease: "sine.inOut" }, 2.5);
+
+      // Scene 3 (3.3–5.6s): "depois de alguns minutos" — o link recua; a tela mostra o convite do Google
+      tl.to(link, { opacity: 0, z: -200, x: -120, duration: 0.5, ease: "power2.in" }, 3.25);
+      tl.to(title, { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, 3.25);
+      tl.to(s2, { yPercent: 0, duration: 0.6, ease: "power3.inOut" }, 3.4);
+      tl.to(phone, { rotationY: 0, duration: 0.8, ease: "power3.inOut" }, 3.4);
+
+      // Scene 4 (5.6–8s): "avaliar" — cinco estrelas saltam em sequência acima do celular e seguram
+      stars.forEach((s, i) => {
+        tl.to(s, { opacity: 1, scale: 1, z: 0, duration: 0.35, ease: "power3.out" }, 5.6 + i * 0.12);
+      });
+
+      tl.set({}, {}, 7.981);
+      window.__timelines["06b-link-google"] = tl;
+    })();
+  </script>
+</template>

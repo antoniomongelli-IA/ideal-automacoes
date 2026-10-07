@@ -1,0 +1,6 @@
+# material bruto da captura (as peças usadas já estão em assets/)
+capture/
+# saídas geradas
+renders/
+snapshots/
+node_modules/

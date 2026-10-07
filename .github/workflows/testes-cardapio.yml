@@ -1,0 +1,48 @@
+# Testes automáticos do cardápio: rodam a cada envio de código para o GitHub.
+# Abrem o cardápio num navegador de verdade e conferem o principal (ver e2e/README.md).
+name: Testes do cardápio
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Conferir tipos e padrões de código
+        run: |
+          npx next typegen
+          npx tsc --noEmit
+          npx eslint app/cardapio components/cardapio lib/cardapio e2e playwright.config.ts
+
+      - name: Compilar o site (apontando para o Supabase de mentira)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54329
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: teste
+
+      - name: Instalar o navegador dos testes
+        run: npx playwright install --with-deps chromium
+
+      - name: Rodar os testes
+        run: npm run test:e2e
+
+      - name: Guardar fotos e rastros dos testes que falharam
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testes-que-falharam
+          path: test-results/
+          retention-days: 7
