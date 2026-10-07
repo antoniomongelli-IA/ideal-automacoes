@@ -39,7 +39,7 @@
       .timer .k { position: absolute; left: 0; right: 0; top: 26px; text-align: center; font-weight: 700; font-size: 32px; color: #9AA3B8; letter-spacing: 0.08em; }
       .timer span { position: absolute; left: 0; right: 0; top: 74px; text-align: center; font-weight: 800; font-size: 110px; line-height: 1; color: #FF4D7E; }
 
-      .fechado { position: absolute; left: 200px; top: 830px; width: 480px; height: 200px; border-radius: 30px; border: 6px solid #FF4D7E; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 96px; color: #FF4D7E; letter-spacing: 0.06em; background: rgba(7, 11, 26, 0.8); }
+      .fechado { position: absolute; left: 170px; top: 830px; width: 560px; height: 200px; border-radius: 30px; border: 6px solid #FF4D7E; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 96px; color: #FF4D7E; letter-spacing: 0.06em; background: rgba(7, 11, 26, 0.8); }
       .lua { position: absolute; left: 790px; top: 660px; width: 150px; height: 150px; border-radius: 50%; box-shadow: -34px 20px 0 0 #FFD27A; }
       .badge { position: absolute; right: -18px; top: -18px; width: 58px; height: 58px; border-radius: 50%; background: #25D366; color: #06210F; font-weight: 800; font-size: 32px; display: flex; align-items: center; justify-content: center; }
 
@@ -58,8 +58,8 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="24" data-width="1080" data-height="1920">
-      <div id="bg" class="clip" data-start="0" data-duration="24" data-track-index="0">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="26" data-width="1080" data-height="1920">
+      <div id="bg" class="clip" data-start="0" data-duration="26" data-track-index="0">
         <div class="bg-grid"></div>
         <div id="orb-a" class="orb orb-a"></div>
         <div id="orb-b" class="orb orb-b"></div>
@@ -122,13 +122,13 @@
       </div>
 
       <!-- virada 18.8–21 -->
-      <div id="fim" class="clip" data-start="18.8" data-duration="2.2" data-track-index="5">
+      <div id="fim" class="clip" data-start="18.8" data-duration="3.3" data-track-index="5">
         <div id="fim-1" class="fim-1">Marcou 2 de 3?</div>
         <div id="fim-2" class="fim-2">Seu WhatsApp precisa de um <b>agente de IA.</b></div>
       </div>
 
       <!-- CTA 21–24 -->
-      <div id="cta" class="clip" data-start="21" data-duration="3" data-track-index="6">
+      <div id="cta" class="clip" data-start="22.1" data-duration="3.9" data-track-index="6">
         <div id="cta-top" class="cta-top">Quer saber onde o seu <b>perde venda?</b></div>
         <div id="cta-box" class="cta-box"><div class="k">Comenta</div><div class="w">AGENTE</div></div>
         <div id="cta-sub" class="cta-sub">e eu te mando um <b>diagnóstico grátis.</b></div>
@@ -192,16 +192,16 @@
       // virada
       tl.fromTo(q("fim-1"), { opacity: 0, scale: 1.3, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "power4.out" }, 18.85);
       rise(q("fim-2"), 19.4);
-      out([q("fim-1"), q("fim-2")], 20.7);
+      out([q("fim-1"), q("fim-2")], 21.8);
 
       // CTA
-      rise(q("cta-top"), 21.05);
-      tl.fromTo(q("cta-box"), { opacity: 0, scale: 0.6, rotationX: 40, z: -300 }, { opacity: 1, scale: 1, rotationX: 0, z: 0, duration: 0.7, ease: "back.out(1.5)" }, 21.35);
-      rise(q("cta-sub"), 21.9);
-      tl.fromTo(q("cta-handle"), { opacity: 0 }, { opacity: 1, duration: 0.4 }, 22.2);
-      tl.to(q("cta-box"), { scale: 1.04, duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 22.6);
+      rise(q("cta-top"), 22.15);
+      tl.fromTo(q("cta-box"), { opacity: 0, scale: 0.6, rotationX: 40, z: -300 }, { opacity: 1, scale: 1, rotationX: 0, z: 0, duration: 0.7, ease: "back.out(1.5)" }, 22.45);
+      rise(q("cta-sub"), 23.00);
+      tl.fromTo(q("cta-handle"), { opacity: 0 }, { opacity: 1, duration: 0.4 }, 23.30);
+      tl.to(q("cta-box"), { scale: 1.04, duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 23.70);
 
-      tl.set({}, {}, 24);
+      tl.set({}, {}, 26);
       window.__timelines["main"] = tl;
     </script>
   </body>

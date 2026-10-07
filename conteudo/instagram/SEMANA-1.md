@@ -4,13 +4,13 @@
 |---|---|---|---|---|
 | **Qua 07** | Reel | Agente de IA em ação (narrado) + **fixar** | `videos/agente-ia/ideal-automacoes-agente-ia-narrado.mp4` | 19h |
 | **Qui 08** | Carrossel | Como um agente de IA atende no seu WhatsApp | gerar com o Prompt 1 (`PROMPTS-CARROSSEL.md`) | 12h |
-| **Sex 09** | Reel | "23h: o cliente que você perdeu" + **fixar** | `videos/reels/reel-23h/reel-23h-com-trilha.mp4` | 19h |
+| **Sex 09** | Reel | "23h: o cliente que você perdeu" + **fixar** | `videos/reels/reel-23h/reel-23h-narrado.mp4` | 19h |
 | **Sáb 10** | Lifestyle | Foto sua (lago, viagem ou casal) com mensagem | sua foto | 11h |
-| **Dom 11** | Reel | 3 sinais de que seu WhatsApp perde venda | `videos/reels/reel-3-sinais/reel-3-sinais-com-trilha.mp4` | 19h |
+| **Dom 11** | Reel | 3 sinais de que seu WhatsApp perde venda | `videos/reels/reel-3-sinais/reel-3-sinais-narrado.mp4` | 19h |
 | **Seg 12** | Carrossel | Quanto custa uma mensagem sem resposta | gerar com o Prompt 2 | 12h |
 | **Ter 13** | Reel gravado por você | "O que é um agente de IA, em 30 segundos" | roteiro abaixo | 19h |
 
-**Trilha nos reels:** cada reel tem duas versões. A **"com-trilha"** já vem com música. A **"sem-trilha"** serve para você colocar um áudio em alta direto no Instagram, o que costuma dar mais alcance. Use uma ou outra, nunca as duas juntas.
+**Reels:** todos vêm narrados (voz feminina, português do Brasil) com trilha que abaixa sozinha quando a voz fala. Ao postar, não adicione outra música no Instagram.
 
 ---
 
@@ -48,7 +48,7 @@ Salva pra mostrar pro seu sócio. E se quiser ver isso no seu WhatsApp, comenta 
 ```
 23:07. Seu cliente mandou mensagem. Às 08:30 ele já tinha fechado com outro.
 
-Isso não é azar. É gap de processo.
+Isso não é azar. É falha de processo.
 
 O cliente não espera você acordar. Ele chama, e quem responde primeiro leva.
 

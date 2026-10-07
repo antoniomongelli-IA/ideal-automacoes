@@ -68,9 +68,9 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="21.5" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1080" data-height="1920">
       <!-- fundo contínuo -->
-      <div id="bg" class="clip" data-start="0" data-duration="21.5" data-track-index="0">
+      <div id="bg" class="clip" data-start="0" data-duration="23" data-track-index="0">
         <div class="bg-grid"></div>
         <div id="orb-a" class="orb orb-a"></div>
         <div id="orb-b" class="orb orb-b"></div>
@@ -118,7 +118,7 @@
       <div id="virada" class="clip" data-start="9.2" data-duration="3.2" data-track-index="4">
         <div id="v1" class="big big-1">Isso não é azar.</div>
         <div id="v-l" class="linha"></div>
-        <div id="v2" class="big big-2">É gap de processo.</div>
+        <div id="v2" class="big big-2">É falha de processo.</div>
       </div>
 
       <!-- com agente de IA (12.4–17.6s) -->
@@ -143,7 +143,7 @@
       </div>
 
       <!-- CTA (17.6–21.5s) -->
-      <div id="cta" class="clip" data-start="17.6" data-duration="3.9" data-track-index="5">
+      <div id="cta" class="clip" data-start="17.6" data-duration="5.4" data-track-index="5">
         <div id="cta-top" class="cta-top">Seu WhatsApp <b>atendendo 24h.</b></div>
         <div id="cta-box" class="cta-box"><div class="k">Comenta</div><div class="w">AGENTE</div></div>
         <div id="cta-sub" class="cta-sub">e eu te mando um <b>diagnóstico grátis</b> do seu atendimento.</div>
@@ -217,7 +217,7 @@
       tl.fromTo(q("cta-handle"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 19.0);
       tl.to(q("cta-box"), { scale: 1.04, duration: 0.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 19.4);
 
-      tl.set({}, {}, 21.5);
+      tl.set({}, {}, 23);
       window.__timelines["main"] = tl;
     </script>
   </body>
