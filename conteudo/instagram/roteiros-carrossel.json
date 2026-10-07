@@ -1,0 +1,366 @@
+{
+  "carrossel-5-perguntas": {
+    "titulo": "5 perguntas que seu agente precisa responder",
+    "slides": [
+      {
+        "tipo": "capa",
+        "foto": "perfil-esq",
+        "num": "03",
+        "serie": "WhatsApp que trabalha por você",
+        "titulo": "5 perguntas que seu agente precisa *responder sozinho*.",
+        "sub": "Se ele trava em _uma_ delas, você perde venda.",
+        "arrasta": "e confira as 5."
+      },
+      {
+        "tipo": "passo",
+        "n": "01",
+        "tag": "PREÇO",
+        "titulo": "*\"Quanto custa?\"*",
+        "texto": "É a pergunta nº 1 no WhatsApp. O agente responde com o valor certo, não com \"chama no privado\".",
+        "chat": [
+          [
+            "cli",
+            "Quanto tá o combo?"
+          ],
+          [
+            "ia",
+            "O combo sai R$ 39,90 com batata e refri. Quer que eu já anote o seu?"
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "02",
+        "tag": "DISPONIBILIDADE",
+        "titulo": "*\"Tem horário? Tem em estoque?\"*",
+        "texto": "Ele consulta a agenda ou o estoque e já oferece as opções. Sem \"vou verificar e te retorno\".",
+        "chat": [
+          [
+            "cli",
+            "Tem horário amanhã?"
+          ],
+          [
+            "ia",
+            "Tenho às 9h e às 14h30. Qual fica melhor pra você?"
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "03",
+        "tag": "ENTREGA",
+        "titulo": "*\"Entrega aqui? Em quanto tempo?\"*",
+        "texto": "Bairro, taxa e prazo respondidos na hora. É aqui que muita venda morre por demora.",
+        "chat": [
+          [
+            "cli",
+            "Entrega no Jardim dos Estados?"
+          ],
+          [
+            "ia",
+            "Entrega sim! Taxa de R$ 6, chega em uns 40 minutos."
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "04",
+        "tag": "PAGAMENTO",
+        "titulo": "*\"Aceita Pix? Parcela?\"*",
+        "texto": "Formas de pagamento, parcelas e descontos à vista. Resposta clara tira a última dúvida antes da compra.",
+        "chat": [
+          [
+            "cli",
+            "Aceita Pix? Dá pra parcelar?"
+          ],
+          [
+            "ia",
+            "Aceito Pix com 5% de desconto, ou em até 3x no cartão."
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "05",
+        "tag": "HUMANO",
+        "titulo": "*\"Posso falar com alguém?\"*",
+        "texto": "A resposta certa é sim, na hora. O agente passa pro seu time com o resumo da conversa.",
+        "resumo": [
+          "RESUMO PRO VENDEDOR",
+          "*Cliente:* quer o combo + entrega",
+          "*Bairro:* Jardim dos Estados",
+          "*Pagamento:* Pix"
+        ]
+      },
+      {
+        "tipo": "salvar",
+        "itens": [
+          "Quanto custa?",
+          "Tem horário ou estoque?",
+          "Entrega aqui? Em quanto tempo?",
+          "Aceita Pix? Parcela?",
+          "Posso falar com alguém?"
+        ],
+        "texto": "Salva e testa no seu WhatsApp hoje: quantas ele responderia sozinho?"
+      },
+      {
+        "tipo": "cta",
+        "titulo": "Quer um agente que *responde as 5*?",
+        "foto": "reuniao.jpg",
+        "pos": "50% 30%"
+      }
+    ]
+  },
+  "carrossel-dia-sem-com": {
+    "titulo": "Um dia de WhatsApp sem e com agente",
+    "slides": [
+      {
+        "tipo": "capa",
+        "foto": "reuniao-capa.jpg",
+        "num": "04",
+        "serie": "WhatsApp que trabalha por você",
+        "titulo": "Um dia no seu WhatsApp: *sem* e *com* agente de IA.",
+        "sub": "Mesmo dia. Mesmos clientes. _Resultado diferente._",
+        "arrasta": "e compare."
+      },
+      {
+        "tipo": "vs",
+        "hora": "08h",
+        "titulo": "A loja abre.",
+        "sem": "Mensagens da noite acumuladas. A equipe começa o dia apagando incêndio.",
+        "com": "Tudo já foi respondido de madrugada. A equipe começa pelos clientes *prontos pra comprar*."
+      },
+      {
+        "tipo": "vs",
+        "hora": "12h",
+        "titulo": "Horário de pico.",
+        "sem": "Dez conversas ao mesmo tempo. Quem chamou por último espera 30 minutos.",
+        "com": "Todos atendidos *ao mesmo tempo*, cada um com a resposta certa."
+      },
+      {
+        "tipo": "vs",
+        "hora": "15h",
+        "titulo": "Cliente quer ver o produto.",
+        "sem": "\"Vou tirar foto e já te mando.\" A foto chega uma hora depois.",
+        "com": "Foto e vídeo do catálogo enviados *em segundos*."
+      },
+      {
+        "tipo": "vs",
+        "hora": "19h",
+        "titulo": "A equipe foi embora.",
+        "sem": "O WhatsApp fica mudo até amanhã. O cliente procura outro.",
+        "com": "O agente continua atendendo, *agendando e vendendo*."
+      },
+      {
+        "tipo": "vs",
+        "hora": "23h",
+        "titulo": "Cliente decidido.",
+        "sem": "Ninguém responde. De manhã, ele já comprou do concorrente.",
+        "com": "Pedido anotado, e o vendedor recebe o *resumo pronto* de manhã."
+      },
+      {
+        "tipo": "salvar",
+        "itens": [
+          "Nenhuma mensagem acumulada",
+          "Pico atendido sem fila",
+          "Foto e vídeo na hora",
+          "Atendimento depois do expediente",
+          "Vendedor só fecha"
+        ],
+        "texto": "Salva e compara com o dia de hoje no seu WhatsApp."
+      },
+      {
+        "tipo": "cta",
+        "titulo": "Quer o *seu dia* assim?"
+      }
+    ]
+  },
+  "carrossel-3-erros-ia": {
+    "titulo": "3 erros ao colocar IA no WhatsApp",
+    "slides": [
+      {
+        "tipo": "capa",
+        "foto": "perfil-dir",
+        "num": "03",
+        "serie": "Erros que custam caro",
+        "titulo": "3 erros ao colocar *IA* no WhatsApp.",
+        "sub": "O problema _quase nunca_ é a ferramenta.",
+        "arrasta": "e evite os 3."
+      },
+      {
+        "tipo": "passo",
+        "n": "01",
+        "tag": "ERRO",
+        "alerta": true,
+        "titulo": "IA que *não conhece* a sua empresa.",
+        "texto": "Sem preço, catálogo e regras, ela inventa resposta. O cliente percebe, e a confiança vai embora.",
+        "chat": [
+          [
+            "cli",
+            "Vocês abrem domingo?"
+          ],
+          [
+            "ia",
+            "Sim, abrimos todos os dias!"
+          ],
+          [
+            "cli",
+            "Fui lá e tava fechado..."
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "tag": "COMO CORRIGIR",
+        "titulo": "Dê a ela uma *base de conhecimento*.",
+        "texto": "Tudo que um bom atendente sabe, a IA também precisa saber:",
+        "itens": [
+          "Preços e catálogo atualizados",
+          "Horários, bairros e prazos",
+          "Regras de troca e pagamento",
+          "O tom de voz da sua marca"
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "02",
+        "tag": "ERRO",
+        "alerta": true,
+        "titulo": "Não passar pra um *humano* na hora certa.",
+        "texto": "Cliente pronto pra comprar, ou irritado, quer falar com gente. Se a IA segura, você perde a venda."
+      },
+      {
+        "tipo": "passo",
+        "tag": "COMO CORRIGIR",
+        "titulo": "Defina os *gatilhos* de passagem.",
+        "texto": "O agente chama alguém do time quando:",
+        "itens": [
+          "O cliente pede pra falar com alguém",
+          "Está pronto pra fechar",
+          "Faz uma reclamação",
+          "A pergunta foge do que ele sabe"
+        ]
+      },
+      {
+        "tipo": "passo",
+        "n": "03",
+        "tag": "ERRO",
+        "alerta": true,
+        "titulo": "Ligar e *nunca mais olhar*.",
+        "texto": "Agente sem acompanhamento repete o mesmo erro mil vezes. E ninguém percebe até o cliente reclamar."
+      },
+      {
+        "tipo": "passo",
+        "tag": "COMO CORRIGIR",
+        "titulo": "Acompanhe *toda semana*.",
+        "texto": "Uma rotina simples de 30 minutos:",
+        "itens": [
+          "Leia 10 conversas aleatórias",
+          "Veja onde ele travou",
+          "Ajuste as respostas",
+          "Meça quantas viraram venda"
+        ]
+      },
+      {
+        "tipo": "salvar",
+        "itens": [
+          "Base de conhecimento completa",
+          "Gatilhos pra passar pro humano",
+          "Revisão toda semana"
+        ],
+        "texto": "Salva antes de colocar IA no seu WhatsApp."
+      },
+      {
+        "tipo": "cta",
+        "titulo": "Quer fazer do *jeito certo*?",
+        "texto": "e eu te mostro, de graça, como ficaria _na sua empresa_."
+      }
+    ]
+  },
+  "carrossel-checklist-agente": {
+    "titulo": "Checklist: sua empresa está pronta pra um agente de IA?",
+    "slides": [
+      {
+        "tipo": "capa",
+        "foto": "bastidor-camisa.jpg",
+        "pos": "52% 40%",
+        "num": "05",
+        "serie": "WhatsApp que trabalha por você",
+        "titulo": "Sua empresa está pronta pra um *agente de IA*?",
+        "sub": "Faz o teste em _30 segundos_.",
+        "arrasta": "e marque o que é verdade."
+      },
+      {
+        "tipo": "marcar",
+        "tag": "MARQUE O QUE É VERDADE",
+        "titulo": "No seu *WhatsApp*...",
+        "itens": [
+          "Chegam mais de 20 mensagens por dia",
+          "Os clientes perguntam sempre as mesmas coisas",
+          "Já perdi venda por demorar a responder"
+        ],
+        "texto": "Continua no próximo →"
+      },
+      {
+        "tipo": "marcar",
+        "tag": "MARQUE O QUE É VERDADE",
+        "titulo": "Na sua *operação*...",
+        "itens": [
+          "Chegam mensagens fora do horário",
+          "Eu mesmo respondo boa parte das conversas",
+          "Tenho catálogo ou serviços bem definidos"
+        ],
+        "texto": "Agora conta quantas você marcou."
+      },
+      {
+        "tipo": "faixas",
+        "titulo": "Seu *resultado*:",
+        "faixas": [
+          [
+            "0 a 2",
+            "Ainda dá pra segurar no braço. Mas fica de olho no crescimento."
+          ],
+          [
+            "3 a 4",
+            "Você já está perdendo venda. Um agente se paga rápido."
+          ],
+          [
+            "5 a 6",
+            "Seu WhatsApp está pedindo socorro. É prioridade."
+          ]
+        ]
+      },
+      {
+        "tipo": "passo",
+        "tag": "O QUE MUDA",
+        "titulo": "Com um *agente de IA*:",
+        "texto": "O que entra no seu dia a dia:",
+        "itens": [
+          "Resposta na hora, 24h",
+          "Perguntas repetidas respondidas sozinhas",
+          "Você só entra pra fechar",
+          "Nenhum cliente esquecido"
+        ]
+      },
+      {
+        "tipo": "salvar",
+        "itens": [
+          "Mais de 20 mensagens por dia",
+          "Perguntas repetidas",
+          "Venda perdida por demora",
+          "Mensagens fora do horário",
+          "Dono respondendo tudo",
+          "Catálogo definido"
+        ],
+        "texto": "Salva e refaz o teste daqui a 3 meses."
+      },
+      {
+        "tipo": "cta",
+        "titulo": "Marcou 3 ou mais?",
+        "foto": "reuniao.jpg",
+        "pos": "50% 30%",
+        "texto": "Comenta e eu faço um _diagnóstico grátis_ do seu WhatsApp."
+      }
+    ]
+  }
+}
