@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Reel 23h</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Jakarta"; src: url("assets/fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+      @font-face { font-family: "Jakarta"; src: url("assets/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: "Jakarta"; src: url("assets/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { background: #070B1A; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #070B1A; font-family: "Jakarta", sans-serif; color: #F5F7FF; }
+      .clip { position: absolute; inset: 0; }
+
+      /* fundo: grade sutil + brilhos azul e roxo */
+      .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(63, 200, 255, 0.06) 2px, transparent 2px), linear-gradient(90deg, rgba(63, 200, 255, 0.06) 2px, transparent 2px); background-size: 90px 90px; }
+      .orb { position: absolute; border-radius: 50%; }
+      .orb-a { left: -260px; top: 120px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(31, 107, 255, 0.45), rgba(31, 107, 255, 0) 65%); }
+      .orb-b { left: 420px; top: 1100px; width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(138, 63, 252, 0.42), rgba(138, 63, 252, 0) 65%); }
+      .orb-c { left: 200px; top: 300px; width: 900px; height: 900px; background: radial-gradient(circle, rgba(255, 170, 80, 0.30), rgba(255, 170, 80, 0) 65%); }
+      .handle { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-weight: 700; font-size: 34px; letter-spacing: 0.02em; color: rgba(245, 247, 255, 0.7); }
+
+      /* relógio */
+      .clock { position: absolute; left: 0; right: 0; top: 250px; height: 250px; perspective: 1400px; }
+      .clock span { position: absolute; left: 0; right: 0; text-align: center; font-weight: 800; font-size: 230px; line-height: 1; letter-spacing: -0.04em; color: #3FC8FF; text-shadow: 0 0 60px rgba(63, 200, 255, 0.55); }
+
+      .headline { position: absolute; left: 80px; right: 80px; top: 540px; text-align: center; font-weight: 800; font-size: 76px; line-height: 1.08; letter-spacing: -0.02em; }
+      .headline b { color: #3FC8FF; font-weight: 800; }
+      .headline i { font-style: normal; color: #D35BFF; }
+
+      /* celular com conversa */
+      .stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 540px 1200px; }
+      .phone { position: absolute; left: 150px; top: 800px; width: 780px; height: 860px; border-radius: 56px; background: #0E1630; border: 3px solid rgba(63, 200, 255, 0.35); box-shadow: 0 60px 140px rgba(0, 0, 0, 0.7), 0 0 80px rgba(31, 107, 255, 0.25); overflow: hidden; }
+      .phone-top { height: 128px; display: flex; align-items: center; gap: 24px; padding: 0 40px; background: #111C3D; border-bottom: 2px solid rgba(255, 255, 255, 0.06); }
+      .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #1F6BFF, #8A3FFC); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 34px; }
+      .phone-top .nome { font-weight: 700; font-size: 38px; }
+      .phone-top .sub { font-weight: 500; font-size: 28px; color: #9AA3B8; }
+      .chat { position: absolute; left: 0; right: 0; top: 128px; bottom: 0; padding: 44px 40px; display: flex; flex-direction: column; gap: 28px; }
+      .bolha { max-width: 600px; padding: 26px 32px; border-radius: 34px; font-weight: 500; font-size: 40px; line-height: 1.3; }
+      .bolha small { display: block; margin-top: 10px; font-size: 26px; color: rgba(15, 20, 40, 0.55); text-align: right; }
+      .cliente { align-self: flex-start; background: #F5F7FF; color: #0B1020; border-bottom-left-radius: 8px; }
+      .agente { align-self: flex-end; background: linear-gradient(135deg, #1F6BFF, #6A4BFF); color: #FFFFFF; border-bottom-right-radius: 8px; }
+      .agente small { color: rgba(255, 255, 255, 0.75); }
+      .status { align-self: flex-start; font-weight: 500; font-size: 30px; color: #9AA3B8; padding-left: 12px; }
+      .slot { align-self: flex-end; position: relative; }
+      .digitando { position: absolute; right: 0; top: 0; display: flex; gap: 12px; padding: 30px 36px; border-radius: 34px; background: rgba(31, 107, 255, 0.35); }
+      .digitando i { width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF; display: block; }
+      .carimbo { position: absolute; left: 230px; top: 1180px; padding: 22px 44px; border: 8px solid #FF4D7E; border-radius: 22px; color: #FF4D7E; font-weight: 800; font-size: 76px; letter-spacing: 0.02em; background: rgba(7, 11, 26, 0.75); }
+      .selo { position: absolute; left: 130px; top: 1540px; width: 820px; padding: 26px 34px; border-radius: 999px; background: rgba(63, 200, 255, 0.14); border: 3px solid #3FC8FF; text-align: center; font-weight: 800; font-size: 40px; color: #3FC8FF; }
+
+      /* frases cheias */
+      .big { position: absolute; left: 80px; right: 80px; text-align: center; font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+      .big-1 { top: 640px; font-size: 120px; }
+      .big-2 { top: 900px; font-size: 120px; color: #3FC8FF; text-shadow: 0 0 70px rgba(63, 200, 255, 0.5); }
+      .linha { position: absolute; left: 340px; right: 340px; top: 870px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #1F6BFF, #D35BFF); }
+
+      /* CTA */
+      .cta-top { position: absolute; left: 80px; right: 80px; top: 470px; text-align: center; font-weight: 800; font-size: 84px; line-height: 1.08; letter-spacing: -0.02em; }
+      .cta-top b { color: #3FC8FF; }
+      .cta-box { position: absolute; left: 110px; right: 110px; top: 820px; height: 330px; border-radius: 48px; background: linear-gradient(135deg, #1F6BFF, #8A3FFC 60%, #C13BFF); box-shadow: 0 50px 120px rgba(138, 63, 252, 0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .cta-box .k { font-weight: 700; font-size: 46px; color: rgba(255, 255, 255, 0.85); }
+      .cta-box .w { font-weight: 800; font-size: 150px; line-height: 1; letter-spacing: 0.01em; }
+      .cta-sub { position: absolute; left: 100px; right: 100px; top: 1210px; text-align: center; font-weight: 700; font-size: 50px; line-height: 1.25; color: #F5F7FF; }
+      .cta-sub b { color: #3FC8FF; }
+      .cta-handle { position: absolute; left: 0; right: 0; top: 1420px; text-align: center; font-weight: 700; font-size: 40px; color: #9AA3B8; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="21.5" data-width="1080" data-height="1920">
+      <!-- fundo contínuo -->
+      <div id="bg" class="clip" data-start="0" data-duration="21.5" data-track-index="0">
+        <div class="bg-grid"></div>
+        <div id="orb-a" class="orb orb-a"></div>
+        <div id="orb-b" class="orb orb-b"></div>
+        <div id="orb-c" class="orb orb-c"></div>
+        <div id="handle" class="handle">@ia.antoniomongelli</div>
+      </div>
+
+      <!-- relógio 23:07 → 08:30 (0–9.2s) -->
+      <div id="clock" class="clip" data-start="0" data-duration="9.2" data-track-index="1">
+        <div class="clock" data-layout-allow-overlap>
+          <span id="t1">23:07</span>
+          <span id="t2">01:40</span>
+          <span id="t3">04:15</span>
+          <span id="t4">06:50</span>
+          <span id="t5">08:30</span>
+        </div>
+      </div>
+
+      <div id="h1" class="clip" data-start="0" data-duration="3.4" data-track-index="2">
+        <div id="h1-t" class="headline">Seu cliente mandou mensagem <b>no WhatsApp.</b></div>
+      </div>
+      <div id="h2" class="clip" data-start="3.4" data-duration="3.0" data-track-index="2">
+        <div id="h2-t" class="headline">E ninguém <b>respondeu.</b></div>
+      </div>
+      <div id="h3" class="clip" data-start="6.4" data-duration="2.8" data-track-index="2">
+        <div id="h3-t" class="headline">De manhã, ele já tinha ido <i>pro concorrente.</i></div>
+      </div>
+
+      <!-- conversa sem resposta (0.6–9.2s) -->
+      <div id="cena-perdida" class="clip" data-start="0.6" data-duration="8.6" data-track-index="3">
+        <div class="stage">
+          <div id="phone1" class="phone">
+            <div class="phone-top"><div class="avatar">C</div><div><div class="nome">Cliente</div><div class="sub">online</div></div></div>
+            <div class="chat">
+              <div id="p1-b1" class="bolha cliente">Oi! Vocês têm horário amanhã cedo?<small>23:07</small></div>
+              <div id="p1-st" class="status">Visualizada. Sem resposta.</div>
+              <div id="p1-b2" class="bolha cliente">Deixa, já fechei com outro lugar. Obrigado!<small>08:30</small></div>
+            </div>
+          </div>
+          <div id="carimbo" class="carimbo" data-layout-allow-overlap data-layout-allow-occlusion>VENDA PERDIDA</div>
+        </div>
+      </div>
+
+      <!-- virada (9.2–12.4s) -->
+      <div id="virada" class="clip" data-start="9.2" data-duration="3.2" data-track-index="4">
+        <div id="v1" class="big big-1">Isso não é azar.</div>
+        <div id="v-l" class="linha"></div>
+        <div id="v2" class="big big-2">É gap de processo.</div>
+      </div>
+
+      <!-- com agente de IA (12.4–17.6s) -->
+      <div id="h4" class="clip" data-start="12.4" data-duration="5.2" data-track-index="2">
+        <div id="h4-t" class="headline" style="top: 300px">Agora, com um <b>agente de IA</b> no seu WhatsApp:</div>
+      </div>
+      <div id="cena-agente" class="clip" data-start="12.4" data-duration="5.2" data-track-index="3">
+        <div class="stage">
+          <div id="phone2" class="phone" style="top: 640px">
+            <div class="phone-top"><div class="avatar">IA</div><div><div class="nome">Sua empresa</div><div class="sub">online agora</div></div></div>
+            <div class="chat">
+              <div id="p2-b1" class="bolha cliente">Oi! Vocês têm horário amanhã cedo?<small>23:07</small></div>
+              <div class="slot">
+                <div id="p2-b2" class="bolha agente">Oi! Temos sim. Prefere 8h ou 9h30? Já deixo reservado pra você.<small>23:07</small></div>
+                <div id="p2-dig" class="digitando"><i></i><i></i><i></i></div>
+              </div>
+              <div id="p2-b3" class="bolha cliente">8h! Pode marcar.<small>23:08</small></div>
+            </div>
+          </div>
+          <div id="selo" class="selo">Atendido em segundos, às 23:07</div>
+        </div>
+      </div>
+
+      <!-- CTA (17.6–21.5s) -->
+      <div id="cta" class="clip" data-start="17.6" data-duration="3.9" data-track-index="5">
+        <div id="cta-top" class="cta-top">Seu WhatsApp <b>atendendo 24h.</b></div>
+        <div id="cta-box" class="cta-box"><div class="k">Comenta</div><div class="w">AGENTE</div></div>
+        <div id="cta-sub" class="cta-sub">e eu te mando um <b>diagnóstico grátis</b> do seu atendimento.</div>
+        <div id="cta-handle" class="cta-handle">@ia.antoniomongelli</div>
+      </div>
+    </div>
+
+    <script>
+      const q = (id) => document.getElementById(id);
+      const tl = gsap.timeline({ paused: true });
+
+      // fundo: brilhos derivando devagar; manhã esquenta a cena (finito)
+      tl.fromTo(q("orb-a"), { x: 0, y: 0 }, { x: 160, y: 120, duration: 21.5, ease: "sine.inOut" }, 0);
+      tl.fromTo(q("orb-b"), { x: 0, y: 0 }, { x: -200, y: -160, duration: 21.5, ease: "sine.inOut" }, 0);
+      tl.fromTo(q("orb-c"), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.to(q("orb-c"), { opacity: 1, duration: 1.2, ease: "power2.out" }, 5.0);
+      tl.to(q("orb-c"), { opacity: 0, duration: 0.8, ease: "power2.in" }, 8.6);
+      tl.fromTo(q("handle"), { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.1);
+
+      // relógio: 23:07 bate, depois as horas viram em sequência até 08:30
+      const t = ["t1", "t2", "t3", "t4", "t5"].map(q);
+      tl.fromTo(t.slice(1), { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0);
+      tl.fromTo(t[0], { opacity: 0, scale: 1.35, filter: "blur(16px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "power4.out" }, 0);
+      [3.7, 4.2, 4.7, 5.2].forEach((at, i) => {
+        tl.to(t[i], { opacity: 0, y: -70, rotationX: 70, duration: 0.25, ease: "power2.in" }, at);
+        tl.fromTo(t[i + 1], { opacity: 0, y: 70, rotationX: -70 }, { opacity: 1, y: 0, rotationX: 0, duration: 0.3, ease: "power3.out" }, at + 0.15);
+      });
+      tl.to(t[4], { color: "#FFB04D", textShadow: "0 0 60px rgba(255,176,77,0.55)", duration: 0.4 }, 5.4);
+
+      // manchetes
+      [["h1-t", 0.45], ["h2-t", 3.45], ["h3-t", 6.45], ["h4-t", 12.5]].forEach(([id, at]) => {
+        tl.fromTo(q(id), { opacity: 0, y: 50, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "power3.out" }, at);
+      });
+
+      // celular 1: entra em 3D, mensagem, visualizada, desistência, carimbo
+      const p1 = q("phone1");
+      tl.fromTo(p1, { opacity: 0, z: -500, rotationX: 28, rotationY: -12, y: 200 }, { opacity: 1, z: 0, rotationX: 8, rotationY: -6, y: 0, duration: 0.9, ease: "power3.out" }, 0.6);
+      tl.to(p1, { rotationY: 4, rotationX: 4, duration: 6.5, ease: "sine.inOut" }, 1.5);
+      tl.fromTo(q("p1-b1"), { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 1.3);
+      tl.fromTo(q("p1-st"), { opacity: 0 }, { opacity: 1, duration: 0.4 }, 2.4);
+      tl.fromTo(q("p1-b2"), { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 5.6);
+      tl.fromTo(q("carimbo"), { opacity: 0, scale: 2.2, rotation: -16, z: 400 }, { opacity: 1, scale: 1, rotation: -8, z: 120, duration: 0.35, ease: "power4.in" }, 7.2);
+      tl.to(p1, { opacity: 0.45, filter: "blur(4px)", duration: 0.5 }, 7.3);
+      tl.to([p1, q("carimbo")], { opacity: 0, z: -600, duration: 0.45, ease: "power2.in" }, 8.75);
+      tl.to(t[4], { opacity: 0, duration: 0.35 }, 8.8);
+      tl.to(q("h3-t"), { opacity: 0, duration: 0.35 }, 8.8);
+
+      // virada
+      tl.fromTo(q("v1"), { opacity: 0, scale: 0.85, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.35);
+      tl.fromTo(q("v-l"), { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 10.1);
+      tl.fromTo(q("v2"), { opacity: 0, scale: 1.25, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.55, ease: "power4.out" }, 10.4);
+      tl.to([q("v1"), q("v-l"), q("v2")], { opacity: 0, y: -40, duration: 0.35, ease: "power2.in" }, 12.0);
+
+      // celular 2: o agente responde na hora
+      const p2 = q("phone2");
+      tl.fromTo(p2, { opacity: 0, z: -500, rotationX: 24, rotationY: 14, y: 200 }, { opacity: 1, z: 0, rotationX: 6, rotationY: 6, y: 0, duration: 0.85, ease: "power3.out" }, 12.5);
+      tl.to(p2, { rotationY: -4, rotationX: 3, duration: 4.0, ease: "sine.inOut" }, 13.4);
+      tl.fromTo(q("p2-b1"), { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 13.1);
+      tl.fromTo(q("p2-dig"), { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.25 }, 13.6);
+      tl.fromTo(q("p2-dig").children, { y: 0 }, { y: -10, duration: 0.2, stagger: 0.08, yoyo: true, repeat: 1, ease: "sine.inOut" }, 13.7);
+      tl.to(q("p2-dig"), { opacity: 0, duration: 0.15 }, 14.3);
+      tl.fromTo(q("p2-b2"), { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)" }, 14.35);
+      tl.fromTo(q("p2-b3"), { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 15.4);
+      tl.fromTo(q("selo"), { opacity: 0, y: 60, scale: 0.8, z: 200 }, { opacity: 1, y: 0, scale: 1, z: 80, duration: 0.5, ease: "back.out(1.8)" }, 16.0);
+      tl.to([p2, q("selo"), q("h4-t")], { opacity: 0, y: -60, duration: 0.35, ease: "power2.in" }, 17.25);
+
+      // CTA
+      tl.fromTo(q("cta-top"), { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 17.65);
+      tl.fromTo(q("cta-box"), { opacity: 0, scale: 0.6, rotationX: 40, z: -300 }, { opacity: 1, scale: 1, rotationX: 0, z: 0, duration: 0.7, ease: "back.out(1.5)" }, 18.0);
+      tl.fromTo(q("cta-sub"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 18.6);
+      tl.fromTo(q("cta-handle"), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 19.0);
+      tl.to(q("cta-box"), { scale: 1.04, duration: 0.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 19.4);
+
+      tl.set({}, {}, 21.5);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
