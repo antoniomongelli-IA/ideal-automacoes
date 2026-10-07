@@ -85,7 +85,7 @@ Você já tem conta profissional ligada a uma Página e já criou um app. Falta 
 ## Como testar a resposta ao AGENTE
 
 1. Com tudo ativo, comente **AGENTE** em um post seu, usando outra conta que seja testadora do app.
-2. Em alguns segundos devem acontecer duas coisas: a resposta "Te chamei no direct!" e a mensagem no direct.
+2. Na hora chega no direct a mensagem perguntando o melhor dia e horário pro diagnóstico. Logo depois aparece a resposta pública "Te chamei no direct!".
 3. Confira na tabela `instagram_comentarios`. As colunas `respondido_publico` e `direct_enviado` devem estar como `true`.
 
 **Para mudar textos ou criar outras palavras:** edite a tabela `instagram_palavras`. Por exemplo, para uma palavra GUIA que manda um material. O nome da pessoa entra no lugar de `{nome}`.

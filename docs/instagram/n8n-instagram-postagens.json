@@ -14,7 +14,7 @@
         -700,
         -260
       ],
-      "id": "9086aab1-4253-4f8c-8260-3bf609a7eb4f",
+      "id": "a9369f4c-c60d-4734-b1ac-f5b7d03a988c",
       "name": "Leia-me"
     },
     {
@@ -34,7 +34,7 @@
         -120,
         0
       ],
-      "id": "d2886c6d-9e0e-47b5-8d7b-de7fe1e221b8",
+      "id": "12c8fa63-6f9e-4579-b574-7ce7b637726c",
       "name": "A cada 5 minutos"
     },
     {
@@ -47,7 +47,7 @@
         100,
         0
       ],
-      "id": "4c1acb8d-6110-4118-afa1-25df48a590fd",
+      "id": "a510f59b-636c-4fb0-b248-c3bed8e4897a",
       "name": "Configuração"
     },
     {
@@ -60,7 +60,7 @@
         320,
         0
       ],
-      "id": "c0be6905-7619-4d46-907d-bd27a684a745",
+      "id": "9e8164e1-0517-4faf-b2be-96e065e04c21",
       "name": "Publicar posts da fila"
     }
   ],

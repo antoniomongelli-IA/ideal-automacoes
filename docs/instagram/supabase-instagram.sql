@@ -49,13 +49,11 @@ insert into public.instagram_palavras (palavra, respostas, mensagem_direct) valu
     'Mandei no seu direct agora mesmo 👊',
     'Te enviei no direct, dá uma olhada!'
   ],
-  'Fala, {nome}! Vi seu comentário 🙌
+  'Fala, {nome}! Vi que você comentou AGENTE 🙌
 
-Pra eu montar seu diagnóstico grátis, me conta rapidinho:
-1. Qual é a sua empresa?
-2. Mais ou menos quantas mensagens chegam no WhatsApp por dia?
+Bora marcar seu diagnóstico grátis? É uma conversa rápida, de uns 20 minutos, por vídeo ou ligação. Eu olho como seu WhatsApp atende hoje e te mostro onde dá pra colocar um agente de IA.
 
-Se preferir, me chama direto no WhatsApp: https://wa.me/5567996102537?text=Quero%20meu%20diagn%C3%B3stico%20gratuito'
+Qual dia e horário ficam melhor pra você essa semana? Pode responder assim: "quinta, 10h" 😉'
 )
 on conflict (palavra) do nothing;
 
