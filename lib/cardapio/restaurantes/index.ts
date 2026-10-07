@@ -2,12 +2,13 @@ import type { Restaurante } from "../types"
 import { brasaBurger } from "./brasa-burger"
 import { kazeSushi } from "./kaze-sushi"
 import { cantinaNonna } from "./cantina-nonna"
+import { roadHouse } from "./road-house"
 
 // Para colocar um restaurante novo:
 // 1. copie `_modelo.ts` para `<slug>.ts` e preencha marca, categorias e itens
 // 2. rode `python scripts/cardapio/preparar_videos.py <slug> <pasta-dos-videos>`
 // 3. importe aqui e adicione na lista abaixo
-const CADASTRO: Restaurante[] = [brasaBurger, kazeSushi, cantinaNonna]
+const CADASTRO: Restaurante[] = [brasaBurger, kazeSushi, cantinaNonna, roadHouse]
 
 /** Os itens apontam só o nome do arquivo; aqui viram os endereços do vídeo e da capa. */
 export const RESTAURANTES: Restaurante[] = CADASTRO.map((r) => ({
