@@ -1,0 +1,22 @@
+[
+  {
+    "inicio": 0.0,
+    "duracao": 3.5162500000000003,
+    "fala": "Você sabe o que tem por dentro de um agente de i á? Eu te mostro."
+  },
+  {
+    "inicio": 3.5162500000000003,
+    "duracao": 10.327582999999999,
+    "fala": "São quatro peças: as instruções, que dizem como ele fala e vende; o catálogo, com seus produtos e preços; as ferramentas, como agenda e CRM; e o uótsápi, onde o seu cliente já está."
+  },
+  {
+    "inicio": 13.843833,
+    "duracao": 5.829458,
+    "fala": "E aqui está o segredo: quanto melhor a configuração, melhor a venda. A ferramenta é a mesma, o resultado não."
+  },
+  {
+    "inicio": 19.673291,
+    "duracao": 6.985083,
+    "fala": "Quer um agente bem configurado na sua empresa? Comenta agente, e eu te mando um diagnóstico grátis!"
+  }
+]
